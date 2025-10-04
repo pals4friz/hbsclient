@@ -499,7 +499,7 @@ def create_invoice_pdf(invoice: Invoice) -> str:
         gold_price_per_10g = gold_rate_per_gram * 10
         
         # Totals section
-        totals_y = item_y - 15
+        totals_y = footer_y - 15
         c.setFont("Helvetica-Bold", 6)
         
         # Draw totals table
