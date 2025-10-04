@@ -574,6 +574,7 @@ const Navigation = () => {
               <Link to="/invoice-list" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>Invoices</Link>
               <Link to="/sales-management" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>Sales</Link>
               <Link to="/sales-report" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>Reports</Link>
+              <Link to="/print-config" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>Print Setup</Link>
             </div>
           </div>
         )}
