@@ -501,10 +501,11 @@ function App() {
         <Navigation />
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/products" element={<Products />} />
+          <Route path="/product-list" element={<ProductList />} />
           <Route path="/customers" element={<Customers />} />
           <Route path="/invoices" element={<CreateInvoice />} />
           <Route path="/invoice-list" element={<InvoiceList />} />
+          <Route path="/sales-management" element={<SalesManagement />} />
           <Route path="/sales-report" element={<SalesReport />} />
         </Routes>
       </BrowserRouter>
