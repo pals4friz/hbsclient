@@ -502,7 +502,7 @@ async def get_dashboard_stats():
     total_invoices = await db.invoices.count_documents({})
     
     # Today's sales
-    today = date.today()
+    today = date.today().isoformat()
     today_sales = await db.sales_records.aggregate([
         {"$match": {"sale_date": today}},
         {"$group": {"_id": None, "total_amount": {"$sum": "$amount"}}}
