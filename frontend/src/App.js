@@ -313,16 +313,19 @@ const Products = () => {
               )}
             </div>
             
-            <input
-              type="number"
-              step="0.01"
-              placeholder="Rate per gram (₹)"
-              value={formData.rate_per_gram}
-              onChange={(e) => setFormData({...formData, rate_per_gram: e.target.value})}
-              className="border border-gray-300 p-2 rounded"
-              required
-              data-testid="product-rate-input"
-            />
+            <div>
+              <input
+                type="number"
+                step="0.01"
+                placeholder="Rate per gram (₹)"
+                value={formData.rate_per_gram}
+                onChange={(e) => setFormData({...formData, rate_per_gram: e.target.value})}
+                className="border border-gray-300 p-2 rounded w-full"
+                required
+                data-testid="product-rate-input"
+              />
+              <div className="text-xs text-gray-500 mt-1">Selling price per gram including making charges</div>
+            </div>
             
             <input
               type="number"
