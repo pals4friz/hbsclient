@@ -1135,6 +1135,14 @@ const CreateInvoice = () => {
           </div>
         </div>
       )}
+
+      {/* QR Code Scanner */}
+      <QRCodeScanner
+        isOpen={showQRScanner}
+        onScan={handleQRScan}
+        onError={handleQRError}
+        onClose={() => setShowQRScanner(false)}
+      />
     </div>
   );
 };
