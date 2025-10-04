@@ -40,6 +40,10 @@ const CreateInvoice = () => {
   });
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [goldRates, setGoldRates] = useState([]);
+  
+  // QR Scanner state
+  const [showQRScanner, setShowQRScanner] = useState(false);
+  const [qrScanResult, setQrScanResult] = useState(null);
 
   useEffect(() => {
     fetchCustomers();
