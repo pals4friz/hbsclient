@@ -840,7 +840,7 @@ const CreateInvoice = () => {
                         <select
                           value={item.product_id}
                           onChange={(e) => updateItem(index, 'product_id', e.target.value)}
-                          className="w-full border border-gray-300 p-2 rounded text-sm"
+                          className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm touch-manipulation"
                           required
                           data-testid={`product-select-${index}`}
                         >
