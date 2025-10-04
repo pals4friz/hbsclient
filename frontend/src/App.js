@@ -8,6 +8,7 @@ import InvoiceList from "./components/InvoiceList";
 import SalesReport from "./components/SalesReport";
 import GoldRates from "./components/GoldRates";
 import SalesManagement from "./components/SalesManagement";
+import PrintLayoutConfig from "./components/PrintLayoutConfig";
 import ProductList from "./components/ProductList";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
