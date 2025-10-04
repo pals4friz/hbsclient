@@ -35,7 +35,6 @@ const GoldRates = () => {
 
   const handleUpdateRate = async (purity) => {
     if (!newRate || newRate <= 0) {
-      alert('Please enter a valid rate');
       return;
     }
 
@@ -48,10 +47,8 @@ const GoldRates = () => {
       setEditingRate(null);
       setNewRate('');
       fetchGoldRates();
-      alert('Rate updated successfully!');
     } catch (error) {
       console.error('Error updating rate:', error);
-      alert('Error updating rate');
     } finally {
       setIsUpdating(false);
     }
