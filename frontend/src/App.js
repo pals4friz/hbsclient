@@ -95,6 +95,53 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Current Gold & Silver Rates Display */}
+      <div className="mb-8 bg-gradient-to-r from-yellow-50 to-gray-50 p-6 rounded-lg shadow">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+            💰 Current Gold & Silver Rates
+          </h2>
+          <button
+            onClick={fetchGoldRates}
+            className="bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700"
+            data-testid="refresh-rates-btn"
+          >
+            🔄 Refresh
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          {goldRates.map((rate) => (
+            <div key={rate.purity} className={`p-4 rounded-lg border-2 ${
+              rate.purity === 'Silver' 
+                ? 'bg-gray-100 border-gray-300' 
+                : 'bg-yellow-100 border-yellow-300'
+            }`}>
+              <div className="text-center">
+                <div className={`text-lg font-bold ${
+                  rate.purity === 'Silver' ? 'text-gray-700' : 'text-yellow-700'
+                }`}>
+                  {rate.purity}
+                </div>
+                <div className="text-2xl font-bold text-gray-900 mt-1">
+                  ₹{rate.rate_per_gram.toFixed(0)}
+                </div>
+                <div className="text-xs text-gray-600 mt-1">per gram</div>
+                <div className="text-xs text-gray-500 mt-1">
+                  Updated: {new Date(rate.updated_at).toLocaleDateString()}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        {goldRates.length === 0 && (
+          <div className="text-center text-gray-500 py-4">
+            No rates available. Click "Manage Rates" below to set up gold and silver rates.
+          </div>
+        )}
+      </div>
+
       {/* Reset Sales Data Section */}
       {(stats.total_invoices > 0 || stats.today_sales > 0) && (
         <div className="mb-8 bg-red-50 border border-red-200 rounded-lg p-6">
