@@ -156,6 +156,13 @@ async def get_product(product_id: str):
         raise HTTPException(status_code=404, detail="Product not found")
     return Product(**product)
 
+@api_router.get("/products/by-sku/{sku}", response_model=Product)
+async def get_product_by_sku(sku: str):
+    product = await db.products.find_one({"sku": sku})
+    if not product:
+        raise HTTPException(status_code=404, detail=f"Product with SKU '{sku}' not found")
+    return Product(**product)
+
 @api_router.put("/products/{product_id}", response_model=Product)
 async def update_product(product_id: str, product: ProductCreate):
     existing_product = await db.products.find_one({"id": product_id})
