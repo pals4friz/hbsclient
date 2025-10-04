@@ -237,9 +237,19 @@ const CreateInvoice = () => {
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
         {/* Customer Selection */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Select Customer *
-          </label>
+          <div className="flex justify-between items-center mb-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Select Customer *
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowNewCustomerModal(true)}
+              className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
+              data-testid="add-new-customer-btn"
+            >
+              + Add New Customer
+            </button>
+          </div>
           <select
             value={selectedCustomer}
             onChange={(e) => setSelectedCustomer(e.target.value)}
