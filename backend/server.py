@@ -131,6 +131,76 @@ class GoldRate(BaseModel):
     rate_per_gram: float
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
+class PrintConfig(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    # Page Settings
+    pageSize: str = "A5"
+    orientation: str = "landscape"
+    margins: dict = {"top": 20, "bottom": 20, "left": 20, "right": 20}
+    copiesPerPage: int = 2
+    
+    # Header Settings
+    companyName: str = "HARI BABU SARRAF"
+    companyAddress: str = "MOHALA CHOWK, PURANPUR"
+    showLogo: bool = False
+    logoPosition: str = "left"
+    headerBackgroundColor: str = "#ffffff"
+    headerTextColor: str = "#000000"
+    companyNameFontSize: int = 14
+    addressFontSize: int = 10
+    
+    # Invoice Title
+    invoiceTitle: str = "ROUGH ESTIMATE"
+    titleFontSize: int = 16
+    titleColor: str = "#000000"
+    titlePosition: str = "center"
+    
+    # Table Settings
+    tableStyle: str = "modern"
+    tableHeaderColor: str = "#333333"
+    tableHeaderTextColor: str = "#ffffff"
+    alternateRowColor: str = "#f5f5f5"
+    tableBorderColor: str = "#cccccc"
+    tableBorderWidth: int = 1
+    cellPadding: int = 5
+    
+    # Table Columns
+    columns: list = []
+    
+    # Font Settings
+    defaultFont: str = "Helvetica"
+    tableFontSize: int = 8
+    headerFontSize: int = 9
+    
+    # Totals Section
+    totalsPosition: str = "right"
+    totalsBackgroundColor: str = "#f9f9f9"
+    finalTotalHighlight: bool = True
+    finalTotalColor: str = "#2563eb"
+    
+    # Footer Settings
+    showTerms: bool = True
+    terms: str = "Terms & Conditions: All sales are final. Prices subject to change."
+    showBankDetails: bool = True
+    bankDetails: str = "Bank: State Bank of India | A/C: 1234567890 | IFSC: SBIN0001234"
+    showContact: bool = True
+    contactInfo: str = "Contact: 9690124010, 9456977703"
+    footerFontSize: int = 7
+    
+    # Colors & Branding
+    primaryColor: str = "#2563eb"
+    secondaryColor: str = "#64748b" 
+    accentColor: str = "#f59e0b"
+    
+    # Additional Elements
+    showQRCode: bool = False
+    showSignature: bool = True
+    signatureText: str = "Authorized Signature"
+    watermark: str = ""
+    showPageNumbers: bool = False
+    
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
 class GoldRateCreate(BaseModel):
     purity: str
     rate_per_gram: float
