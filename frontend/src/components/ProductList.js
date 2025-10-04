@@ -224,13 +224,35 @@ const ProductList = () => {
           <h1 className="text-3xl font-bold text-gray-800">Product List & SKU Reference</h1>
           <p className="text-gray-600 mt-1">Product catalog for QR code scanning reference (weights come from QR codes)</p>
         </div>
-        <button
-          onClick={() => setShowForm(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-          data-testid="add-product-btn"
-        >
-          Add New Product
-        </button>
+        
+        <div className="flex gap-3">
+          <button
+            onClick={downloadTemplate}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
+            data-testid="download-template-btn"
+          >
+            📄 Download Template
+          </button>
+          
+          <label className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 cursor-pointer flex items-center gap-2">
+            📁 Import Excel
+            <input
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={handleFileImport}
+              className="hidden"
+              data-testid="import-excel-input"
+            />
+          </label>
+          
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            data-testid="add-product-btn"
+          >
+            Add New Product
+          </button>
+        </div>
       </div>
 
       {showForm && (
