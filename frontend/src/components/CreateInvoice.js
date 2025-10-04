@@ -96,6 +96,8 @@ const CreateInvoice = () => {
       const invoiceData = {
         customer_id: selectedCustomer,
         items: invoiceItems,
+        labor_charges: laborCharges,
+        tax_included: taxIncluded,
         tax_percentage: taxPercentage
       };
 
