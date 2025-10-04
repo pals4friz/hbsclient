@@ -481,11 +481,12 @@ const Navigation = () => {
           <Link to="/" className="text-xl font-bold">💎 Jewelry Store</Link>
           <div className="space-x-4">
             <Link to="/" className="hover:text-blue-200">Dashboard</Link>
-            <Link to="/products" className="hover:text-blue-200">Products</Link>
+            <Link to="/product-list" className="hover:text-blue-200">Product List</Link>
             <Link to="/customers" className="hover:text-blue-200">Customers</Link>
             <Link to="/invoices" className="hover:text-blue-200">Create Invoice</Link>
             <Link to="/invoice-list" className="hover:text-blue-200">Invoices</Link>
-            <Link to="/sales-report" className="hover:text-blue-200">Sales Report</Link>
+            <Link to="/sales-management" className="hover:text-blue-200">Sales</Link>
+            <Link to="/sales-report" className="hover:text-blue-200">Reports</Link>
           </div>
         </div>
       </div>
