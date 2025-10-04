@@ -158,7 +158,6 @@ const CreateInvoice = () => {
   const handleAddNewCustomer = async (e) => {
     e.preventDefault();
     if (!newCustomerData.name || !newCustomerData.phone || !newCustomerData.address) {
-      alert('Please fill in all required fields (Name, Phone, Address)');
       return;
     }
 
