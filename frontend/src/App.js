@@ -394,6 +394,10 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/customers" element={<Customers />} />
+          <Route path="/invoices" element={<CreateInvoice />} />
+          <Route path="/invoice-list" element={<InvoiceList />} />
+          <Route path="/sales-report" element={<SalesReport />} />
         </Routes>
       </BrowserRouter>
     </div>
