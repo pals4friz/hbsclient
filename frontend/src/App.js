@@ -125,6 +125,7 @@ const Products = () => {
 
   useEffect(() => {
     fetchProducts();
+    fetchGoldRates();
   }, []);
 
   const fetchProducts = async () => {
@@ -133,6 +134,15 @@ const Products = () => {
       setProducts(response.data);
     } catch (error) {
       console.error('Error fetching products:', error);
+    }
+  };
+
+  const fetchGoldRates = async () => {
+    try {
+      const response = await axios.get(`${API}/gold-rates`);
+      setGoldRates(response.data);
+    } catch (error) {
+      console.error('Error fetching gold rates:', error);
     }
   };
 
