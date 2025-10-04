@@ -473,16 +473,36 @@ const ProductList = () => {
         </div>
       </div>
 
-      {/* QR Code Format Help */}
-      <div className="mt-6 bg-blue-50 p-4 rounded-lg">
-        <h4 className="font-semibold text-blue-800 mb-2">📱 QR Code Format for Scanning</h4>
-        <div className="text-sm text-blue-700 space-y-1">
-          <p><strong>Format:</strong> <code className="bg-white px-1 rounded">XX{'{SKU}'}XXXXX|{'{weight}'}</code></p>
-          <p><strong>Example:</strong> <code className="bg-white px-1 rounded">AB12CD567|2.5</code> where:</p>
-          <ul className="list-disc list-inside ml-4">
-            <li>Positions 3-4: <code>12</code> (SKU from this table)</li>
-            <li>After |: <code>2.5</code> (actual weight in grams)</li>
-          </ul>
+      {/* Excel Import Format Help */}
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-green-50 p-4 rounded-lg">
+          <h4 className="font-semibold text-green-800 mb-2">📄 Excel Import Format</h4>
+          <div className="text-sm text-green-700 space-y-2">
+            <p><strong>Required Columns:</strong></p>
+            <ul className="list-disc list-inside ml-4 space-y-1">
+              <li><code>name</code> - Product name</li>
+              <li><code>sku</code> - 2-character SKU code</li>
+              <li><code>category</code> - Ring, Necklace, etc.</li>
+              <li><code>purity</code> - 18K, 22K, 24K, Silver</li>
+              <li><code>rate_per_gram</code> - Price per gram</li>
+              <li><code>description</code> - Optional description</li>
+            </ul>
+            <p className="text-green-600 font-medium mt-2">
+              💡 Click "Download Template" for example Excel file
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <h4 className="font-semibold text-blue-800 mb-2">📱 QR Code Format for Scanning</h4>
+          <div className="text-sm text-blue-700 space-y-1">
+            <p><strong>Format:</strong> <code className="bg-white px-1 rounded">XX{'{SKU}'}XXXXX|{'{weight}'}</code></p>
+            <p><strong>Example:</strong> <code className="bg-white px-1 rounded">AB12CD567|2.5</code> where:</p>
+            <ul className="list-disc list-inside ml-4">
+              <li>Positions 3-4: <code>12</code> (SKU from this table)</li>
+              <li>After |: <code>2.5</code> (actual weight in grams)</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
