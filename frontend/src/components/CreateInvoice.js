@@ -648,10 +648,54 @@ const CreateInvoice = () => {
             } text-white`}
             data-testid="create-invoice-btn"
           >
-            {isSubmitting ? 'Creating Invoice...' : 'Create & Download Invoice'}
+            {isSubmitting ? 'Creating Invoice...' : 'Create Invoice'}
           </button>
         </div>
       </form>
+
+      {/* Invoice Actions - Show after successful creation */}
+      {lastCreatedInvoice && (
+        <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-semibold text-green-800">✅ Invoice Created Successfully!</h3>
+              <p className="text-green-700">Invoice #{lastCreatedInvoice.invoice_number} - Total: ₹{lastCreatedInvoice.total_amount.toFixed(2)}</p>
+            </div>
+            <button
+              onClick={() => setLastCreatedInvoice(null)}
+              className="text-green-600 hover:text-green-800"
+            >
+              ✕
+            </button>
+          </div>
+          
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => handleDownloadPDF(lastCreatedInvoice.id, lastCreatedInvoice.invoice_number)}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2"
+              data-testid="download-pdf-btn"
+            >
+              📄 Download PDF
+            </button>
+            
+            <button
+              onClick={() => handlePrintInvoice(lastCreatedInvoice.id)}
+              className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center gap-2"
+              data-testid="print-invoice-btn"
+            >
+              🖨️ Print Invoice
+            </button>
+            
+            <button
+              onClick={() => setLastCreatedInvoice(null)}
+              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+              data-testid="create-another-btn"
+            >
+              ➕ Create Another Invoice
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* New Customer Modal */}
       {showNewCustomerModal && (
