@@ -499,6 +499,7 @@ def main():
     # Test PDF downloads and print functionality
     tester.test_download_invoice_pdf(invoice_id)
     tester.test_print_invoice(invoice_id)
+    tester.test_landscape_pdf_format(invoice_id)
     tester.test_sales_report_download()
     
     # Clean up (optional - comment out if you want to keep test data)
