@@ -101,3 +101,50 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Implement landscape printing for the A5 invoice format. The user wants the invoice to print in landscape mode for better formatting of the original/duplicate copies side-by-side."
+
+backend:
+  - task: "PDF Generation - Landscape A5 Format"
+    implemented: true
+    working: "needs_testing"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "needs_testing"
+          agent: "main"
+          comment: "Backend already has landscape(A5) pagesize in create_invoice_pdf function line 311, needs to verify if working correctly"
+
+frontend:
+  - task: "Print HTML - Landscape CSS Configuration"
+    implemented: false
+    working: false
+    file: "/app/frontend/src/components/CreateInvoice.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "CSS in generatePrintHTML function has @page { size: A5; } but missing landscape orientation. Needs to be updated to @page { size: A5 landscape; }"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 0
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Test current PDF download functionality"
+    - "Test current print functionality"
+    - "Update frontend CSS for landscape print"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "main"
+      message: "Starting landscape print implementation. Backend appears to already have landscape A5 setup. Need to test current functionality and fix frontend CSS print styles."
