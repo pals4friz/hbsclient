@@ -126,11 +126,14 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: true
           agent: "main"
           comment: "✅ Updated InvoiceItem model to include labor_charges field. Updated invoice creation logic to calculate total labor from individual item labor charges."
+        - working: true
+          agent: "testing"
+          comment: "✅ COMPREHENSIVE TESTING PASSED: Individual labor charges per item working perfectly. Created invoice with items having different labor charges (₹500 and ₹750). Total labor correctly calculated as ₹1250. API endpoint /api/invoices handles labor_charges field properly. PDF generation includes actual labor values (not hardcoded ₹0). Test results: Invoice ID 8754fabb-249d-43ff-a0ba-c915c4607d36 created successfully with individual labor charges."
 
   - task: "Discount, Old Gold, Old Silver Calculation"
     implemented: true
@@ -138,11 +141,14 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: true
           agent: "main"
           comment: "✅ Added discount_amount, old_gold_value, old_silver_value fields to Invoice model. Updated calculation formula: Subtotal + Labor + Tax - Discount - Old Gold - Old Silver = Final Total. Updated PDF generation to use actual values."
+        - working: true
+          agent: "testing"
+          comment: "✅ COMPREHENSIVE TESTING PASSED: Enhanced pricing calculation working perfectly. Tested new formula: Subtotal (₹112000) + Labor (₹1000) + Tax (₹3390) - Discount (₹2000) - Old Gold (₹15000) - Old Silver (₹3000) = Final Total (₹96390). All calculations verified mathematically correct. PDF generation includes actual values: OLD GOLD ₹15000, OLD SILVER ₹3000, DISCOUNT ₹2000. Tested both tax included/excluded scenarios. Edge cases with zero values handled correctly. Invoice ID ecd668b4-dde3-4d55-ba3a-1919fcd0e7cc demonstrates full functionality."
 
 frontend:
   - task: "Print HTML - Landscape CSS Configuration"
