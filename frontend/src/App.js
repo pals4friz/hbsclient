@@ -164,8 +164,8 @@ const Dashboard = () => {
   );
 };
 
-// Products Component
-const Products = () => {
+// Products Component (Legacy - replaced by ProductList)
+const Products_OLD = () => {
   const [products, setProducts] = useState([]);
   const [goldRates, setGoldRates] = useState([]);
   const [showForm, setShowForm] = useState(false);
