@@ -10,9 +10,11 @@ const CreateInvoice = () => {
   const [products, setProducts] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState('');
   const [invoiceItems, setInvoiceItems] = useState([]);
-  const [laborCharges, setLaborCharges] = useState(0);
   const [taxIncluded, setTaxIncluded] = useState(false); // Default to without tax
   const [taxPercentage, setTaxPercentage] = useState(3.0);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [oldGoldValue, setOldGoldValue] = useState(0);
+  const [oldSilverValue, setOldSilverValue] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [lastCreatedInvoice, setLastCreatedInvoice] = useState(null);
   
