@@ -107,19 +107,17 @@ const CreateInvoice = () => {
         subtotal += amount;
         totalWeight += item.weight;
         
-        // Calculate labor charges per item based on its weight
-        let itemLaborCharges = 0;
-        if (item.weight < 5) {
-          itemLaborCharges = 500;
-        } else {
-          itemLaborCharges = 100 * item.weight;
-        }
-        totalLaborCharges += itemLaborCharges;
+        // Use individual labor charges per item (user-editable)
+        totalLaborCharges += parseFloat(item.labor_charges || 0);
       }
     });
 
     const subtotalWithLabor = subtotal + totalLaborCharges;
     const taxAmount = taxIncluded ? subtotalWithLabor * (taxPercentage / 100) : 0;
+    
+    // New calculation formula: Subtotal + Labor + Tax - Discount - (Old Gold + Old Silver) = Final Total
+    const subtotalWithTax = subtotalWithLabor + taxAmount;
+    const totalAfterDeductions = subtotalWithTax - parseFloat(discountAmount || 0) - parseFloat(oldGoldValue || 0) - parseFloat(oldSilverValue || 0);
     const total = subtotalWithLabor + taxAmount;
 
     return { subtotal, laborCharges: totalLaborCharges, totalWeight, subtotalWithLabor, taxAmount, total, invoiceItems };
