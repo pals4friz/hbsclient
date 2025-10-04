@@ -686,12 +686,14 @@ const CreateInvoice = () => {
                 <input
                   type="number"
                   step="0.01"
+                  placeholder="Selling price per gram"
                   value={newProductData.rate_per_gram}
                   onChange={(e) => setNewProductData({...newProductData, rate_per_gram: e.target.value})}
                   className="w-full border border-gray-300 p-2 rounded"
                   required
                   data-testid="new-product-rate"
                 />
+                <div className="text-xs text-gray-500 mt-1">Include making charges in this rate</div>
               </div>
               
               <div>
