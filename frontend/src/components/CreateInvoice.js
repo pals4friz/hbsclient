@@ -217,10 +217,8 @@ const CreateInvoice = () => {
       });
       setShowNewProductModal(false);
       
-      alert('Product added successfully!');
     } catch (error) {
       console.error('Error adding product:', error);
-      alert('Error adding product. Please try again.');
     } finally {
       setIsAddingProduct(false);
     }
