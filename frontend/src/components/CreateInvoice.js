@@ -679,15 +679,15 @@ const CreateInvoice = () => {
       <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
         {/* Customer Selection */}
         <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 gap-2">
             <label className="block text-sm font-medium text-gray-700">
               Select Customer *
             </label>
             <button
               type="button"
               onClick={() => setShowNewCustomerModal(true)}
-              className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"
-              data-testid="add-new-customer-btn"
+              className="px-3 py-2 bg-green-600 text-white text-xs sm:text-sm rounded hover:bg-green-700 min-h-[40px] touch-manipulation self-start sm:self-auto"
+              data-testid="add-customer-btn"
             >
               + Add New Customer
             </button>
@@ -695,7 +695,7 @@ const CreateInvoice = () => {
           <select
             value={selectedCustomer}
             onChange={(e) => setSelectedCustomer(e.target.value)}
-            className="w-full border border-gray-300 p-2 rounded"
+            className="w-full border border-gray-300 p-2 sm:p-3 rounded touch-manipulation"
             required
             data-testid="customer-select"
           >
