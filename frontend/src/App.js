@@ -130,9 +130,14 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Link to="/products" className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow border-l-4 border-blue-500">
-          <h3 className="text-xl font-semibold mb-2 text-gray-800">Product Management</h3>
-          <p className="text-gray-600">Add, edit, and manage jewelry inventory (all weights in grams)</p>
+        <Link to="/product-list" className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow border-l-4 border-blue-500">
+          <h3 className="text-xl font-semibold mb-2 text-gray-800">Product List & SKU Reference</h3>
+          <p className="text-gray-600">Product catalog with SKU codes for QR scanning (no weights/stock)</p>
+        </Link>
+        
+        <Link to="/sales-management" className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow border-l-4 border-orange-500">
+          <h3 className="text-xl font-semibold mb-2 text-gray-800">Sales Management</h3>
+          <p className="text-gray-600">View sold items with actual weights and sales analytics</p>
         </Link>
         
         <Link to="/customers" className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow border-l-4 border-green-500">
