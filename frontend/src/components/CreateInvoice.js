@@ -512,7 +512,7 @@ const CreateInvoice = () => {
           <title>Invoice ${invoice.invoice_number}</title>
           <style>
             @page { 
-              size: A5; 
+              size: A5 landscape; 
               margin: 0.2in; 
             }
             body { 
