@@ -64,10 +64,11 @@ const CreateInvoice = () => {
       }
     });
 
-    const taxAmount = subtotal * (taxPercentage / 100);
-    const total = subtotal + taxAmount;
+    const subtotalWithLabor = subtotal + laborCharges;
+    const taxAmount = taxIncluded ? subtotalWithLabor * (taxPercentage / 100) : 0;
+    const total = subtotalWithLabor + taxAmount;
 
-    return { subtotal, taxAmount, total };
+    return { subtotal, laborCharges, subtotalWithLabor, taxAmount, total };
   };
 
   const handleSubmit = async (e) => {
