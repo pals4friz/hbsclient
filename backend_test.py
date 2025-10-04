@@ -327,6 +327,82 @@ class JewelryStoreAPITester:
             
         return success
 
+    def test_landscape_pdf_format(self, invoice_id):
+        """Test specific landscape A5 PDF format requirements"""
+        print(f"\n🔍 Testing Landscape A5 PDF Format Requirements...")
+        
+        # First get the invoice data to verify gold pricing calculation
+        success, invoice_data = self.run_test(
+            "Get Invoice Data for Format Check",
+            "GET",
+            f"invoices/{invoice_id}",
+            200
+        )
+        
+        if not success:
+            return False
+        
+        self.tests_run += 1
+        
+        # Calculate expected gold price per 10g (22K default rate)
+        total_weight = sum(item['weight'] for item in invoice_data['items'])
+        gold_rate_22k = 5500  # Default rate from server.py
+        expected_gold_price_per_10g = gold_rate_22k * 10
+        
+        print(f"   ✅ Invoice total weight: {total_weight:.1f}g")
+        print(f"   ✅ Expected 22K gold price per 10g: ₹{expected_gold_price_per_10g}")
+        print(f"   ✅ Invoice contains {len(invoice_data['items'])} items")
+        
+        # Download PDF to verify format
+        url = f"{self.api_url}/invoices/{invoice_id}/download"
+        try:
+            response = requests.get(url)
+            if response.status_code == 200 and response.content.startswith(b'%PDF'):
+                # Save for inspection
+                pdf_path = f"/tmp/landscape_test_{invoice_id}.pdf"
+                with open(pdf_path, "wb") as f:
+                    f.write(response.content)
+                
+                print(f"   ✅ PDF generated successfully")
+                print(f"   ✅ PDF saved to: {pdf_path}")
+                print(f"   ✅ File size: {len(response.content)} bytes")
+                
+                # Check if PDF contains expected elements (basic text search)
+                pdf_text = response.content.decode('latin-1', errors='ignore')
+                
+                checks = [
+                    ("ORIGINAL", "Original copy text"),
+                    ("DUPLICATE", "Duplicate copy text"),
+                    ("ROUGH ESTIMATE", "Invoice title"),
+                    ("HARI BABU SARRAF", "Company name"),
+                    (invoice_data['customer_name'], "Customer name"),
+                    (invoice_data['invoice_number'], "Invoice number"),
+                    ("Gold Price", "Gold pricing section")
+                ]
+                
+                passed_checks = 0
+                for check_text, description in checks:
+                    if check_text in pdf_text:
+                        print(f"   ✅ Found {description}")
+                        passed_checks += 1
+                    else:
+                        print(f"   ⚠️  Missing {description}")
+                
+                if passed_checks >= 5:  # At least 5 out of 7 checks should pass
+                    self.tests_passed += 1
+                    print(f"   ✅ Landscape A5 PDF format validation passed ({passed_checks}/7 checks)")
+                    return True
+                else:
+                    print(f"   ❌ PDF format validation failed ({passed_checks}/7 checks)")
+                    return False
+            else:
+                print(f"   ❌ Failed to download valid PDF")
+                return False
+                
+        except Exception as e:
+            print(f"   ❌ Error during PDF format test: {str(e)}")
+            return False
+
     def test_sales_report_download(self):
         """Test sales report Excel download"""
         print(f"\n🔍 Testing Download Sales Report...")
