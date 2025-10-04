@@ -1014,7 +1014,7 @@ const CreateInvoice = () => {
                   max="100"
                   value={taxPercentage}
                   onChange={(e) => setTaxPercentage(parseFloat(e.target.value))}
-                  className="w-full border border-gray-300 p-2 rounded"
+                  className="w-full border border-gray-300 p-2 sm:p-3 rounded touch-manipulation"
                   data-testid="tax-percentage-input"
                 />
               </div>
