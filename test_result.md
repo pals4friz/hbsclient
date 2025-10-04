@@ -107,15 +107,18 @@ user_problem_statement: "Implement landscape printing for the A5 invoice format.
 backend:
   - task: "PDF Generation - Landscape A5 Format"
     implemented: true
-    working: "needs_testing"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "needs_testing"
           agent: "main"
           comment: "Backend already has landscape(A5) pagesize in create_invoice_pdf function line 311, needs to verify if working correctly"
+        - working: true
+          agent: "testing"
+          comment: "✅ PDF generation working correctly. Fixed drawCentredText -> drawCentredString and fill parameter issues. A5 landscape format confirmed working with original/duplicate copies side-by-side. Gold pricing per 10g calculation implemented. All PDF endpoints tested successfully: /api/invoices/{id}/download returns valid PDF (2872 bytes), /api/invoices/{id}/print returns complete invoice data. Test results: 16/16 tests passed (100% success rate)."
 
 frontend:
   - task: "Print HTML - Landscape CSS Configuration"
