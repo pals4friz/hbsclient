@@ -272,14 +272,24 @@ const CreateInvoice = () => {
             <label className="block text-sm font-medium text-gray-700">
               Invoice Items
             </label>
-            <button
-              type="button"
-              onClick={addItem}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-              data-testid="add-item-btn"
-            >
-              Add Item
-            </button>
+            <div className="space-x-2">
+              <button
+                type="button"
+                onClick={() => setShowNewProductModal(true)}
+                className="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 text-sm"
+                data-testid="add-new-product-btn"
+              >
+                + Add New Product
+              </button>
+              <button
+                type="button"
+                onClick={addItem}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                data-testid="add-item-btn"
+              >
+                Add Item
+              </button>
+            </div>
           </div>
 
           {invoiceItems.length === 0 ? (
