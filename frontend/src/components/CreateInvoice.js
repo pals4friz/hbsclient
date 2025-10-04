@@ -630,7 +630,7 @@ const CreateInvoice = () => {
     `;
   };
 
-  const { subtotal, laborCharges: autoLaborCharges, totalWeight, subtotalWithLabor, taxAmount, total } = calculateTotal();
+  const { subtotal, laborCharges, totalWeight, subtotalWithLabor, taxAmount, total, discountAmount: calcDiscountAmount, oldGoldValue: calcOldGoldValue, oldSilverValue: calcOldSilverValue } = calculateTotal();
 
   return (
     <div className="p-6">
