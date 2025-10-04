@@ -478,7 +478,7 @@ async def download_sales_report(start_date: str, end_date: str):
     formatted_records = []
     for record in sales_records:
         formatted_records.append({
-            "sale_date": record["sale_date"].strftime('%d-%m-%Y'),
+            "sale_date": record["sale_date"],
             "invoice_number": record["invoice_info"]["invoice_number"],
             "product_name": record["product_name"],
             "sku": record["sku"],
