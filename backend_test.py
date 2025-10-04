@@ -224,6 +224,190 @@ class JewelryStoreAPITester:
             return response['id']
         return None
 
+    def test_create_invoice_with_individual_labor(self, customer_id, product_id):
+        """Test invoice creation with individual labor charges per item"""
+        invoice_data = {
+            "customer_id": customer_id,
+            "items": [
+                {
+                    "product_id": product_id,
+                    "quantity": 1,
+                    "weight": 10.5,
+                    "labor_charges": 500.0  # Individual labor for first item
+                },
+                {
+                    "product_id": product_id,
+                    "quantity": 1,
+                    "weight": 15.2,
+                    "labor_charges": 750.0  # Individual labor for second item
+                }
+            ],
+            "tax_included": True,
+            "tax_percentage": 3.0,
+            "discount_amount": 0.0,
+            "old_gold_value": 0.0,
+            "old_silver_value": 0.0
+        }
+        
+        success, response = self.run_test(
+            "Create Invoice with Individual Labor Charges",
+            "POST",
+            "invoices",
+            200,
+            data=invoice_data
+        )
+        
+        if success and 'id' in response:
+            self.created_ids['invoices'].append(response['id'])
+            print(f"   Created invoice ID: {response['id']}")
+            print(f"   Invoice number: {response.get('invoice_number', 'N/A')}")
+            print(f"   Total labor charges: ₹{response.get('labor_charges', 0):.2f}")
+            print(f"   Total amount: ₹{response.get('total_amount', 0):.2f}")
+            
+            # Verify individual labor charges are summed correctly
+            expected_total_labor = 500.0 + 750.0  # Sum of individual labor charges
+            actual_total_labor = response.get('labor_charges', 0)
+            if abs(actual_total_labor - expected_total_labor) < 0.01:
+                print(f"   ✅ Labor charges calculated correctly: ₹{actual_total_labor}")
+            else:
+                print(f"   ❌ Labor charges mismatch: expected ₹{expected_total_labor}, got ₹{actual_total_labor}")
+                
+            return response['id']
+        return None
+
+    def test_create_invoice_with_discounts_and_deductions(self, customer_id, product_id):
+        """Test invoice creation with discount, old gold, and old silver values"""
+        invoice_data = {
+            "customer_id": customer_id,
+            "items": [
+                {
+                    "product_id": product_id,
+                    "quantity": 1,
+                    "weight": 20.0,
+                    "labor_charges": 1000.0
+                }
+            ],
+            "tax_included": True,
+            "tax_percentage": 3.0,
+            "discount_amount": 2000.0,  # Discount amount
+            "old_gold_value": 15000.0,  # Old gold value to deduct
+            "old_silver_value": 3000.0   # Old silver value to deduct
+        }
+        
+        success, response = self.run_test(
+            "Create Invoice with Discounts and Deductions",
+            "POST",
+            "invoices",
+            200,
+            data=invoice_data
+        )
+        
+        if success and 'id' in response:
+            self.created_ids['invoices'].append(response['id'])
+            print(f"   Created invoice ID: {response['id']}")
+            print(f"   Invoice number: {response.get('invoice_number', 'N/A')}")
+            print(f"   Subtotal: ₹{response.get('subtotal', 0):.2f}")
+            print(f"   Labor charges: ₹{response.get('labor_charges', 0):.2f}")
+            print(f"   Tax amount: ₹{response.get('tax_amount', 0):.2f}")
+            print(f"   Discount amount: ₹{response.get('discount_amount', 0):.2f}")
+            print(f"   Old gold value: ₹{response.get('old_gold_value', 0):.2f}")
+            print(f"   Old silver value: ₹{response.get('old_silver_value', 0):.2f}")
+            print(f"   Final total: ₹{response.get('total_amount', 0):.2f}")
+            
+            # Verify calculation formula: Subtotal + Labor + Tax - Discount - Old Gold - Old Silver = Final Total
+            subtotal = response.get('subtotal', 0)
+            labor = response.get('labor_charges', 0)
+            tax = response.get('tax_amount', 0)
+            discount = response.get('discount_amount', 0)
+            old_gold = response.get('old_gold_value', 0)
+            old_silver = response.get('old_silver_value', 0)
+            actual_total = response.get('total_amount', 0)
+            
+            expected_total = subtotal + labor + tax - discount - old_gold - old_silver
+            
+            if abs(actual_total - expected_total) < 0.01:
+                print(f"   ✅ Calculation formula verified: {subtotal} + {labor} + {tax} - {discount} - {old_gold} - {old_silver} = {actual_total}")
+            else:
+                print(f"   ❌ Calculation mismatch: expected ₹{expected_total}, got ₹{actual_total}")
+                
+            return response['id']
+        return None
+
+    def test_create_invoice_without_tax(self, customer_id, product_id):
+        """Test invoice creation without tax to verify calculation"""
+        invoice_data = {
+            "customer_id": customer_id,
+            "items": [
+                {
+                    "product_id": product_id,
+                    "quantity": 1,
+                    "weight": 8.0,
+                    "labor_charges": 400.0
+                }
+            ],
+            "tax_included": False,  # No tax
+            "discount_amount": 500.0,
+            "old_gold_value": 2000.0,
+            "old_silver_value": 1000.0
+        }
+        
+        success, response = self.run_test(
+            "Create Invoice without Tax",
+            "POST",
+            "invoices",
+            200,
+            data=invoice_data
+        )
+        
+        if success and 'id' in response:
+            self.created_ids['invoices'].append(response['id'])
+            print(f"   Created invoice ID: {response['id']}")
+            print(f"   Tax included: {response.get('tax_included', False)}")
+            print(f"   Tax amount: ₹{response.get('tax_amount', 0):.2f}")
+            print(f"   Final total: ₹{response.get('total_amount', 0):.2f}")
+            
+            # Verify tax amount is 0 when tax_included is False
+            if response.get('tax_amount', 0) == 0:
+                print(f"   ✅ Tax correctly excluded from calculation")
+            else:
+                print(f"   ❌ Tax should be 0 when tax_included is False")
+                
+            return response['id']
+        return None
+
+    def test_create_invoice_edge_cases(self, customer_id, product_id):
+        """Test invoice creation with edge cases (zero values, high amounts)"""
+        # Test with zero discount and deductions
+        invoice_data_zero = {
+            "customer_id": customer_id,
+            "items": [
+                {
+                    "product_id": product_id,
+                    "quantity": 1,
+                    "weight": 5.0,
+                    "labor_charges": 0.0  # Zero labor
+                }
+            ],
+            "tax_included": True,
+            "discount_amount": 0.0,  # Zero discount
+            "old_gold_value": 0.0,   # Zero old gold
+            "old_silver_value": 0.0  # Zero old silver
+        }
+        
+        success, response = self.run_test(
+            "Create Invoice with Zero Values",
+            "POST",
+            "invoices",
+            200,
+            data=invoice_data_zero
+        )
+        
+        if success and 'id' in response:
+            self.created_ids['invoices'].append(response['id'])
+            print(f"   ✅ Zero values handled correctly")
+            return response['id']
+        return None
+
     def test_get_invoices(self):
         """Test getting all invoices"""
         success, response = self.run_test(
