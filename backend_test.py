@@ -931,6 +931,21 @@ def main():
     tester.test_print_invoice(invoice_id)
     tester.test_landscape_pdf_format(invoice_id)
     
+    print("\n" + "🏢" * 50)
+    print("🏢 FIRM NAME DISPLAY TESTING - USER REPORTED ISSUE")
+    print("🏢" * 50)
+    
+    # Test firm name display specifically
+    tester.test_firm_name_display_in_pdf(invoice_id)
+    tester.test_pdf_content_analysis(invoice_id)
+    
+    # Test firm name in different invoice types
+    if discount_invoice_id:
+        tester.test_firm_name_display_in_pdf(discount_invoice_id)
+    
+    if labor_invoice_id:
+        tester.test_firm_name_display_in_pdf(labor_invoice_id)
+    
     # Test PDF with enhanced features
     if discount_invoice_id:
         tester.test_download_invoice_pdf(discount_invoice_id)
