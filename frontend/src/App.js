@@ -162,12 +162,12 @@ Type 'RESET' to confirm this action:`;
         
         <Link to="/invoices" className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow border-l-4 border-yellow-500">
           <h3 className="text-xl font-semibold mb-2 text-gray-800">Create Invoice</h3>
-          <p className="text-gray-600">Generate invoices with tax options & labor charges</p>
+          <p className="text-gray-600">Generate invoices with tax options, labor charges & direct print</p>
         </Link>
         
         <Link to="/invoice-list" className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow border-l-4 border-purple-500">
           <h3 className="text-xl font-semibold mb-2 text-gray-800">Invoice History</h3>
-          <p className="text-gray-600">View, download Excel, and print invoices</p>
+          <p className="text-gray-600">View, download PDF, and print invoices</p>
         </Link>
         
         <Link to="/sales-report" className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow border-l-4 border-red-500">
