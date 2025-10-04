@@ -317,14 +317,14 @@ def create_invoice_pdf(invoice: Invoice) -> str:
         
         # Title and company info
         c.setFont("Helvetica-Bold", 12)
-        c.drawCentredText(width/2, base_y - 30, "ROUGH ESTIMATE")
-        c.drawCentredText(width/2, base_y - 45, copy_text)
+        c.drawCentredString(width/2, base_y - 30, "ROUGH ESTIMATE")
+        c.drawCentredString(width/2, base_y - 45, copy_text)
         
         c.setFont("Helvetica-Bold", 10)
-        c.drawCentredText(width/2, base_y - 60, "HARI BABU SARRAF")
+        c.drawCentredString(width/2, base_y - 60, "HARI BABU SARRAF")
         
         c.setFont("Helvetica", 8)
-        c.drawCentredText(width/2, base_y - 75, "MOHALA CHOWK, PURANPUR")
+        c.drawCentredString(width/2, base_y - 75, "MOHALA CHOWK, PURANPUR")
         
         # Customer and invoice details
         c.setFont("Helvetica-Bold", 7)
