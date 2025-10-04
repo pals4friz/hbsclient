@@ -1092,7 +1092,7 @@ const CreateInvoice = () => {
           <button
             type="submit"
             disabled={isSubmitting || invoiceItems.length === 0}
-            className={`px-6 py-3 rounded-lg font-medium ${
+            className={`px-6 py-3 sm:py-4 rounded-lg font-medium min-h-[48px] touch-manipulation ${
               isSubmitting || invoiceItems.length === 0
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-green-600 hover:bg-green-700'
