@@ -965,7 +965,7 @@ const CreateInvoice = () => {
                 min="0"
                 value={oldSilverValue}
                 onChange={(e) => setOldSilverValue(parseFloat(e.target.value) || 0)}
-                className="w-full border border-gray-300 p-2 rounded"
+                className="w-full border border-gray-300 p-2 sm:p-3 rounded touch-manipulation"
                 placeholder="0.00"
                 data-testid="old-silver-input"
               />
