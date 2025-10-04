@@ -913,10 +913,10 @@ const CreateInvoice = () => {
                 <span>Items Subtotal:</span>
                 <span data-testid="subtotal-display">₹{subtotal.toFixed(2)}</span>
               </div>
-              {laborCharges > 0 && (
+              {autoLaborCharges > 0 && (
                 <div className="flex justify-between">
                   <span>Labor Charges:</span>
-                  <span data-testid="labor-display">₹{laborCharges.toFixed(2)}</span>
+                  <span data-testid="labor-display">₹{autoLaborCharges.toFixed(0)}</span>
                 </div>
               )}
               <div className="flex justify-between">
