@@ -91,7 +91,7 @@ class Invoice(BaseModel):
     tax_percentage: float
     tax_amount: float
     total_amount: float
-    invoice_date: date
+    invoice_date: str  # Store as string to avoid BSON issues
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class InvoiceCreate(BaseModel):
