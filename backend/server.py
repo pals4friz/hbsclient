@@ -295,6 +295,7 @@ async def create_invoice(invoice_data: InvoiceCreate):
             weight=item.weight,
             rate_per_gram=item.rate_per_gram,
             amount=item.amount,
+            labor_charges=item.labor_charges,
             sale_date=date.today().isoformat()
         )
         await db.sales_records.insert_one(sales_record.dict())
