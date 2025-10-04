@@ -898,7 +898,7 @@ const CreateInvoice = () => {
                           <input
                             type="text"
                             value={`₹${amount.toFixed(2)}`}
-                            className="w-full border border-gray-300 p-2 rounded text-sm bg-gray-50"
+                            className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm bg-gray-50"
                             readOnly
                             data-testid={`amount-display-${index}`}
                           />
