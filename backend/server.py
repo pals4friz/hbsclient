@@ -299,17 +299,17 @@ async def get_invoice(invoice_id: str):
 # === PDF GENERATION ===
 
 def create_invoice_pdf(invoice: Invoice) -> str:
-    """Create PDF file for invoice and return file path in A5 format with original and duplicate"""
+    """Create PDF file for invoice and return file path in A5 landscape format with original and duplicate"""
     temp_dir = tempfile.mkdtemp()
     file_path = os.path.join(temp_dir, f"Invoice_{invoice.invoice_number}.pdf")
     
-    # A5 page size (148 x 210 mm)
-    from reportlab.lib.pagesizes import A5
+    # A5 landscape page size (210 x 148 mm)
+    from reportlab.lib.pagesizes import A5, landscape
     from reportlab.pdfgen import canvas as pdf_canvas
     
-    # Create canvas for manual layout
-    c = pdf_canvas.Canvas(file_path, pagesize=A5)
-    width, height = A5
+    # Create canvas for manual layout in landscape mode
+    c = pdf_canvas.Canvas(file_path, pagesize=landscape(A5))
+    width, height = landscape(A5)
     
     def draw_invoice_copy(y_offset, copy_text):
         """Draw a single invoice copy at given y_offset"""
