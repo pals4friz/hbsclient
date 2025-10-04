@@ -13,6 +13,7 @@ const CreateInvoice = () => {
   const [taxIncluded, setTaxIncluded] = useState(true);
   const [taxPercentage, setTaxPercentage] = useState(3.0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [lastCreatedInvoice, setLastCreatedInvoice] = useState(null);
   
   // New customer modal state
   const [showNewCustomerModal, setShowNewCustomerModal] = useState(false);
