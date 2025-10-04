@@ -141,7 +141,7 @@ const CreateInvoice = () => {
       const invoiceData = {
         customer_id: selectedCustomer,
         items: invoiceItems,
-        labor_charges: laborCharges,
+        labor_charges: autoLaborCharges,
         tax_included: taxIncluded,
         tax_percentage: taxPercentage
       };
