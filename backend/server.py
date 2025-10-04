@@ -395,9 +395,9 @@ def create_invoice_pdf(invoice: Invoice) -> str:
             totals.append(('Labor Charges', '', f"₹{invoice.labor_charges:.0f}"))
         
         totals.extend([
-            ('OLD GOLD', '', '₹0'),
-            ('OLD SILVER', '', '₹0'),
-            ('DISCOUNT', '', '₹0'),
+            ('OLD GOLD', '', f"₹{invoice.old_gold_value:.0f}"),
+            ('OLD SILVER', '', f"₹{invoice.old_silver_value:.0f}"),
+            ('DISCOUNT', '', f"₹{invoice.discount_amount:.0f}"),
         ])
         
         if invoice.tax_included and invoice.tax_amount > 0:
