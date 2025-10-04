@@ -1019,17 +1019,21 @@ const CreateInvoice = () => {
                 <span data-testid="subtotal-display">₹{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm text-gray-600">
+                <span>Subtotal (Items):</span>
+                <span>₹{subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm text-gray-600">
                 <span>Total Weight:</span>
                 <span>{totalWeight.toFixed(2)}g</span>
               </div>
-              {autoLaborCharges > 0 && (
+              {laborCharges > 0 && (
                 <div className="flex justify-between text-blue-600">
                   <span>Labor Charges:</span>
-                  <span data-testid="labor-display">₹{autoLaborCharges.toFixed(0)}</span>
+                  <span data-testid="labor-display">₹{laborCharges.toFixed(0)}</span>
                 </div>
               )}
               <div className="flex justify-between border-t pt-2">
-                <span>Subtotal with Labor:</span>
+                <span>Subtotal + Labor:</span>
                 <span data-testid="subtotal-with-labor-display">₹{subtotalWithLabor.toFixed(2)}</span>
               </div>
               {taxIncluded && (
@@ -1038,8 +1042,26 @@ const CreateInvoice = () => {
                   <span data-testid="tax-display">₹{taxAmount.toFixed(2)}</span>
                 </div>
               )}
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-red-600">
+                  <span>Discount:</span>
+                  <span>-₹{discountAmount.toFixed(2)}</span>
+                </div>
+              )}
+              {oldGoldValue > 0 && (
+                <div className="flex justify-between text-red-600">
+                  <span>Old Gold:</span>
+                  <span>-₹{oldGoldValue.toFixed(2)}</span>
+                </div>
+              )}
+              {oldSilverValue > 0 && (
+                <div className="flex justify-between text-red-600">
+                  <span>Old Silver:</span>
+                  <span>-₹{oldSilverValue.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between font-bold text-lg border-t pt-2">
-                <span>Total Amount:</span>
+                <span>Final Total:</span>
                 <span data-testid="total-display">₹{total.toFixed(2)}</span>
               </div>
               {!taxIncluded && (
