@@ -260,40 +260,104 @@ const CreateInvoice = () => {
           )}
         </div>
 
-        {/* Tax and Totals */}
+        {/* Labor Charges and Tax Settings */}
         <div className="mb-6 border-t pt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tax Percentage (%)
+                Labor Charges (₹)
               </label>
               <input
                 type="number"
-                step="0.1"
+                step="0.01"
                 min="0"
-                max="100"
-                value={taxPercentage}
-                onChange={(e) => setTaxPercentage(parseFloat(e.target.value))}
+                value={laborCharges}
+                onChange={(e) => setLaborCharges(parseFloat(e.target.value) || 0)}
                 className="w-full border border-gray-300 p-2 rounded"
-                data-testid="tax-percentage-input"
+                data-testid="labor-charges-input"
               />
             </div>
 
-            <div className="md:text-right">
-              <div className="space-y-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tax Settings
+              </label>
+              <div className="flex items-center space-x-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="tax-option"
+                    checked={taxIncluded}
+                    onChange={() => setTaxIncluded(true)}
+                    className="mr-2"
+                    data-testid="with-tax-radio"
+                  />
+                  With Tax
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="tax-option"
+                    checked={!taxIncluded}
+                    onChange={() => setTaxIncluded(false)}
+                    className="mr-2"
+                    data-testid="without-tax-radio"
+                  />
+                  Without Tax
+                </label>
+              </div>
+            </div>
+
+            {taxIncluded && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tax Percentage (%)
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="100"
+                  value={taxPercentage}
+                  onChange={(e) => setTaxPercentage(parseFloat(e.target.value))}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  data-testid="tax-percentage-input"
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="md:text-right bg-gray-50 p-4 rounded">
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span>Items Subtotal:</span>
+                <span data-testid="subtotal-display">₹{subtotal.toFixed(2)}</span>
+              </div>
+              {laborCharges > 0 && (
                 <div className="flex justify-between">
-                  <span>Subtotal:</span>
-                  <span data-testid="subtotal-display">₹{subtotal.toFixed(2)}</span>
+                  <span>Labor Charges:</span>
+                  <span data-testid="labor-display">₹{laborCharges.toFixed(2)}</span>
                 </div>
+              )}
+              <div className="flex justify-between">
+                <span>Subtotal with Labor:</span>
+                <span data-testid="subtotal-with-labor-display">₹{subtotalWithLabor.toFixed(2)}</span>
+              </div>
+              {taxIncluded && (
                 <div className="flex justify-between">
                   <span>Tax ({taxPercentage}%):</span>
                   <span data-testid="tax-display">₹{taxAmount.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between font-bold text-lg">
-                  <span>Total:</span>
-                  <span data-testid="total-display">₹{total.toFixed(2)}</span>
-                </div>
+              )}
+              <div className="flex justify-between font-bold text-lg border-t pt-2">
+                <span>Total Amount:</span>
+                <span data-testid="total-display">₹{total.toFixed(2)}</span>
               </div>
+              {!taxIncluded && (
+                <div className="text-sm text-gray-600 italic">
+                  *This invoice is without tax
+                </div>
+              )}
             </div>
           </div>
         </div>
