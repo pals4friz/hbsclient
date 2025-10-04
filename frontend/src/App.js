@@ -110,7 +110,7 @@ const Dashboard = () => {
           </button>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {goldRates.map((rate) => (
             <div key={rate.purity} className={`p-4 rounded-lg border-2 ${
               rate.purity === 'Silver' 
