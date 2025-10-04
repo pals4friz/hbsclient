@@ -45,10 +45,8 @@ class Product(BaseModel):
     name: str
     sku: str
     category: str  # Ring, Necklace, Earring, Bracelet, etc.
-    weight: float  # in grams
     purity: str  # 18K, 22K, 24K, etc.
     rate_per_gram: float
-    stock_quantity: int
     description: Optional[str] = ""
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -56,10 +54,8 @@ class ProductCreate(BaseModel):
     name: str
     sku: str
     category: str
-    weight: float
     purity: str
     rate_per_gram: float
-    stock_quantity: int
     description: Optional[str] = ""
 
 class Customer(BaseModel):
