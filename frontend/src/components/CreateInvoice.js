@@ -640,12 +640,12 @@ const CreateInvoice = () => {
   } = calculateTotal();
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-start mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Create Invoice</h1>
+    <div className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-6 gap-4">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Create Invoice</h1>
         
-        {/* Compact Rates Display - Top Right */}
-        <div className="bg-gradient-to-r from-yellow-50 to-gray-50 p-3 rounded-lg border border-yellow-200 min-w-64">
+        {/* Compact Rates Display - Mobile: Full width, Desktop: Right side */}
+        <div className="bg-gradient-to-r from-yellow-50 to-gray-50 p-3 rounded-lg border border-yellow-200 sm:min-w-64">
           <div className="flex justify-between items-center mb-2">
             <h4 className="text-sm font-semibold text-gray-700">💰 Current Rates</h4>
             <button
