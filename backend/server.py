@@ -80,6 +80,7 @@ class InvoiceItem(BaseModel):
     weight: float  # Actual weight from QR code
     rate_per_gram: float
     amount: float
+    labor_charges: float = 0.0  # Individual labor charges per item
 
 class Invoice(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
