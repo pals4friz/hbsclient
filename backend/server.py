@@ -563,12 +563,12 @@ async def download_invoice(invoice_id: str):
         raise HTTPException(status_code=404, detail="Invoice not found")
     
     invoice_obj = Invoice(**invoice)
-    file_path = create_invoice_excel(invoice_obj)
+    file_path = create_invoice_pdf(invoice_obj)
     
     return FileResponse(
         path=file_path,
-        filename=f"Invoice_{invoice_obj.invoice_number}.xlsx",
-        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        filename=f"Invoice_{invoice_obj.invoice_number}.pdf",
+        media_type="application/pdf"
     )
 
 @api_router.get("/invoices/{invoice_id}/print")
