@@ -221,13 +221,22 @@ const InvoiceList = () => {
                       ₹{invoice.total_amount.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleDownload(invoice.id, invoice.invoice_number)}
-                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs"
-                        data-testid={`download-invoice-${invoice.id}`}
-                      >
-                        Download Excel
-                      </button>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleDownload(invoice.id, invoice.invoice_number)}
+                          className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs"
+                          data-testid={`download-invoice-${invoice.id}`}
+                        >
+                          Download Excel
+                        </button>
+                        <button
+                          onClick={() => handlePrint(invoice.id)}
+                          className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-xs"
+                          data-testid={`print-invoice-${invoice.id}`}
+                        >
+                          Print
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
