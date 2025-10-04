@@ -341,6 +341,10 @@ def create_invoice_pdf(invoice: Invoice) -> str:
         c.setFont("Helvetica-Bold", 12)
         c.drawCentredString(width/2, base_y - 60, "HARI BABU SARRAF")
         
+        # Add underline for firm name
+        firm_name_width = c.stringWidth("HARI BABU SARRAF", "Helvetica-Bold", 12)
+        c.line(width/2 - firm_name_width/2, base_y - 62, width/2 + firm_name_width/2, base_y - 62)
+        
         c.setFont("Helvetica", 8)
         c.drawCentredString(width/2, base_y - 75, "MOHALA CHOWK, PURANPUR")
         
