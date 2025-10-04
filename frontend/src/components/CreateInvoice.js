@@ -95,20 +95,32 @@ const CreateInvoice = () => {
 
   const calculateTotal = () => {
     let subtotal = 0;
+    let totalWeight = 0;
     
     invoiceItems.forEach(item => {
       const product = products.find(p => p.id === item.product_id);
       if (product && item.weight) {
         const amount = item.weight * product.rate_per_gram;
         subtotal += amount;
+        totalWeight += item.weight;
       }
     });
 
-    const subtotalWithLabor = subtotal + laborCharges;
+    // Auto-calculate labor charges based on total weight
+    let autoLaborCharges = 0;
+    if (totalWeight > 0) {
+      if (totalWeight < 5) {
+        autoLaborCharges = 500;
+      } else {
+        autoLaborCharges = 100 * totalWeight;
+      }
+    }
+
+    const subtotalWithLabor = subtotal + autoLaborCharges;
     const taxAmount = taxIncluded ? subtotalWithLabor * (taxPercentage / 100) : 0;
     const total = subtotalWithLabor + taxAmount;
 
-    return { subtotal, laborCharges, subtotalWithLabor, taxAmount, total };
+    return { subtotal, laborCharges: autoLaborCharges, totalWeight, subtotalWithLabor, taxAmount, total };
   };
 
   const handleSubmit = async (e) => {
