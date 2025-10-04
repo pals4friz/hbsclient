@@ -200,6 +200,16 @@ const Products = () => {
     setShowForm(true);
   };
 
+  const handlePurityChange = (purity) => {
+    setFormData({...formData, purity: purity});
+    
+    // Auto-suggest rate based on current gold rates
+    const currentRate = goldRates.find(rate => rate.purity === purity);
+    if (currentRate) {
+      setFormData(prev => ({...prev, purity: purity, rate_per_gram: currentRate.rate_per_gram.toString()}));
+    }
+  };
+
   const handleDelete = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
