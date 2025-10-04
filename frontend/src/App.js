@@ -283,14 +283,11 @@ const Products = () => {
   };
 
   const handleDelete = async (productId) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      try {
-        await axios.delete(`${API}/products/${productId}`);
-        fetchProducts();
-      } catch (error) {
-        console.error('Error deleting product:', error);
-        alert('Error deleting product');
-      }
+    try {
+      await axios.delete(`${API}/products/${productId}`);
+      fetchProducts();
+    } catch (error) {
+      console.error('Error deleting product:', error);
     }
   };
 
