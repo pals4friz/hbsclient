@@ -662,17 +662,23 @@ const CreateInvoice = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Purity *</label>
                 <select
                   value={newProductData.purity}
-                  onChange={(e) => setNewProductData({...newProductData, purity: e.target.value})}
+                  onChange={(e) => handleNewProductPurityChange(e.target.value)}
                   className="w-full border border-gray-300 p-2 rounded"
                   required
                   data-testid="new-product-purity"
                 >
                   <option value="">Select Purity</option>
-                  <option value="18K">18K</option>
-                  <option value="22K">22K</option>
-                  <option value="24K">24K</option>
+                  <option value="18K">18K Gold</option>
+                  <option value="20K">20K Gold</option>
+                  <option value="22K">22K Gold</option>
+                  <option value="24K">24K Gold</option>
                   <option value="Silver">Silver</option>
                 </select>
+                {newProductData.purity && goldRates.find(rate => rate.purity === newProductData.purity) && (
+                  <div className="text-xs text-green-600 mt-1">
+                    Current market rate: ₹{goldRates.find(rate => rate.purity === newProductData.purity).rate_per_gram}/gram
+                  </div>
+                )}
               </div>
               
               <div>
