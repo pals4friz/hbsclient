@@ -239,6 +239,17 @@ const CreateInvoice = () => {
     }
   };
 
+  // Handle purity change in new product modal
+  const handleNewProductPurityChange = (purity) => {
+    setNewProductData({...newProductData, purity: purity});
+    
+    // Auto-suggest rate based on current gold rates
+    const currentRate = goldRates.find(rate => rate.purity === purity);
+    if (currentRate) {
+      setNewProductData(prev => ({...prev, purity: purity, rate_per_gram: currentRate.rate_per_gram.toString()}));
+    }
+  };
+
   const { subtotal, laborCharges: laborChargesCalc, subtotalWithLabor, taxAmount, total } = calculateTotal();
 
   return (
