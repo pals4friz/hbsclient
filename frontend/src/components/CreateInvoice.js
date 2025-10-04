@@ -982,12 +982,31 @@ const CreateInvoice = () => {
         {/* Labor Calculation Info */}
         {invoiceItems.length > 0 && (
           <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-800 mb-2">⚙️ Auto Labor Calculation</h4>
-            <div className="text-sm text-blue-700 space-y-1">
-              <p><strong>Rules:</strong></p>
-              <p>• Weight &lt; 5g: Fixed ₹500 labor charge</p>
-              <p>• Weight ≥ 5g: ₹100 per gram (₹100 × weight)</p>
-              <p><strong>Current:</strong> {totalWeight.toFixed(2)}g → ₹{autoLaborCharges.toFixed(0)} labor</p>
+            <h4 className="font-semibold text-blue-800 mb-2">⚙️ Per-Item Labor Calculation</h4>
+            <div className="text-sm text-blue-700 space-y-2">
+              <div>
+                <p><strong>Rules per item:</strong></p>
+                <p>• Weight &lt; 5g: Fixed ₹500 labor charge</p>
+                <p>• Weight ≥ 5g: ₹100 per gram (₹100 × weight)</p>
+              </div>
+              <div>
+                <p><strong>Current items:</strong></p>
+                {invoiceItems.map((item, index) => {
+                  const product = products.find(p => p.id === item.product_id);
+                  if (product && item.weight) {
+                    const itemLabor = item.weight < 5 ? 500 : 100 * item.weight;
+                    return (
+                      <p key={index} className="text-xs">
+                        • {product.name}: {item.weight.toFixed(2)}g → ₹{itemLabor.toFixed(0)} labor
+                      </p>
+                    );
+                  }
+                  return null;
+                })}
+                <p className="font-semibold border-t pt-1 mt-1">
+                  Total Labor: ₹{autoLaborCharges.toFixed(0)}
+                </p>
+              </div>
             </div>
           </div>
         )}
