@@ -786,11 +786,13 @@ const CreateInvoice = () => {
                       <div>
                         <label className="block text-xs text-gray-500 mb-1">Weight (g)</label>
                         <input
-                          type="text"
-                          value={weight.toFixed(2)}
-                          className="w-full border border-gray-300 p-2 rounded text-sm bg-gray-50"
-                          readOnly
-                          data-testid={`weight-display-${index}`}
+                          type="number"
+                          step="0.01"
+                          value={item.weight || 0}
+                          onChange={(e) => updateItem(index, 'weight', parseFloat(e.target.value) || 0)}
+                          className="w-full border border-gray-300 p-2 rounded text-sm"
+                          placeholder="0.00"
+                          data-testid={`weight-input-${index}`}
                         />
                       </div>
 
