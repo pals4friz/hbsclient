@@ -64,17 +64,22 @@ const InvoiceList = () => {
   };
 
   const generatePrintHTML = (invoice) => {
-    const itemsHTML = invoice.items.map((item, index) => `
+    const itemsHTML = invoice.items.map((item) => `
       <tr>
-        <td>${index + 1}</td>
         <td>${item.product_name}</td>
-        <td>${item.sku}</td>
-        <td>${item.quantity}</td>
-        <td>${item.weight.toFixed(2)}g</td>
-        <td>₹${item.rate_per_gram.toFixed(2)}</td>
-        <td>₹${item.amount.toFixed(2)}</td>
+        <td>${item.weight.toFixed(1)}g</td>
+        <td>₹${item.rate_per_gram.toFixed(0)}</td>
+        <td>₹${item.amount.toFixed(0)}</td>
       </tr>
     `).join('');
+
+    // Add empty rows to fill the table
+    let emptyRows = '';
+    for (let i = invoice.items.length; i < 7; i++) {
+      emptyRows += '<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+    }
+
+    const totalWeight = invoice.items.reduce((sum, item) => sum + item.weight, 0);
 
     return `
       <!DOCTYPE html>
@@ -82,85 +87,210 @@ const InvoiceList = () => {
         <head>
           <title>Invoice ${invoice.invoice_number}</title>
           <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            .header { text-align: center; margin-bottom: 30px; }
-            .invoice-details { margin-bottom: 20px; }
-            .customer-details { margin-bottom: 20px; }
-            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-            th { background-color: #f2f2f2; font-weight: bold; }
-            .totals { margin-top: 20px; text-align: right; }
-            .totals table { width: 300px; margin-left: auto; }
-            .total-amount { font-weight: bold; font-size: 1.2em; }
-            .print-only { display: block; }
+            @page { 
+              size: A5; 
+              margin: 0.3in; 
+            }
+            body { 
+              font-family: Arial, sans-serif; 
+              margin: 0; 
+              font-size: 12px;
+              line-height: 1.2;
+            }
+            .header { 
+              text-align: center; 
+              margin-bottom: 15px; 
+            }
+            .header h1 { 
+              font-size: 16px; 
+              font-weight: bold; 
+              margin: 5px 0; 
+            }
+            .header h2 { 
+              font-size: 14px; 
+              font-weight: bold; 
+              margin: 5px 0; 
+            }
+            .header p { 
+              font-size: 10px; 
+              margin: 5px 0 15px 0; 
+            }
+            .customer-details { 
+              margin-bottom: 15px; 
+            }
+            .customer-details table { 
+              width: 100%; 
+            }
+            .customer-details td { 
+              padding: 2px 5px; 
+              font-size: 9px; 
+            }
+            .customer-details .label { 
+              font-weight: bold; 
+              width: 80px; 
+            }
+            table { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin-bottom: 10px; 
+            }
+            th, td { 
+              border: 1px solid #000; 
+              padding: 3px 5px; 
+              font-size: 8px;
+            }
+            th { 
+              background-color: #f0f0f0; 
+              font-weight: bold; 
+              text-align: center;
+            }
+            .items-table td:first-child { 
+              text-align: left; 
+            }
+            .items-table td:nth-child(2),
+            .items-table td:nth-child(3),
+            .items-table td:nth-child(4) { 
+              text-align: center; 
+            }
+            .totals-table { 
+              margin-top: 5px; 
+            }
+            .totals-table td { 
+              font-weight: bold; 
+            }
+            .final-total { 
+              background-color: #f0f0f0; 
+            }
+            .footer { 
+              margin-top: 15px; 
+              font-size: 8px; 
+            }
+            .footer table { 
+              border: none; 
+            }
+            .footer td { 
+              border: none; 
+              padding: 2px; 
+            }
+            .footer .label { 
+              font-weight: bold; 
+            }
             @media print {
               .no-print { display: none; }
+              body { -webkit-print-color-adjust: exact; }
             }
           </style>
         </head>
         <body>
           <div class="header">
-            <h1>💎 JEWELRY STORE</h1>
-            <h2>INVOICE</h2>
-          </div>
-          
-          <div class="invoice-details">
-            <p><strong>Invoice Number:</strong> ${invoice.invoice_number}</p>
-            <p><strong>Date:</strong> ${new Date(invoice.invoice_date).toLocaleDateString()}</p>
+            <h1>ROUGH ESTIMATE</h1>
+            <h2>HARI BABU SARRAF</h2>
+            <p>MOHALA CHOWK, PURANPUR</p>
           </div>
           
           <div class="customer-details">
-            <h3>Bill To:</h3>
-            <p><strong>Name:</strong> ${invoice.customer_name}</p>
-            <p><strong>Phone:</strong> ${invoice.customer_phone}</p>
-            <p><strong>Address:</strong> ${invoice.customer_address}</p>
+            <table>
+              <tr>
+                <td class="label">NAME:</td>
+                <td>${invoice.customer_name}</td>
+                <td class="label">INVOICE NO.:</td>
+                <td>${invoice.invoice_number}</td>
+              </tr>
+              <tr>
+                <td class="label">DATE:</td>
+                <td>${new Date(invoice.invoice_date).toLocaleDateString()}</td>
+                <td class="label">PHONE:</td>
+                <td>${invoice.customer_phone}</td>
+              </tr>
+            </table>
           </div>
           
-          <table>
+          <table class="items-table">
             <thead>
               <tr>
-                <th>S.No</th>
-                <th>Product Name</th>
-                <th>SKU</th>
-                <th>Qty</th>
-                <th>Weight</th>
+                <th>Item Name</th>
+                <th>Lab Weight</th>
                 <th>Rate/g</th>
                 <th>Amount</th>
               </tr>
             </thead>
             <tbody>
               ${itemsHTML}
+              ${emptyRows}
             </tbody>
           </table>
           
-          <div class="totals">
+          <table class="totals-table">
+            <tr>
+              <td>Total</td>
+              <td style="text-align: center;">${totalWeight.toFixed(1)} grms</td>
+              <td></td>
+              <td style="text-align: center;">₹${invoice.subtotal.toFixed(0)}</td>
+            </tr>
+            ${invoice.labor_charges > 0 ? `
+              <tr>
+                <td>Labor Charges</td>
+                <td></td>
+                <td></td>
+                <td style="text-align: center;">₹${invoice.labor_charges.toFixed(0)}</td>
+              </tr>
+            ` : ''}
+            <tr>
+              <td>GOLD PRICE</td>
+              <td></td>
+              <td></td>
+              <td style="text-align: center;">₹${invoice.subtotal.toFixed(0)}</td>
+            </tr>
+            <tr>
+              <td>OLD GOLD</td>
+              <td></td>
+              <td></td>
+              <td style="text-align: center;">₹0</td>
+            </tr>
+            <tr>
+              <td>OLD SILVER</td>
+              <td></td>
+              <td></td>
+              <td style="text-align: center;">₹0</td>
+            </tr>
+            <tr>
+              <td>DISCOUNT</td>
+              <td></td>
+              <td></td>
+              <td style="text-align: center;">₹0</td>
+            </tr>
+            ${invoice.tax_included && invoice.tax_amount > 0 ? `
+              <tr>
+                <td>TAX (${invoice.tax_percentage}%)</td>
+                <td></td>
+                <td></td>
+                <td style="text-align: center;">₹${invoice.tax_amount.toFixed(0)}</td>
+              </tr>
+            ` : ''}
+            <tr class="final-total">
+              <td><strong>FINAL TOTAL</strong></td>
+              <td></td>
+              <td></td>
+              <td style="text-align: center;"><strong>₹${invoice.total_amount.toFixed(0)}</strong></td>
+            </tr>
+          </table>
+          
+          <div class="footer">
             <table>
               <tr>
-                <td>Items Subtotal:</td>
-                <td>₹${invoice.subtotal.toFixed(2)}</td>
+                <td class="label">FOLLOW US ON:</td>
+                <td class="label">CONTACTS:</td>
               </tr>
-              ${invoice.labor_charges > 0 ? `
-                <tr>
-                  <td>Labor Charges:</td>
-                  <td>₹${invoice.labor_charges.toFixed(2)}</td>
-                </tr>
-              ` : ''}
-              ${invoice.tax_included && invoice.tax_amount > 0 ? `
-                <tr>
-                  <td>Tax (${invoice.tax_percentage}%):</td>
-                  <td>₹${invoice.tax_amount.toFixed(2)}</td>
-                </tr>
-              ` : ''}
-              <tr class="total-amount">
-                <td><strong>Total Amount:</strong></td>
-                <td><strong>₹${invoice.total_amount.toFixed(2)}</strong></td>
+              <tr>
+                <td></td>
+                <td>9690124010, 9456977703</td>
+              </tr>
+              <tr>
+                <td>22 Carat also available</td>
+                <td></td>
               </tr>
             </table>
-            ${!invoice.tax_included ? '<p style="font-style: italic; margin-top: 10px;">*This invoice is without tax</p>' : ''}
-          </div>
-          
-          <div style="margin-top: 50px;">
-            <p>Thank you for your business!</p>
+            ${!invoice.tax_included ? '<p style="font-style: italic; margin-top: 5px; text-align: center;">*This estimate is without tax</p>' : ''}
           </div>
         </body>
       </html>
