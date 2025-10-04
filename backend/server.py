@@ -355,26 +355,71 @@ def create_invoice_pdf(invoice: Invoice) -> str:
         c.drawString(20, base_y - 108, f"DATE: {invoice.invoice_date}")
         c.drawString(220, base_y - 108, f"PHONE: {invoice.customer_phone}")
         
-        # Items table header
+        # Enhanced Items Table with Professional Styling
         table_y = base_y - 130
-        c.setFont("Helvetica-Bold", 6)
-        c.rect(20, table_y - 12, width - 40, 12, fill=1, stroke=1)  # Header background
+        table_width = width - 40
+        table_left = 20
+        
+        # Define column widths and positions
+        col_widths = [120, 50, 50, 60]  # Item Name, Weight, Rate, Amount
+        col_positions = []
+        x_pos = table_left
+        for width_val in col_widths:
+            col_positions.append(x_pos)
+            x_pos += width_val
+        
+        # Table header with enhanced styling
+        header_height = 15
+        c.setFillColorRGB(0.2, 0.2, 0.2)  # Dark gray header
+        c.rect(table_left, table_y - header_height, table_width, header_height, fill=1, stroke=1)
+        
+        # Header text
         c.setFillColorRGB(1, 1, 1)  # White text
-        c.drawString(25, table_y - 10, "Item Name")
-        c.drawString(200, table_y - 10, "Weight")
-        c.drawString(240, table_y - 10, "Rate/g")
-        c.drawString(280, table_y - 10, "Amount")
+        c.setFont("Helvetica-Bold", 7)
+        c.drawString(col_positions[0] + 3, table_y - 11, "ITEM NAME")
+        c.drawCentredString(col_positions[1] + col_widths[1]/2, table_y - 11, "WEIGHT")
+        c.drawCentredString(col_positions[2] + col_widths[2]/2, table_y - 11, "RATE/G")
+        c.drawCentredString(col_positions[3] + col_widths[3]/2, table_y - 11, "AMOUNT")
+        
         c.setFillColorRGB(0, 0, 0)  # Back to black text
         
-        # Items data
-        c.setFont("Helvetica", 6)
-        item_y = table_y - 25
+        # Items data with alternating row colors
+        row_height = 14
+        item_start_y = table_y - header_height
+        
         for i, item in enumerate(invoice.items[:4]):  # Limit to 4 items per copy
-            c.drawString(25, item_y, item.product_name[:25])
-            c.drawString(200, item_y, f"{item.weight:.1f}g")
-            c.drawString(240, item_y, f"₹{item.rate_per_gram:.0f}")
-            c.drawString(280, item_y, f"₹{item.amount:.0f}")
-            item_y -= 12
+            row_y = item_start_y - (i + 1) * row_height
+            
+            # Alternating row background
+            if i % 2 == 1:  # Odd rows get light gray background
+                c.setFillColorRGB(0.95, 0.95, 0.95)
+                c.rect(table_left, row_y, table_width, row_height, fill=1, stroke=0)
+                c.setFillColorRGB(0, 0, 0)  # Back to black text
+            
+            # Draw cell borders
+            for j, col_pos in enumerate(col_positions):
+                c.rect(col_pos, row_y, col_widths[j], row_height, fill=0, stroke=1)
+            
+            # Draw item data
+            c.setFont("Helvetica", 6)
+            text_y = row_y + 4
+            c.drawString(col_positions[0] + 3, text_y, item.product_name[:18])
+            c.drawCentredString(col_positions[1] + col_widths[1]/2, text_y, f"{item.weight:.1f}g")
+            c.drawCentredString(col_positions[2] + col_widths[2]/2, text_y, f"₹{item.rate_per_gram:.0f}")
+            c.drawCentredString(col_positions[3] + col_widths[3]/2, text_y, f"₹{item.amount:.0f}")
+            
+            # Add labor charges if present
+            if item.labor_charges > 0:
+                labor_y = text_y - 8
+                c.setFont("Helvetica-Oblique", 5)
+                c.drawString(col_positions[0] + 8, labor_y, f"Labor: ₹{item.labor_charges:.0f}")
+                c.setFont("Helvetica", 6)
+        
+        # Table footer border
+        footer_y = item_start_y - min(len(invoice.items[:4]), 4) * row_height
+        c.setLineWidth(2)
+        c.line(table_left, footer_y, table_left + table_width, footer_y)
+        c.setLineWidth(1)
         
         # Calculate gold price per 10g based on purity
         total_weight = sum(item.weight for item in invoice.items)
