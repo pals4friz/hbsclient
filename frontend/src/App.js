@@ -6,6 +6,7 @@ import Customers from "./components/Customers";
 import CreateInvoice from "./components/CreateInvoice";
 import InvoiceList from "./components/InvoiceList";
 import SalesReport from "./components/SalesReport";
+import GoldRates from "./components/GoldRates";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
