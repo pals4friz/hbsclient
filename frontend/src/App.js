@@ -158,14 +158,14 @@ const Dashboard = () => {
             <button
               onClick={handleResetSalesData}
               disabled={isResetting}
-              className={`px-6 py-3 rounded-lg font-medium ${
+              className={`px-6 py-3 rounded-lg font-medium min-h-[48px] touch-manipulation ${
                 isResetting 
                   ? 'bg-gray-400 cursor-not-allowed text-gray-600' 
                   : 'bg-red-600 hover:bg-red-700 text-white'
               }`}
               data-testid="reset-sales-data-btn"
             >
-              {isResetting ? 'Resetting...' : 'Reset Sales Data'}
+              {isResitting ? 'Resetting...' : 'Reset Sales Data'}
             </button>
           </div>
         </div>
