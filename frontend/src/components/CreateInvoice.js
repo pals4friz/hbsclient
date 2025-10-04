@@ -239,6 +239,154 @@ const CreateInvoice = () => {
     }
   };
 
+  // Download PDF function
+  const handleDownloadPDF = async (invoiceId, invoiceNumber) => {
+    try {
+      const response = await axios.get(`${API}/invoices/${invoiceId}/download`, {
+        responseType: 'blob'
+      });
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Invoice_${invoiceNumber}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      alert('Error downloading PDF');
+    }
+  };
+
+  // Print function
+  const handlePrintInvoice = async (invoiceId) => {
+    try {
+      const response = await axios.get(`${API}/invoices/${invoiceId}/print`);
+      const invoice = response.data;
+      
+      // Create a new window for printing
+      const printWindow = window.open('', '_blank');
+      const printContent = generatePrintHTML(invoice);
+      
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      
+      // Wait for content to load then print
+      printWindow.onload = () => {
+        printWindow.print();
+        printWindow.close();
+      };
+    } catch (error) {
+      console.error('Error printing invoice:', error);
+      alert('Error printing invoice');
+    }
+  };
+
+  // Generate print HTML (same as in InvoiceList component)
+  const generatePrintHTML = (invoice) => {
+    const itemsHTML = invoice.items.map((item, index) => `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${item.product_name}</td>
+        <td>${item.sku}</td>
+        <td>${item.quantity}</td>
+        <td>${item.weight.toFixed(2)}g</td>
+        <td>₹${item.rate_per_gram.toFixed(2)}</td>
+        <td>₹${item.amount.toFixed(2)}</td>
+      </tr>
+    `).join('');
+
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Invoice ${invoice.invoice_number}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .header { text-align: center; margin-bottom: 30px; }
+            .invoice-details { margin-bottom: 20px; }
+            .customer-details { margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; font-weight: bold; }
+            .totals { margin-top: 20px; text-align: right; }
+            .totals table { width: 300px; margin-left: auto; }
+            .total-amount { font-weight: bold; font-size: 1.2em; }
+            @media print {
+              .no-print { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>💎 JEWELRY STORE</h1>
+            <h2>INVOICE</h2>
+          </div>
+          
+          <div class="invoice-details">
+            <p><strong>Invoice Number:</strong> ${invoice.invoice_number}</p>
+            <p><strong>Date:</strong> ${new Date(invoice.invoice_date).toLocaleDateString()}</p>
+          </div>
+          
+          <div class="customer-details">
+            <h3>Bill To:</h3>
+            <p><strong>Name:</strong> ${invoice.customer_name}</p>
+            <p><strong>Phone:</strong> ${invoice.customer_phone}</p>
+            <p><strong>Address:</strong> ${invoice.customer_address}</p>
+          </div>
+          
+          <table>
+            <thead>
+              <tr>
+                <th>S.No</th>
+                <th>Product Name</th>
+                <th>SKU</th>
+                <th>Qty</th>
+                <th>Weight</th>
+                <th>Rate/g</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHTML}
+            </tbody>
+          </table>
+          
+          <div class="totals">
+            <table>
+              <tr>
+                <td>Items Subtotal:</td>
+                <td>₹${invoice.subtotal.toFixed(2)}</td>
+              </tr>
+              ${invoice.labor_charges > 0 ? `
+                <tr>
+                  <td>Labor Charges:</td>
+                  <td>₹${invoice.labor_charges.toFixed(2)}</td>
+                </tr>
+              ` : ''}
+              ${invoice.tax_included && invoice.tax_amount > 0 ? `
+                <tr>
+                  <td>Tax (${invoice.tax_percentage}%):</td>
+                  <td>₹${invoice.tax_amount.toFixed(2)}</td>
+                </tr>
+              ` : ''}
+              <tr class="total-amount">
+                <td><strong>Total Amount:</strong></td>
+                <td><strong>₹${invoice.total_amount.toFixed(2)}</strong></td>
+              </tr>
+            </table>
+            ${!invoice.tax_included ? '<p style="font-style: italic; margin-top: 10px;">*This invoice is without tax</p>' : ''}
+          </div>
+          
+          <div style="margin-top: 50px;">
+            <p>Thank you for your business!</p>
+          </div>
+        </body>
+      </html>
+    `;
+  };
+
   const { subtotal, laborCharges: laborChargesCalc, subtotalWithLabor, taxAmount, total } = calculateTotal();
 
   return (
