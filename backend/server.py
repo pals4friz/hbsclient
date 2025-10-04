@@ -890,6 +890,36 @@ async def get_dashboard_stats():
         "today_sales": today_sales_amount
     }
 
+# === PRINT CONFIGURATION APIS ===
+
+@api_router.get("/print-config", response_model=PrintConfig)
+async def get_print_config():
+    config = await db.print_config.find_one({})
+    if not config:
+        # Return default configuration
+        default_config = PrintConfig()
+        return default_config
+    return PrintConfig(**config)
+
+@api_router.post("/print-config", response_model=PrintConfig)
+async def save_print_config(config: PrintConfig):
+    # Remove existing config (we only store one)
+    await db.print_config.delete_many({})
+    
+    # Save new config
+    await db.print_config.insert_one(config.dict())
+    return config
+
+@api_router.put("/print-config", response_model=PrintConfig)
+async def update_print_config(config: PrintConfig):
+    # Update existing config or create new one
+    existing_config = await db.print_config.find_one({})
+    if existing_config:
+        await db.print_config.update_one({"id": existing_config["id"]}, {"$set": config.dict()})
+    else:
+        await db.print_config.insert_one(config.dict())
+    return config
+
 # Include the router in the main app
 app.include_router(api_router)
 
