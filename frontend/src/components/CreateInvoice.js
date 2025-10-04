@@ -886,7 +886,7 @@ const CreateInvoice = () => {
                           step="0.01"
                           value={item.labor_charges || 0}
                           onChange={(e) => updateItem(index, 'labor_charges', parseFloat(e.target.value) || 0)}
-                          className="w-full border border-gray-300 p-2 rounded text-sm"
+                          className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm touch-manipulation"
                           placeholder="0.00"
                           data-testid={`labor-input-${index}`}
                         />
