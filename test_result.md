@@ -141,8 +141,6 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Test current PDF download functionality"
-    - "Test current print functionality"
     - "Update frontend CSS for landscape print"
   stuck_tasks: []
   test_all: false
