@@ -292,11 +292,11 @@ const CreateInvoice = () => {
         };
         setInvoiceItems(updatedItems);
       } else {
-        // Add new item
-        const quantity = Math.ceil(weight / product.weight);
+        // Add new item with actual weight from QR code
         const newItem = {
           product_id: product.id,
-          quantity: quantity
+          quantity: 1, // Always 1 since each QR represents one specific item
+          weight: weight // Actual weight from QR code
         };
         setInvoiceItems([...invoiceItems, newItem]);
       }
