@@ -140,8 +140,6 @@ const CreateInvoice = () => {
       const response = await axios.post(`${API}/invoices`, invoiceData);
       setLastCreatedInvoice(response.data);
       
-      alert('Invoice created successfully! Use the buttons below to download PDF or print.');
-      
       // Reset form
       setSelectedCustomer('');
       setInvoiceItems([]);
