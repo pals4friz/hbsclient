@@ -158,6 +158,14 @@ const CreateInvoice = () => {
       setOldGoldValue(0);
       setOldSilverValue(0);
       
+      // Scroll to success message on mobile
+      setTimeout(() => {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'smooth'
+        });
+      }, 100);
+      
     } catch (error) {
       console.error('Error creating invoice:', error);
     } finally {
