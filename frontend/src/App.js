@@ -18,6 +18,7 @@ const Dashboard = () => {
     total_invoices: 0,
     today_sales: 0
   });
+  const [showGoldRates, setShowGoldRates] = useState(false);
 
   useEffect(() => {
     fetchDashboardStats();
