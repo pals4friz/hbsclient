@@ -20,6 +20,7 @@ const Dashboard = () => {
     today_sales: 0
   });
   const [showGoldRates, setShowGoldRates] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
     fetchDashboardStats();
@@ -31,6 +32,49 @@ const Dashboard = () => {
       setStats(response.data);
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
+    }
+  };
+
+  const handleResetSalesData = async () => {
+    const confirmMessage = `⚠️ DANGER ZONE ⚠️
+
+Are you sure you want to reset ALL SALES DATA?
+
+This will permanently delete:
+• All invoices (${stats.total_invoices} invoices)
+• All sales records
+• All sales history
+
+This will NOT delete:
+• Products/Inventory
+• Customer information
+• Gold rates
+
+Type 'RESET' to confirm this action:`;
+
+    const userInput = prompt(confirmMessage);
+    
+    if (userInput !== 'RESET') {
+      if (userInput !== null) { // null means user clicked cancel
+        alert('Reset cancelled. Please type exactly "RESET" to confirm.');
+      }
+      return;
+    }
+
+    setIsResetting(true);
+    try {
+      const response = await axios.post(`${API}/dashboard/reset-sales`);
+      
+      alert(`Sales data reset successfully!\n\nDeleted:\n• ${response.data.deleted_invoices} invoices\n• ${response.data.deleted_sales_records} sales records\n\nProducts and customers are preserved.`);
+      
+      // Refresh dashboard stats
+      fetchDashboardStats();
+      
+    } catch (error) {
+      console.error('Error resetting sales data:', error);
+      alert('Error resetting sales data. Please try again or contact support.');
+    } finally {
+      setIsResetting(false);
     }
   };
 
