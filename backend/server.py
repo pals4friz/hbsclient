@@ -77,7 +77,7 @@ class InvoiceItem(BaseModel):
     product_name: str
     sku: str
     quantity: int
-    weight: float
+    weight: float  # Actual weight from QR code
     rate_per_gram: float
     amount: float
 
