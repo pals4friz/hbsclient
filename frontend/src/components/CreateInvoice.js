@@ -603,40 +603,38 @@ const CreateInvoice = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Create Invoice</h1>
-
-      {/* Current Gold & Silver Rates Quick View */}
-      <div className="mb-6 bg-gradient-to-r from-yellow-50 to-gray-50 p-4 rounded-lg border">
-        <div className="flex justify-between items-center mb-3">
-          <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-            💰 Current Rates (per gram)
-          </h3>
-          <button
-            type="button"
-            onClick={fetchGoldRates}
-            className="text-xs bg-yellow-600 text-white px-2 py-1 rounded hover:bg-yellow-700"
-            data-testid="refresh-invoice-rates"
-          >
-            🔄
-          </button>
-        </div>
+      <div className="flex justify-between items-start mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Create Invoice</h1>
         
-        <div className="flex flex-wrap gap-3">
-          {goldRates.map((rate) => (
-            <div key={rate.purity} className={`px-3 py-2 rounded-lg border ${
-              rate.purity === 'Silver' 
-                ? 'bg-gray-100 border-gray-300 text-gray-700' 
-                : 'bg-yellow-100 border-yellow-300 text-yellow-700'
-            }`}>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold">{rate.purity}:</span>
-                <span className="font-bold text-gray-900">₹{rate.rate_per_gram.toFixed(0)}</span>
+        {/* Compact Rates Display - Top Right */}
+        <div className="bg-gradient-to-r from-yellow-50 to-gray-50 p-3 rounded-lg border border-yellow-200 min-w-64">
+          <div className="flex justify-between items-center mb-2">
+            <h4 className="text-sm font-semibold text-gray-700">💰 Current Rates</h4>
+            <button
+              type="button"
+              onClick={fetchGoldRates}
+              className="text-xs bg-yellow-600 text-white px-2 py-1 rounded hover:bg-yellow-700"
+              data-testid="refresh-invoice-rates"
+            >
+              🔄
+            </button>
+          </div>
+          
+          <div className="space-y-1">
+            {goldRates.map((rate) => (
+              <div key={rate.purity} className="flex justify-between items-center text-sm">
+                <span className={`font-medium ${
+                  rate.purity === 'Silver' ? 'text-gray-600' : 'text-yellow-600'
+                }`}>
+                  {rate.purity}:
+                </span>
+                <span className="font-bold text-gray-900">₹{rate.rate_per_gram.toFixed(0)}/g</span>
               </div>
-            </div>
-          ))}
-          {goldRates.length === 0 && (
-            <div className="text-gray-500 text-sm italic">No rates set. Go to Dashboard → Manage Rates</div>
-          )}
+            ))}
+            {goldRates.length === 0 && (
+              <div className="text-xs text-gray-500 italic">No rates set</div>
+            )}
+          </div>
         </div>
       </div>
 
