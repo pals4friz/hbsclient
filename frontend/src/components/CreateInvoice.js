@@ -962,35 +962,36 @@ const CreateInvoice = () => {
                 data-testid="old-silver-input"
               />
             </div>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tax Settings
+          {/* Tax Settings */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tax Settings
+            </label>
+            <div className="flex items-center space-x-4">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="tax-option"
+                  checked={taxIncluded}
+                  onChange={() => setTaxIncluded(true)}
+                  className="mr-2"
+                  data-testid="with-tax-radio"
+                />
+                With Tax
               </label>
-              <div className="flex items-center space-x-4">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="tax-option"
-                    checked={taxIncluded}
-                    onChange={() => setTaxIncluded(true)}
-                    className="mr-2"
-                    data-testid="with-tax-radio"
-                  />
-                  With Tax
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="tax-option"
-                    checked={!taxIncluded}
-                    onChange={() => setTaxIncluded(false)}
-                    className="mr-2"
-                    data-testid="without-tax-radio"
-                  />
-                  Without Tax
-                </label>
-              </div>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="tax-option"
+                  checked={!taxIncluded}
+                  onChange={() => setTaxIncluded(false)}
+                  className="mr-2"
+                  data-testid="without-tax-radio"
+                />
+                Without Tax
+              </label>
             </div>
 
             {taxIncluded && (
