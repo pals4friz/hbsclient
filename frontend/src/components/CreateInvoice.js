@@ -140,9 +140,10 @@ const CreateInvoice = () => {
       const invoiceData = {
         customer_id: selectedCustomer,
         items: invoiceItems,
-        labor_charges: autoLaborCharges,
         tax_included: taxIncluded,
-        tax_percentage: taxPercentage
+        discount_amount: parseFloat(discountAmount || 0),
+        old_gold_value: parseFloat(oldGoldValue || 0),
+        old_silver_value: parseFloat(oldSilverValue || 0)
       };
 
       const response = await axios.post(`${API}/invoices`, invoiceData);
