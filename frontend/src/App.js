@@ -165,7 +165,7 @@ const Dashboard = () => {
               }`}
               data-testid="reset-sales-data-btn"
             >
-              {isResitting ? 'Resetting...' : 'Reset Sales Data'}
+              {isResetting ? 'Resetting...' : 'Reset Sales Data'}
             </button>
           </div>
         </div>
