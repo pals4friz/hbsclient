@@ -215,9 +215,16 @@ async def create_invoice(invoice_data: InvoiceCreate):
         new_stock = product["stock_quantity"] - quantity
         await db.products.update_one({"id": product["id"]}, {"$set": {"stock_quantity": new_stock}})
     
+    # Add labor charges
+    subtotal_with_labor = subtotal + invoice_data.labor_charges
+    
     # Calculate taxes and total
-    tax_amount = subtotal * (invoice_data.tax_percentage / 100)
-    total_amount = subtotal + tax_amount
+    if invoice_data.tax_included:
+        tax_amount = subtotal_with_labor * (invoice_data.tax_percentage / 100)
+        total_amount = subtotal_with_labor + tax_amount
+    else:
+        tax_amount = 0.0
+        total_amount = subtotal_with_labor
     
     # Generate invoice number
     invoice_count = await db.invoices.count_documents({})
