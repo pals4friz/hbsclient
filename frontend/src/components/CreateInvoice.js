@@ -1116,24 +1116,32 @@ const CreateInvoice = () => {
 
       {/* Invoice Actions - Show after successful creation */}
       {lastCreatedInvoice && (
-        <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-lg font-semibold text-green-800">✅ Invoice Created Successfully!</h3>
-              <p className="text-green-700">Invoice #{lastCreatedInvoice.invoice_number} - Total: ₹{lastCreatedInvoice.total_amount.toFixed(2)}</p>
+        <div className="mt-6 bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-300 rounded-lg p-4 sm:p-6 shadow-lg">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+            <div className="mb-3 sm:mb-0">
+              <h3 className="text-lg sm:text-xl font-bold text-green-800 flex items-center gap-2">
+                🎉 Invoice Created Successfully!
+              </h3>
+              <p className="text-green-700 font-medium">
+                Invoice #{lastCreatedInvoice.invoice_number} - Total: ₹{lastCreatedInvoice.total_amount.toFixed(2)}
+              </p>
+              <p className="text-sm text-gray-600 mt-1">
+                Form has been reset. You can create another invoice or download/print this one.
+              </p>
             </div>
             <button
               onClick={() => setLastCreatedInvoice(null)}
-              className="text-green-600 hover:text-green-800"
+              className="text-green-600 hover:text-green-800 self-start sm:self-auto p-2 rounded-full hover:bg-green-100 transition-colors"
+              title="Close"
             >
               ✕
             </button>
           </div>
           
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <button
               onClick={() => handleDownloadPDF(lastCreatedInvoice.id, lastCreatedInvoice.invoice_number)}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2"
+              className="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 font-medium min-h-[48px] touch-manipulation"
               data-testid="download-pdf-btn"
             >
               📄 Download PDF
@@ -1141,7 +1149,7 @@ const CreateInvoice = () => {
             
             <button
               onClick={() => handlePrintInvoice(lastCreatedInvoice.id)}
-              className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 flex items-center gap-2"
+              className="bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 flex items-center justify-center gap-2 font-medium min-h-[48px] touch-manipulation"
               data-testid="print-invoice-btn"
             >
               🖨️ Print Invoice
@@ -1149,10 +1157,10 @@ const CreateInvoice = () => {
             
             <button
               onClick={() => setLastCreatedInvoice(null)}
-              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+              className="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 flex items-center justify-center gap-2 font-medium min-h-[48px] touch-manipulation"
               data-testid="create-another-btn"
             >
-              ➕ Create Another Invoice
+              ➕ Create Another
             </button>
           </div>
         </div>
