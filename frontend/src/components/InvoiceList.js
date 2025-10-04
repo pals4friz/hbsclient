@@ -227,7 +227,7 @@ const InvoiceList = () => {
                           className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs"
                           data-testid={`download-invoice-${invoice.id}`}
                         >
-                          Download Excel
+                          Download PDF
                         </button>
                         <button
                           onClick={() => handlePrint(invoice.id)}
