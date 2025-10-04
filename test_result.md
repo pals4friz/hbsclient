@@ -122,16 +122,19 @@ backend:
 
 frontend:
   - task: "Print HTML - Landscape CSS Configuration"
-    implemented: false
-    working: false
+    implemented: true
+    working: true
     file: "/app/frontend/src/components/CreateInvoice.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "main"
           comment: "CSS in generatePrintHTML function has @page { size: A5; } but missing landscape orientation. Needs to be updated to @page { size: A5 landscape; }"
+        - working: true
+          agent: "main"
+          comment: "✅ Updated CSS to @page { size: A5 landscape; } to ensure frontend print function uses landscape orientation matching the backend PDF generation."
 
 metadata:
   created_by: "main_agent"
