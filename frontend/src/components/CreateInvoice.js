@@ -651,7 +651,7 @@ const CreateInvoice = () => {
             <button
               type="button"
               onClick={fetchGoldRates}
-              className="text-xs bg-yellow-600 text-white px-2 py-1 rounded hover:bg-yellow-700"
+              className="text-xs bg-yellow-600 text-white px-3 py-2 rounded hover:bg-yellow-700 min-h-[32px] touch-manipulation"
               data-testid="refresh-invoice-rates"
             >
               🔄
