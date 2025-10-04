@@ -138,21 +138,9 @@ const CreateInvoice = () => {
       };
 
       const response = await axios.post(`${API}/invoices`, invoiceData);
+      setLastCreatedInvoice(response.data);
       
-      // Download the invoice immediately
-      const downloadResponse = await axios.get(`${API}/invoices/${response.data.id}/download`, {
-        responseType: 'blob'
-      });
-      
-      const url = window.URL.createObjectURL(new Blob([downloadResponse.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `Invoice_${response.data.invoice_number}.xlsx`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
-      alert('Invoice created and downloaded successfully!');
+      alert('Invoice created successfully! Use the buttons below to download PDF or print.');
       
       // Reset form
       setSelectedCustomer('');
