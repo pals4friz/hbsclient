@@ -228,8 +228,48 @@ const CreateInvoice = () => {
     }
   };
 
+  // Parse QR code function
+  const parseQuickQR = (qrText) => {
+    try {
+      console.log('Processing QR text:', qrText);
+      
+      if (typeof qrText === 'string' && qrText.length >= 4) {
+        // Extract SKU (3rd and 4th characters)
+        const sku = qrText.substring(2, 4);
+        
+        // Extract weight (everything after "|")
+        const pipeIndex = qrText.indexOf('|');
+        let weight = null;
+        
+        if (pipeIndex !== -1 && pipeIndex < qrText.length - 1) {
+          const weightStr = qrText.substring(pipeIndex + 1);
+          weight = parseFloat(weightStr);
+        }
+        
+        console.log('Parsed - SKU:', sku, 'Weight:', weight);
+        
+        if (sku && weight && !isNaN(weight)) {
+          return { sku, weight, originalCode: qrText };
+        } else {
+          setQrScanResult({ error: 'Invalid QR code format', found: false });
+          return null;
+        }
+      } else {
+        setQrScanResult({ error: 'QR code too short', found: false });
+        return null;
+      }
+    } catch (error) {
+      console.error('Error parsing QR code:', error);
+      setQrScanResult({ error: 'Error parsing QR code: ' + error.message, found: false });
+      return null;
+    }
+  };
+
   // QR Scanner functions
-  const handleQRScan = ({ sku, weight, originalCode }) => {
+  const handleQRScan = (result) => {
+    if (!result) return;
+    
+    const { sku, weight, originalCode } = result;
     console.log('QR Scan result:', { sku, weight, originalCode });
     
     // Find product by SKU
