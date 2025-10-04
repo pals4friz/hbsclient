@@ -152,9 +152,11 @@ const CreateInvoice = () => {
       // Reset form
       setSelectedCustomer('');
       setInvoiceItems([]);
-      setLaborCharges(0);
       setTaxIncluded(false); // Default to without tax
       setTaxPercentage(3.0);
+      setDiscountAmount(0);
+      setOldGoldValue(0);
+      setOldSilverValue(0);
       
     } catch (error) {
       console.error('Error creating invoice:', error);
