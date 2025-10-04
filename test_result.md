@@ -204,3 +204,5 @@ agent_communication:
       message: "Starting landscape print implementation. Backend appears to already have landscape A5 setup. Need to test current functionality and fix frontend CSS print styles."
     - agent: "testing"
       message: "✅ Backend PDF generation fully tested and working. Fixed critical ReportLab API issues (drawCentredText -> drawCentredString, fill parameter). A5 landscape format confirmed with original/duplicate copies. All endpoints working: PDF download, print data, gold pricing calculation. 16/16 tests passed. Backend landscape printing is COMPLETE and ready for use."
+    - agent: "main"
+      message: "✅ MAJOR ENHANCEMENT COMPLETE: Successfully implemented all requested features - individual labor charges per item, discount amount, old gold/silver values with new calculation formula. Updated both backend (models, API, PDF generation) and frontend (input fields, calculations, display). Landscape printing was already working. Fixed JSX syntax errors. Application now fully functional with new pricing controls."
