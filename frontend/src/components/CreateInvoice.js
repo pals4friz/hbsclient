@@ -248,7 +248,6 @@ const CreateInvoice = () => {
       link.remove();
     } catch (error) {
       console.error('Error downloading PDF:', error);
-      alert('Error downloading PDF');
     }
   };
 
