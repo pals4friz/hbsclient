@@ -110,19 +110,12 @@ const CreateInvoice = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!selectedCustomer) {
-      alert('Please select a customer');
-      return;
-    }
-
-    if (invoiceItems.length === 0) {
-      alert('Please add at least one item');
+    if (!selectedCustomer || invoiceItems.length === 0) {
       return;
     }
 
     const invalidItems = invoiceItems.some(item => !item.product_id || !item.quantity);
     if (invalidItems) {
-      alert('Please fill all item details');
       return;
     }
 
