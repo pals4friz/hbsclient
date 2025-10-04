@@ -302,7 +302,7 @@ def create_invoice_excel(invoice: Invoice) -> str:
     ws['A3'] = "Invoice Number:"
     ws['B3'] = invoice.invoice_number
     ws['A4'] = "Date:"
-    ws['B4'] = invoice.invoice_date.strftime('%d-%m-%Y')
+    ws['B4'] = invoice.invoice_date
     
     # Customer details
     ws['D3'] = "Customer Name:"
