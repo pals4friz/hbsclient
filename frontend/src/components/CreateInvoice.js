@@ -1082,7 +1082,7 @@ const CreateInvoice = () => {
           </div>
         </div>
 
-        {/* Calculation Summary */}
+        {/* Calculation Summary 
         {invoiceItems.length > 0 && (
           <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="font-semibold text-blue-800 mb-2">📋 Calculation Formula</h4>
@@ -1093,6 +1093,7 @@ const CreateInvoice = () => {
             </div>
           </div>
         )}
+        */}
 
         {/* Submit Button */}
         <div className="flex justify-end">
