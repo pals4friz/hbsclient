@@ -289,13 +289,42 @@ class JewelryStoreAPITester:
             return False
 
     def test_print_invoice(self, invoice_id):
-        """Test invoice print data"""
+        """Test invoice print data - verify all required fields for landscape printing"""
         success, response = self.run_test(
             "Get Invoice for Print",
             "GET",
             f"invoices/{invoice_id}/print",
             200
         )
+        
+        if success:
+            # Verify essential fields for PDF generation
+            required_fields = ['id', 'invoice_number', 'customer_name', 'customer_phone', 
+                             'customer_address', 'items', 'subtotal', 'total_amount', 'invoice_date']
+            missing_fields = []
+            
+            for field in required_fields:
+                if field not in response:
+                    missing_fields.append(field)
+            
+            if missing_fields:
+                print(f"   ❌ Missing required fields: {missing_fields}")
+                return False
+            
+            # Check items structure
+            if 'items' in response and len(response['items']) > 0:
+                item = response['items'][0]
+                item_fields = ['product_name', 'weight', 'rate_per_gram', 'amount']
+                missing_item_fields = [f for f in item_fields if f not in item]
+                
+                if missing_item_fields:
+                    print(f"   ❌ Missing item fields: {missing_item_fields}")
+                    return False
+                
+                print(f"   ✅ Invoice has {len(response['items'])} items")
+                print(f"   ✅ Total weight: {sum(item['weight'] for item in response['items']):.1f}g")
+                print(f"   ✅ Total amount: ₹{response['total_amount']:.2f}")
+            
         return success
 
     def test_sales_report_download(self):
