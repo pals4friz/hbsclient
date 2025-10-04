@@ -595,7 +595,15 @@ const CreateInvoice = () => {
             <label className="block text-sm font-medium text-gray-700">
               Invoice Items
             </label>
-            <div className="space-x-2">
+            <div className="space-x-2 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setShowQRScanner(true)}
+                className="bg-purple-600 text-white px-3 py-2 rounded hover:bg-purple-700 text-sm flex items-center gap-1"
+                data-testid="scan-qr-btn"
+              >
+                📷 Scan QR Code
+              </button>
               <button
                 type="button"
                 onClick={() => setShowNewProductModal(true)}
@@ -614,6 +622,45 @@ const CreateInvoice = () => {
               </button>
             </div>
           </div>
+
+          {/* QR Scan Result Display */}
+          {qrScanResult && (
+            <div className={`mb-4 p-3 rounded border ${
+              qrScanResult.found 
+                ? 'bg-green-50 border-green-200' 
+                : 'bg-red-50 border-red-200'
+            }`}>
+              <div className="flex justify-between items-start">
+                <div>
+                  {qrScanResult.found ? (
+                    <div>
+                      <p className="text-sm font-medium text-green-800">
+                        ✅ QR Code Scanned Successfully
+                      </p>
+                      <p className="text-xs text-green-700">
+                        Product: {qrScanResult.productName} | SKU: {qrScanResult.sku} | Weight: {qrScanResult.weight}g
+                      </p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-sm font-medium text-red-800">
+                        ❌ QR Code Scan {qrScanResult.error ? 'Error' : 'Failed'}
+                      </p>
+                      <p className="text-xs text-red-700">
+                        {qrScanResult.error || `SKU "${qrScanResult.sku}" not found in inventory`}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={() => setQrScanResult(null)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          )}
 
           {invoiceItems.length === 0 ? (
             <p className="text-gray-500 text-center py-4">No items added yet. Click "Add Item" to get started.</p>
