@@ -1082,18 +1082,7 @@ const CreateInvoice = () => {
           </div>
         </div>
 
-        {/* Calculation Summary 
-        {invoiceItems.length > 0 && (
-          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-800 mb-2">📋 Calculation Formula</h4>
-            <div className="text-sm text-blue-700 space-y-1">
-              <p><strong>Formula:</strong> Items + Labor + Tax - Discount - Old Gold - Old Silver = Final Total</p>
-              <p><strong>Labor:</strong> Enter individual labor charges per item as needed</p>
-              </div>
-            </div>
-          </div>
-        )}
-        */}
+        {/* Calculation Summary - Temporarily removed during development */}
 
         {/* Submit Button */}
         <div className="flex justify-end">
