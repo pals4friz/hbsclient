@@ -860,7 +860,7 @@ const CreateInvoice = () => {
                           min="1"
                           value={item.quantity || 1}
                           onChange={(e) => updateItem(index, 'quantity', parseInt(e.target.value))}
-                          className="w-full border border-gray-300 p-2 rounded text-sm"
+                          className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm touch-manipulation"
                           required
                           data-testid={`quantity-input-${index}`}
                         />
