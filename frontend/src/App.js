@@ -22,10 +22,12 @@ const Dashboard = () => {
     today_sales: 0
   });
   const [showGoldRates, setShowGoldRates] = useState(false);
+  const [goldRates, setGoldRates] = useState([]);
   const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
     fetchDashboardStats();
+    fetchGoldRates();
   }, []);
 
   const fetchDashboardStats = async () => {
@@ -34,6 +36,15 @@ const Dashboard = () => {
       setStats(response.data);
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
+    }
+  };
+
+  const fetchGoldRates = async () => {
+    try {
+      const response = await axios.get(`${API}/gold-rates`);
+      setGoldRates(response.data);
+    } catch (error) {
+      console.error('Error fetching gold rates:', error);
     }
   };
 
