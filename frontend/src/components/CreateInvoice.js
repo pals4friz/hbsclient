@@ -178,10 +178,8 @@ const CreateInvoice = () => {
       setNewCustomerData({ name: '', phone: '', email: '', address: '' });
       setShowNewCustomerModal(false);
       
-      alert('Customer added successfully!');
     } catch (error) {
       console.error('Error adding customer:', error);
-      alert('Error adding customer. Please try again.');
     } finally {
       setIsAddingCustomer(false);
     }
