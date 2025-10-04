@@ -831,7 +831,7 @@ const CreateInvoice = () => {
               {invoiceItems.map((item, index) => {
                 const product = products.find(p => p.id === item.product_id);
                 const weight = item.weight || 0;
-                const amount = weight * product.rate_per_gram;
+                const amount = product ? weight * product.rate_per_gram : 0;
 
                 return (
                   <div key={index} className="border border-gray-200 p-3 sm:p-4 rounded" data-testid={`invoice-item-${index}`}>
