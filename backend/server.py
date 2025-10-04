@@ -217,6 +217,7 @@ async def create_invoice(invoice_data: InvoiceCreate):
     # Process items and calculate totals
     invoice_items = []
     subtotal = 0.0
+    total_labor_charges = 0.0
     
     for item_data in invoice_data.items:
         product = await db.products.find_one({"id": item_data["product_id"]})
@@ -226,6 +227,7 @@ async def create_invoice(invoice_data: InvoiceCreate):
         quantity = item_data["quantity"]
         weight = item_data["weight"]  # Weight comes from QR code/manual input
         amount = weight * product["rate_per_gram"]
+        labor_charges = item_data.get("labor_charges", 0.0)  # Individual labor per item
         
         invoice_item = InvoiceItem(
             product_id=product["id"],
@@ -234,21 +236,26 @@ async def create_invoice(invoice_data: InvoiceCreate):
             quantity=quantity,
             weight=weight,
             rate_per_gram=product["rate_per_gram"],
-            amount=amount
+            amount=amount,
+            labor_charges=labor_charges
         )
         invoice_items.append(invoice_item)
         subtotal += amount
+        total_labor_charges += labor_charges
     
-    # Add labor charges
-    subtotal_with_labor = subtotal + invoice_data.labor_charges
+    # Calculate with new formula: Subtotal + Labor + Tax - Discount - (Old Gold + Old Silver) = Final Total
+    subtotal_with_labor = subtotal + total_labor_charges
     
-    # Calculate taxes and total
+    # Calculate taxes
     if invoice_data.tax_included:
-        tax_amount = subtotal_with_labor * (invoice_data.tax_percentage / 100)
-        total_amount = subtotal_with_labor + tax_amount
+        tax_amount = subtotal_with_labor * (3.0 / 100)  # Default 3% tax
+        subtotal_with_tax = subtotal_with_labor + tax_amount
     else:
         tax_amount = 0.0
-        total_amount = subtotal_with_labor
+        subtotal_with_tax = subtotal_with_labor
+    
+    # Apply deductions: Subtotal + Tax - Discount - (Old Gold + Old Silver) = Final Total
+    total_amount = subtotal_with_tax - invoice_data.discount_amount - invoice_data.old_gold_value - invoice_data.old_silver_value
     
     # Generate invoice number
     invoice_count = await db.invoices.count_documents({})
