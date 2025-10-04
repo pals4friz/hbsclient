@@ -97,13 +97,13 @@ const Dashboard = () => {
 
       {/* Current Gold & Silver Rates Display */}
       <div className="mb-8 bg-gradient-to-r from-yellow-50 to-gray-50 p-6 rounded-lg shadow">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
+          <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 flex items-center gap-2">
             💰 Current Gold & Silver Rates
           </h2>
           <button
             onClick={fetchGoldRates}
-            className="bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700"
+            className="bg-yellow-600 text-white px-4 py-2 rounded text-sm hover:bg-yellow-700 min-h-[40px] touch-manipulation self-start sm:self-auto"
             data-testid="refresh-rates-btn"
           >
             🔄 Refresh
