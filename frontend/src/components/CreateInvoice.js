@@ -37,6 +37,7 @@ const CreateInvoice = () => {
     description: ''
   });
   const [isAddingProduct, setIsAddingProduct] = useState(false);
+  const [goldRates, setGoldRates] = useState([]);
 
   useEffect(() => {
     fetchCustomers();
