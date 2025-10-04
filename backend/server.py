@@ -509,6 +509,68 @@ async def download_sales_report(start_date: str, end_date: str):
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
+# === GOLD RATES APIS ===
+
+@api_router.get("/gold-rates", response_model=List[GoldRate])
+async def get_gold_rates():
+    rates = await db.gold_rates.find().to_list(1000)
+    return [GoldRate(**rate) for rate in rates]
+
+@api_router.post("/gold-rates", response_model=GoldRate)
+async def create_gold_rate(rate: GoldRateCreate):
+    # Check if rate for this purity already exists
+    existing_rate = await db.gold_rates.find_one({"purity": rate.purity})
+    if existing_rate:
+        raise HTTPException(status_code=400, detail=f"Rate for {rate.purity} already exists. Use update instead.")
+    
+    rate_dict = rate.dict()
+    rate_obj = GoldRate(**rate_dict)
+    await db.gold_rates.insert_one(rate_obj.dict())
+    return rate_obj
+
+@api_router.put("/gold-rates/{purity}", response_model=GoldRate)
+async def update_gold_rate(purity: str, rate_update: GoldRateUpdate):
+    existing_rate = await db.gold_rates.find_one({"purity": purity})
+    if not existing_rate:
+        raise HTTPException(status_code=404, detail=f"Rate for {purity} not found")
+    
+    updated_data = {
+        "rate_per_gram": rate_update.rate_per_gram,
+        "updated_at": datetime.utcnow()
+    }
+    
+    await db.gold_rates.update_one({"purity": purity}, {"$set": updated_data})
+    updated_rate = await db.gold_rates.find_one({"purity": purity})
+    return GoldRate(**updated_rate)
+
+@api_router.get("/gold-rates/{purity}", response_model=GoldRate)
+async def get_gold_rate_by_purity(purity: str):
+    rate = await db.gold_rates.find_one({"purity": purity})
+    if not rate:
+        raise HTTPException(status_code=404, detail=f"Rate for {purity} not found")
+    return GoldRate(**rate)
+
+# Initialize default gold rates if they don't exist
+@api_router.post("/gold-rates/initialize")
+async def initialize_default_rates():
+    default_rates = [
+        {"purity": "18K", "rate_per_gram": 4500.0},
+        {"purity": "20K", "rate_per_gram": 5000.0},
+        {"purity": "22K", "rate_per_gram": 5500.0},
+        {"purity": "24K", "rate_per_gram": 6000.0},
+        {"purity": "Silver", "rate_per_gram": 80.0}
+    ]
+    
+    initialized_count = 0
+    for rate_data in default_rates:
+        existing = await db.gold_rates.find_one({"purity": rate_data["purity"]})
+        if not existing:
+            rate_obj = GoldRate(**rate_data)
+            await db.gold_rates.insert_one(rate_obj.dict())
+            initialized_count += 1
+    
+    return {"message": f"Initialized {initialized_count} default gold rates"}
+
 # === DASHBOARD APIS ===
 
 @api_router.get("/dashboard/stats")
