@@ -549,6 +549,7 @@ const Navigation = () => {
             <Link to="/invoice-list" className="hover:text-blue-200 px-2 py-1">Invoices</Link>
             <Link to="/sales-management" className="hover:text-blue-200 px-2 py-1">Sales</Link>
             <Link to="/sales-report" className="hover:text-blue-200 px-2 py-1">Reports</Link>
+            <Link to="/print-config" className="hover:text-blue-200 px-2 py-1">Print Setup</Link>
           </div>
           
           {/* Mobile Menu Button */}
