@@ -149,7 +149,6 @@ const CreateInvoice = () => {
       
     } catch (error) {
       console.error('Error creating invoice:', error);
-      alert('Error creating invoice. Please check item availability.');
     } finally {
       setIsSubmitting(false);
     }
