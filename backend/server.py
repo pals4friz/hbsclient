@@ -396,7 +396,9 @@ def create_invoice_pdf(invoice: Invoice) -> str:
             
             # Highlight final total
             if label == 'FINAL TOTAL':
-                c.rect(20, y_pos - 2, width - 40, 10, fill=0.9, stroke=1)
+                c.setFillColorRGB(0.9, 0.9, 0.9)  # Light gray background
+                c.rect(20, y_pos - 2, width - 40, 10, fill=1, stroke=1)
+                c.setFillColorRGB(0, 0, 0)  # Back to black text
                 c.setFont("Helvetica-Bold", 7)
                 c.drawString(25, y_pos, label)
                 c.drawString(280, y_pos, amount)
