@@ -840,17 +840,22 @@ const CreateInvoice = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Labor Charges (₹)
+                Auto Labor Charges (₹)
               </label>
               <input
-                type="number"
-                step="0.01"
-                min="0"
-                value={laborCharges}
-                onChange={(e) => setLaborCharges(parseFloat(e.target.value) || 0)}
-                className="w-full border border-gray-300 p-2 rounded"
-                data-testid="labor-charges-input"
+                type="text"
+                value={`₹${autoLaborCharges.toFixed(0)}`}
+                className="w-full border border-gray-300 p-2 rounded bg-gray-50"
+                readOnly
+                data-testid="labor-charges-display"
               />
+              <div className="text-xs text-gray-500 mt-1">
+                {totalWeight > 0 ? (
+                  totalWeight < 5 
+                    ? `Weight: ${totalWeight.toFixed(2)}g < 5g → ₹500 fixed`
+                    : `Weight: ${totalWeight.toFixed(2)}g ≥ 5g → ₹100 × ${totalWeight.toFixed(2)}g = ₹${(100 * totalWeight).toFixed(0)}`
+                ) : 'Auto-calculated based on total weight'}
+              </div>
             </div>
 
             <div>
