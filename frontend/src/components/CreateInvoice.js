@@ -744,42 +744,44 @@ const CreateInvoice = () => {
 
           {/* Quick QR Input */}
           <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-            <div className="flex items-center space-x-4">
-              <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
+            <div className="mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Quick QR Input:
               </label>
-              <input
-                type="text"
-                placeholder="Paste QR code: AB12CD567|2.5"
-                className="flex-1 border border-gray-300 p-2 rounded font-mono text-sm"
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && e.target.value.trim()) {
-                    handleQRScan(parseQuickQR(e.target.value.trim()));
-                    e.target.value = '';
-                  }
-                }}
-                data-testid="quick-qr-input"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  const input = document.querySelector('[data-testid="quick-qr-input"]');
-                  if (input && input.value.trim()) {
-                    const result = parseQuickQR(input.value.trim());
-                    if (result) {
-                      handleQRScan(result);
-                      input.value = '';
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  placeholder="Paste QR code: AB12CD567|2.5"
+                  className="flex-1 border border-gray-300 p-2 sm:p-3 rounded font-mono text-sm touch-manipulation"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && e.target.value.trim()) {
+                      handleQRScan(parseQuickQR(e.target.value.trim()));
+                      e.target.value = '';
                     }
-                  }
-                }}
-                className="bg-purple-600 text-white px-3 py-2 rounded hover:bg-purple-700 text-sm"
-                data-testid="process-quick-qr"
-              >
-                Add
-              </button>
-            </div>
-            <div className="text-xs text-gray-500 mt-1">
-              Paste QR code from external scanner or type manually (Format: positions 3-4 = SKU, after | = weight)
+                  }}
+                  data-testid="quick-qr-input"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const input = document.querySelector('[data-testid="quick-qr-input"]');
+                    if (input && input.value.trim()) {
+                      const result = parseQuickQR(input.value.trim());
+                      if (result) {
+                        handleQRScan(result);
+                        input.value = '';
+                      }
+                    }
+                  }}
+                  className="px-4 py-2 sm:py-3 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm min-h-[44px] touch-manipulation sm:min-w-[80px]"
+                  data-testid="process-quick-qr"
+                >
+                  Add
+                </button>
+              </div>
+              <div className="text-xs text-gray-500 mt-2">
+                Paste QR code from external scanner or type manually (Format: positions 3-4 = SKU, after | = weight)
+              </div>
             </div>
           </div>
 
