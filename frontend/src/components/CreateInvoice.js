@@ -493,6 +493,224 @@ const CreateInvoice = () => {
           </button>
         </div>
       </form>
+
+      {/* New Customer Modal */}
+      {showNewCustomerModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="new-customer-modal">
+          <div className="bg-white p-6 rounded-lg w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Add New Customer</h3>
+            <form onSubmit={handleAddNewCustomer} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                <input
+                  type="text"
+                  value={newCustomerData.name}
+                  onChange={(e) => setNewCustomerData({...newCustomerData, name: e.target.value})}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  required
+                  data-testid="new-customer-name"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number *</label>
+                <input
+                  type="tel"
+                  value={newCustomerData.phone}
+                  onChange={(e) => setNewCustomerData({...newCustomerData, phone: e.target.value})}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  required
+                  data-testid="new-customer-phone"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email (Optional)</label>
+                <input
+                  type="email"
+                  value={newCustomerData.email}
+                  onChange={(e) => setNewCustomerData({...newCustomerData, email: e.target.value})}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  data-testid="new-customer-email"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
+                <textarea
+                  value={newCustomerData.address}
+                  onChange={(e) => setNewCustomerData({...newCustomerData, address: e.target.value})}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  rows="3"
+                  required
+                  data-testid="new-customer-address"
+                />
+              </div>
+              
+              <div className="flex space-x-2 pt-4">
+                <button
+                  type="submit"
+                  disabled={isAddingCustomer}
+                  className={`flex-1 py-2 rounded ${
+                    isAddingCustomer ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'
+                  } text-white`}
+                  data-testid="save-new-customer"
+                >
+                  {isAddingCustomer ? 'Adding...' : 'Add Customer'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowNewCustomerModal(false)}
+                  className="flex-1 bg-gray-600 text-white py-2 rounded hover:bg-gray-700"
+                  data-testid="cancel-new-customer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* New Product Modal */}
+      {showNewProductModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="new-product-modal">
+          <div className="bg-white p-6 rounded-lg w-full max-w-2xl max-h-96 overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">Add New Product</h3>
+            <form onSubmit={handleAddNewProduct} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
+                <input
+                  type="text"
+                  value={newProductData.name}
+                  onChange={(e) => setNewProductData({...newProductData, name: e.target.value})}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  required
+                  data-testid="new-product-name"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">SKU *</label>
+                <input
+                  type="text"
+                  value={newProductData.sku}
+                  onChange={(e) => setNewProductData({...newProductData, sku: e.target.value})}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  required
+                  data-testid="new-product-sku"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                <select
+                  value={newProductData.category}
+                  onChange={(e) => setNewProductData({...newProductData, category: e.target.value})}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  required
+                  data-testid="new-product-category"
+                >
+                  <option value="">Select Category</option>
+                  <option value="Ring">Ring</option>
+                  <option value="Necklace">Necklace</option>
+                  <option value="Earring">Earring</option>
+                  <option value="Bracelet">Bracelet</option>
+                  <option value="Chain">Chain</option>
+                  <option value="Pendant">Pendant</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Weight (grams) *</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={newProductData.weight}
+                  onChange={(e) => setNewProductData({...newProductData, weight: e.target.value})}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  required
+                  data-testid="new-product-weight"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Purity *</label>
+                <select
+                  value={newProductData.purity}
+                  onChange={(e) => setNewProductData({...newProductData, purity: e.target.value})}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  required
+                  data-testid="new-product-purity"
+                >
+                  <option value="">Select Purity</option>
+                  <option value="18K">18K</option>
+                  <option value="22K">22K</option>
+                  <option value="24K">24K</option>
+                  <option value="Silver">Silver</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Rate per gram (₹) *</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={newProductData.rate_per_gram}
+                  onChange={(e) => setNewProductData({...newProductData, rate_per_gram: e.target.value})}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  required
+                  data-testid="new-product-rate"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Stock Quantity *</label>
+                <input
+                  type="number"
+                  value={newProductData.stock_quantity}
+                  onChange={(e) => setNewProductData({...newProductData, stock_quantity: e.target.value})}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  required
+                  data-testid="new-product-stock"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description (Optional)</label>
+                <input
+                  type="text"
+                  value={newProductData.description}
+                  onChange={(e) => setNewProductData({...newProductData, description: e.target.value})}
+                  className="w-full border border-gray-300 p-2 rounded"
+                  data-testid="new-product-description"
+                />
+              </div>
+              
+              <div className="md:col-span-2 flex space-x-2 pt-4">
+                <button
+                  type="submit"
+                  disabled={isAddingProduct}
+                  className={`flex-1 py-2 rounded ${
+                    isAddingProduct ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'
+                  } text-white`}
+                  data-testid="save-new-product"
+                >
+                  {isAddingProduct ? 'Adding...' : 'Add Product'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowNewProductModal(false)}
+                  className="flex-1 bg-gray-600 text-white py-2 rounded hover:bg-gray-700"
+                  data-testid="cancel-new-product"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
