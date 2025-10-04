@@ -38,7 +38,6 @@ const InvoiceList = () => {
       link.remove();
     } catch (error) {
       console.error('Error downloading invoice:', error);
-      alert('Error downloading invoice');
     }
   };
 
