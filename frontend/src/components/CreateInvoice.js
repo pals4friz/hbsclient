@@ -13,6 +13,30 @@ const CreateInvoice = () => {
   const [taxIncluded, setTaxIncluded] = useState(true);
   const [taxPercentage, setTaxPercentage] = useState(3.0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // New customer modal state
+  const [showNewCustomerModal, setShowNewCustomerModal] = useState(false);
+  const [newCustomerData, setNewCustomerData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    address: ''
+  });
+  const [isAddingCustomer, setIsAddingCustomer] = useState(false);
+
+  // New product modal state
+  const [showNewProductModal, setShowNewProductModal] = useState(false);
+  const [newProductData, setNewProductData] = useState({
+    name: '',
+    sku: '',
+    category: '',
+    weight: '',
+    purity: '',
+    rate_per_gram: '',
+    stock_quantity: '',
+    description: ''
+  });
+  const [isAddingProduct, setIsAddingProduct] = useState(false);
 
   useEffect(() => {
     fetchCustomers();
