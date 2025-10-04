@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import axios from "axios";
 import "./App.css";
+import Customers from "./components/Customers";
+import CreateInvoice from "./components/CreateInvoice";
+import InvoiceList from "./components/InvoiceList";
+import SalesReport from "./components/SalesReport";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
