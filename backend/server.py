@@ -231,7 +231,7 @@ async def create_invoice(invoice_data: InvoiceCreate):
         tax_percentage=invoice_data.tax_percentage,
         tax_amount=tax_amount,
         total_amount=total_amount,
-        invoice_date=date.today()
+        invoice_date=date.today().isoformat()
     )
     
     await db.invoices.insert_one(invoice.dict())
