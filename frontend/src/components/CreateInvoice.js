@@ -548,7 +548,7 @@ const CreateInvoice = () => {
               text-decoration: underline;
             }
             .header h3 { 
-              font-size: 11px; 
+              font-size: 13px; 
               font-weight: bold; 
               margin: 2px 0; 
             }
