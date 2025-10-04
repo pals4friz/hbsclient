@@ -36,15 +36,8 @@ const SalesReport = () => {
       link.click();
       link.remove();
 
-      alert('Sales report generated and downloaded successfully!');
-      
     } catch (error) {
       console.error('Error generating sales report:', error);
-      if (error.response?.status === 400) {
-        alert('Invalid date format. Please use the date picker.');
-      } else {
-        alert('Error generating sales report. Please try again.');
-      }
     } finally {
       setIsGenerating(false);
     }
