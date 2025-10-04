@@ -648,12 +648,14 @@ const CreateInvoice = () => {
                 <input
                   type="number"
                   step="0.01"
+                  placeholder="e.g., 2.5, 10.25"
                   value={newProductData.weight}
                   onChange={(e) => setNewProductData({...newProductData, weight: e.target.value})}
                   className="w-full border border-gray-300 p-2 rounded"
                   required
                   data-testid="new-product-weight"
                 />
+                <div className="text-xs text-gray-500 mt-1">Product weight in grams</div>
               </div>
               
               <div>
