@@ -906,7 +906,7 @@ const CreateInvoice = () => {
                         <button
                           type="button"
                           onClick={() => removeItem(index)}
-                          className="ml-2 text-red-600 hover:text-red-800 p-2"
+                          className="ml-2 text-red-600 hover:text-red-800 p-2 sm:p-3 min-h-[44px] touch-manipulation"
                           data-testid={`remove-item-${index}`}
                         >
                           ✕
