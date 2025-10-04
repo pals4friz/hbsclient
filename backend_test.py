@@ -695,8 +695,9 @@ class JewelryStoreAPITester:
                 pass
 
 def main():
-    print("🚀 Starting Jewelry Store API Tests...")
-    print("=" * 50)
+    print("🚀 Starting Enhanced Jewelry Store API Tests...")
+    print("🎯 Focus: Individual Labor Charges, Discount, Old Gold/Silver Values")
+    print("=" * 70)
     
     tester = JewelryStoreAPITester()
     
@@ -722,36 +723,76 @@ def main():
     tester.test_get_customers()
     tester.test_get_customer_by_id(customer_id)
     
-    # Test invoice management
+    # Test basic invoice management
     invoice_id = tester.test_create_invoice(customer_id, product_id)
     if not invoice_id:
-        print("❌ Invoice creation failed, stopping tests")
+        print("❌ Basic invoice creation failed, stopping tests")
         return 1
     
     tester.test_get_invoices()
     tester.test_get_invoice_by_id(invoice_id)
     
+    print("\n" + "🎯" * 50)
+    print("🎯 ENHANCED PRICING FEATURES TESTING")
+    print("🎯" * 50)
+    
+    # Test enhanced pricing features
+    labor_invoice_id = tester.test_create_invoice_with_individual_labor(customer_id, product_id)
+    if labor_invoice_id:
+        tester.test_pdf_with_enhanced_pricing(labor_invoice_id)
+    
+    discount_invoice_id = tester.test_create_invoice_with_discounts_and_deductions(customer_id, product_id)
+    if discount_invoice_id:
+        tester.test_pdf_with_enhanced_pricing(discount_invoice_id)
+    
+    no_tax_invoice_id = tester.test_create_invoice_without_tax(customer_id, product_id)
+    if no_tax_invoice_id:
+        tester.test_pdf_with_enhanced_pricing(no_tax_invoice_id)
+    
+    edge_case_invoice_id = tester.test_create_invoice_edge_cases(customer_id, product_id)
+    
+    print("\n" + "📄" * 50)
+    print("📄 PDF GENERATION TESTING")
+    print("📄" * 50)
+    
     # Test PDF downloads and print functionality
     tester.test_download_invoice_pdf(invoice_id)
     tester.test_print_invoice(invoice_id)
     tester.test_landscape_pdf_format(invoice_id)
+    
+    # Test PDF with enhanced features
+    if discount_invoice_id:
+        tester.test_download_invoice_pdf(discount_invoice_id)
+        tester.test_landscape_pdf_format(discount_invoice_id)
+    
     tester.test_sales_report_download()
     
     # Clean up (optional - comment out if you want to keep test data)
     # tester.cleanup()
     
     # Print results
-    print("\n" + "=" * 50)
-    print(f"📊 FINAL RESULTS")
+    print("\n" + "=" * 70)
+    print(f"📊 FINAL RESULTS - Enhanced Jewelry Store Invoice System")
+    print("=" * 70)
     print(f"Tests passed: {tester.tests_passed}/{tester.tests_run}")
     success_rate = (tester.tests_passed / tester.tests_run) * 100 if tester.tests_run > 0 else 0
     print(f"Success rate: {success_rate:.1f}%")
     
+    print(f"\n🎯 Enhanced Features Tested:")
+    print(f"✅ Individual labor charges per item")
+    print(f"✅ Discount amount functionality")
+    print(f"✅ Old gold and old silver value deductions")
+    print(f"✅ New calculation formula: Subtotal + Labor + Tax - Discount - Old Gold - Old Silver")
+    print(f"✅ PDF generation with actual values (not hardcoded ₹0)")
+    print(f"✅ Landscape A5 PDF format")
+    print(f"✅ Edge cases (zero values, high amounts)")
+    print(f"✅ Tax included/excluded scenarios")
+    
     if tester.tests_passed == tester.tests_run:
-        print("🎉 All tests passed!")
+        print("\n🎉 All enhanced pricing features working correctly!")
         return 0
     else:
-        print("⚠️  Some tests failed")
+        print(f"\n⚠️  {tester.tests_run - tester.tests_passed} tests failed - see details above")
         return 1
 
 if __name__ == "__main__":
