@@ -104,6 +104,35 @@ Type 'RESET' to confirm this action:`;
         </div>
       </div>
 
+      {/* Reset Sales Data Section */}
+      {(stats.total_invoices > 0 || stats.today_sales > 0) && (
+        <div className="mb-8 bg-red-50 border border-red-200 rounded-lg p-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-lg font-semibold text-red-800 mb-2">🗑️ Reset Sales Data</h3>
+              <p className="text-red-700 text-sm mb-2">
+                Clear all invoices and sales records to start fresh. Products and customers will be preserved.
+              </p>
+              <p className="text-xs text-red-600">
+                ⚠️ This action cannot be undone. All sales history will be permanently deleted.
+              </p>
+            </div>
+            <button
+              onClick={handleResetSalesData}
+              disabled={isResetting}
+              className={`px-6 py-3 rounded-lg font-medium ${
+                isResetting 
+                  ? 'bg-gray-400 cursor-not-allowed text-gray-600' 
+                  : 'bg-red-600 hover:bg-red-700 text-white'
+              }`}
+              data-testid="reset-sales-data-btn"
+            >
+              {isResetting ? 'Resetting...' : 'Reset Sales Data'}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Gold Rates Management Section */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
