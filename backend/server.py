@@ -441,10 +441,13 @@ async def get_invoice_for_print(invoice_id: str):
 
 @api_router.get("/sales/download")
 async def download_sales_report(start_date: str, end_date: str):
-    # Parse dates
+    # Parse and validate dates
     try:
-        start = datetime.strptime(start_date, '%Y-%m-%d').date()
-        end = datetime.strptime(end_date, '%Y-%m-%d').date()
+        start_parsed = datetime.strptime(start_date, '%Y-%m-%d').date()
+        end_parsed = datetime.strptime(end_date, '%Y-%m-%d').date()
+        # Convert to string for MongoDB query
+        start = start_parsed.isoformat()
+        end = end_parsed.isoformat()
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
     
