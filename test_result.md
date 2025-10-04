@@ -149,3 +149,5 @@ test_plan:
 agent_communication:
     - agent: "main"
       message: "Starting landscape print implementation. Backend appears to already have landscape A5 setup. Need to test current functionality and fix frontend CSS print styles."
+    - agent: "testing"
+      message: "✅ Backend PDF generation fully tested and working. Fixed critical ReportLab API issues (drawCentredText -> drawCentredString, fill parameter). A5 landscape format confirmed with original/duplicate copies. All endpoints working: PDF download, print data, gold pricing calculation. 16/16 tests passed. Backend landscape printing is COMPLETE and ready for use."
