@@ -718,23 +718,23 @@ const CreateInvoice = () => {
               <button
                 type="button"
                 onClick={() => setShowQRScanner(true)}
-                className="bg-purple-600 text-white px-3 py-2 rounded hover:bg-purple-700 text-sm flex items-center gap-1"
-                data-testid="scan-qr-btn"
+                className="px-4 py-2 sm:py-3 bg-purple-600 text-white rounded hover:bg-purple-700 min-h-[44px] touch-manipulation text-sm sm:text-base"
+                data-testid="qr-input-btn"
               >
                 📱 QR Input
               </button>
               <button
                 type="button"
                 onClick={() => setShowNewProductModal(true)}
-                className="bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 text-sm"
-                data-testid="add-new-product-btn"
+                className="px-4 py-2 sm:py-3 bg-green-600 text-white rounded hover:bg-green-700 min-h-[44px] touch-manipulation text-sm sm:text-base"
+                data-testid="add-product-btn"
               >
                 + Add New Product
               </button>
               <button
                 type="button"
                 onClick={addItem}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                className="px-4 py-2 sm:py-3 bg-blue-600 text-white rounded hover:bg-blue-700 min-h-[44px] touch-manipulation text-sm sm:text-base"
                 data-testid="add-item-btn"
               >
                 Add Item
