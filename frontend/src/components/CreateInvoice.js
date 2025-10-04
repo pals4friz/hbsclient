@@ -995,7 +995,7 @@ const CreateInvoice = () => {
             </div>
 
             {taxIncluded && (
-              <div>
+              <div className="mt-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Tax Percentage (%)
                 </label>
@@ -1012,6 +1012,7 @@ const CreateInvoice = () => {
               </div>
             )}
           </div>
+        </div>
 
           <div className="md:text-right bg-gray-50 p-4 rounded">
             <div className="space-y-2">
