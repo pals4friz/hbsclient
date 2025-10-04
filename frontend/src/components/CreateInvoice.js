@@ -280,15 +280,12 @@ const CreateInvoice = () => {
       const existingItemIndex = invoiceItems.findIndex(item => item.product_id === product.id);
       
       if (existingItemIndex >= 0) {
-        // Update existing item with new weight/quantity
+        // Update existing item with new weight
         const updatedItems = [...invoiceItems];
-        const currentItem = updatedItems[existingItemIndex];
-        
-        // Calculate new quantity based on weight
-        const newQuantity = Math.ceil(weight / product.weight);
         updatedItems[existingItemIndex] = {
-          ...currentItem,
-          quantity: newQuantity
+          ...updatedItems[existingItemIndex],
+          quantity: 1,
+          weight: weight // Update with new scanned weight
         };
         setInvoiceItems(updatedItems);
       } else {
