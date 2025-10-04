@@ -98,9 +98,8 @@ const CreateInvoice = () => {
     
     invoiceItems.forEach(item => {
       const product = products.find(p => p.id === item.product_id);
-      if (product && item.quantity) {
-        const weight = product.weight * item.quantity;
-        const amount = weight * product.rate_per_gram;
+      if (product && item.weight) {
+        const amount = item.weight * product.rate_per_gram;
         subtotal += amount;
       }
     });
