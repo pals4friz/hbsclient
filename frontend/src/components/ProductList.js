@@ -18,6 +18,8 @@ const ProductList = () => {
     rate_per_gram: '',
     description: ''
   });
+  const [isImporting, setIsImporting] = useState(false);
+  const [importResults, setImportResults] = useState(null);
 
   useEffect(() => {
     fetchProducts();
