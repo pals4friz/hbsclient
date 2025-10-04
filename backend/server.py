@@ -99,6 +99,8 @@ class Invoice(BaseModel):
 class InvoiceCreate(BaseModel):
     customer_id: str
     items: List[dict]  # {product_id, quantity}
+    labor_charges: float = 0.0
+    tax_included: bool = True
     tax_percentage: float = 3.0  # Default GST for jewelry
 
 class SalesRecord(BaseModel):
