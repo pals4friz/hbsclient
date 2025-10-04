@@ -331,14 +331,34 @@ def create_invoice_excel(invoice: Invoice) -> str:
     
     # Totals
     last_row = len(invoice.items) + 8
-    ws[f'F{last_row}'] = "Subtotal:"
-    ws[f'G{last_row}'] = f"₹{invoice.subtotal:.2f}"
-    ws[f'F{last_row+1}'] = f"Tax ({invoice.tax_percentage}%):"
-    ws[f'G{last_row+1}'] = f"₹{invoice.tax_amount:.2f}"
-    ws[f'F{last_row+2}'] = "Total:"
-    ws[f'G{last_row+2}'] = f"₹{invoice.total_amount:.2f}"
-    ws[f'F{last_row+2}'].font = header_font
-    ws[f'G{last_row+2}'].font = header_font
+    current_row = last_row
+    
+    ws[f'F{current_row}'] = "Subtotal:"
+    ws[f'G{current_row}'] = f"₹{invoice.subtotal:.2f}"
+    current_row += 1
+    
+    # Labor charges if any
+    if invoice.labor_charges > 0:
+        ws[f'F{current_row}'] = "Labor Charges:"
+        ws[f'G{current_row}'] = f"₹{invoice.labor_charges:.2f}"
+        current_row += 1
+    
+    # Tax if included
+    if invoice.tax_included and invoice.tax_amount > 0:
+        ws[f'F{current_row}'] = f"Tax ({invoice.tax_percentage}%):"
+        ws[f'G{current_row}'] = f"₹{invoice.tax_amount:.2f}"
+        current_row += 1
+    
+    ws[f'F{current_row}'] = "Total Amount:"
+    ws[f'G{current_row}'] = f"₹{invoice.total_amount:.2f}"
+    ws[f'F{current_row}'].font = header_font
+    ws[f'G{current_row}'].font = header_font
+    
+    # Add note about tax
+    if not invoice.tax_included:
+        current_row += 2
+        ws[f'A{current_row}'] = "Note: This invoice is without tax"
+        ws[f'A{current_row}'].font = Font(italic=True)
     
     # Save file
     temp_dir = tempfile.mkdtemp()
