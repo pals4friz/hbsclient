@@ -121,6 +121,7 @@ class SalesRecord(BaseModel):
     weight: float
     rate_per_gram: float
     amount: float
+    labor_charges: float = 0.0
     sale_date: str  # Store as string to avoid BSON issues
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
