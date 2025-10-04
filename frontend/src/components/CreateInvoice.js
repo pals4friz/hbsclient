@@ -9,6 +9,8 @@ const CreateInvoice = () => {
   const [products, setProducts] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState('');
   const [invoiceItems, setInvoiceItems] = useState([]);
+  const [laborCharges, setLaborCharges] = useState(0);
+  const [taxIncluded, setTaxIncluded] = useState(true);
   const [taxPercentage, setTaxPercentage] = useState(3.0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
