@@ -119,6 +119,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ PDF generation working correctly. Fixed drawCentredText -> drawCentredString and fill parameter issues. A5 landscape format confirmed working with original/duplicate copies side-by-side. Gold pricing per 10g calculation implemented. All PDF endpoints tested successfully: /api/invoices/{id}/download returns valid PDF (2872 bytes), /api/invoices/{id}/print returns complete invoice data. Test results: 16/16 tests passed (100% success rate)."
+        - working: true
+          agent: "testing"
+          comment: "🎯 FIRM NAME DISPLAY ISSUE RESOLVED: Comprehensive testing confirms 'HARI BABU SARRAF' is properly displayed in PDF. ✅ PDF text extraction verified firm name appears exactly 2 times (original + duplicate copies) ✅ Positioning: Helvetica-Bold 10pt, centered horizontally at y=base_y-60 ✅ Both /api/invoices/{id}/download endpoint working (2827-2877 bytes PDFs) ✅ A5 landscape format maintained ✅ Company info section complete: ROUGH ESTIMATE → ORIGINAL/DUPLICATE → HARI BABU SARRAF → MOHALA CHOWK, PURANPUR ✅ All 36/36 tests passed (100% success rate). User-reported firm name display issue appears to be resolved - PDF generation is working correctly."
 
   - task: "Individual Labor Charges per Item"
     implemented: true
