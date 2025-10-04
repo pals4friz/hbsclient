@@ -598,6 +598,7 @@ function App() {
           <Route path="/sales-management" element={<SalesManagement />} />
           <Route path="/sales-report" element={<SalesReport />} />
           <Route path="/print-config" element={<PrintLayoutConfig />} />
+          <Route path="/print-config" element={<PrintLayoutConfig />} />
         </Routes>
       </BrowserRouter>
     </div>
