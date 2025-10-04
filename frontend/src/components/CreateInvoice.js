@@ -1021,6 +1021,8 @@ const CreateInvoice = () => {
           </div>
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div></div>
           <div className="md:text-right bg-gray-50 p-4 rounded">
             <div className="space-y-2">
               <div className="flex justify-between">
