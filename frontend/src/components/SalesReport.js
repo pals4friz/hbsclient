@@ -13,12 +13,10 @@ const SalesReport = () => {
     e.preventDefault();
     
     if (!startDate || !endDate) {
-      alert('Please select both start and end dates');
       return;
     }
 
     if (new Date(startDate) > new Date(endDate)) {
-      alert('Start date cannot be after end date');
       return;
     }
 
