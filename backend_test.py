@@ -420,8 +420,8 @@ def main():
     tester.test_get_invoices()
     tester.test_get_invoice_by_id(invoice_id)
     
-    # Test Excel downloads
-    tester.test_download_invoice(invoice_id)
+    # Test PDF downloads and print functionality
+    tester.test_download_invoice_pdf(invoice_id)
     tester.test_print_invoice(invoice_id)
     tester.test_sales_report_download()
     
