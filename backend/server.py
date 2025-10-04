@@ -338,7 +338,7 @@ def create_invoice_pdf(invoice: Invoice) -> str:
         c.drawCentredString(width/2, base_y - 30, "ROUGH ESTIMATE")
         c.drawCentredString(width/2, base_y - 45, copy_text)
         
-        c.setFont("Helvetica-Bold", 10)
+        c.setFont("Helvetica-Bold", 12)
         c.drawCentredString(width/2, base_y - 60, "HARI BABU SARRAF")
         
         c.setFont("Helvetica", 8)
