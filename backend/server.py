@@ -91,10 +91,13 @@ class Invoice(BaseModel):
     customer_address: str
     items: List[InvoiceItem]
     subtotal: float
-    labor_charges: float = 0.0
+    labor_charges: float = 0.0  # Total labor charges (sum of individual items)
     tax_included: bool = True  # Whether tax is included or excluded
     tax_percentage: float = 3.0
     tax_amount: float = 0.0
+    discount_amount: float = 0.0  # Discount amount in rupees
+    old_gold_value: float = 0.0  # Old gold value to be deducted
+    old_silver_value: float = 0.0  # Old silver value to be deducted
     total_amount: float
     invoice_date: str  # Store as string to avoid BSON issues
     created_at: datetime = Field(default_factory=datetime.utcnow)
