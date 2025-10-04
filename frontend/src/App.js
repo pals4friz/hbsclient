@@ -60,10 +60,26 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Gold Rates Management Section */}
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold text-gray-800">📊 Gold & Silver Rates</h2>
+          <button
+            onClick={() => setShowGoldRates(!showGoldRates)}
+            className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700"
+            data-testid="toggle-gold-rates"
+          >
+            {showGoldRates ? 'Hide Rates' : 'Manage Rates'}
+          </button>
+        </div>
+        
+        {showGoldRates && <GoldRates />}
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Link to="/products" className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow border-l-4 border-blue-500">
           <h3 className="text-xl font-semibold mb-2 text-gray-800">Product Management</h3>
-          <p className="text-gray-600">Add, edit, and manage jewelry inventory</p>
+          <p className="text-gray-600">Add, edit, and manage jewelry inventory (all weights in grams)</p>
         </Link>
         
         <Link to="/customers" className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow border-l-4 border-green-500">
@@ -73,12 +89,12 @@ const Dashboard = () => {
         
         <Link to="/invoices" className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow border-l-4 border-yellow-500">
           <h3 className="text-xl font-semibold mb-2 text-gray-800">Create Invoice</h3>
-          <p className="text-gray-600">Generate invoices and download Excel</p>
+          <p className="text-gray-600">Generate invoices with tax options & labor charges</p>
         </Link>
         
         <Link to="/invoice-list" className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow border-l-4 border-purple-500">
           <h3 className="text-xl font-semibold mb-2 text-gray-800">Invoice History</h3>
-          <p className="text-gray-600">View and download past invoices</p>
+          <p className="text-gray-600">View, download Excel, and print invoices</p>
         </Link>
         
         <Link to="/sales-report" className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow border-l-4 border-red-500">
