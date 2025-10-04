@@ -914,7 +914,7 @@ const CreateInvoice = () => {
 
         {/* Additional Charges and Tax Settings */}
         <div className="mb-6 border-t pt-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Discount Amount (₹)
