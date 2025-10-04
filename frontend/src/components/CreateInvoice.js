@@ -912,27 +912,55 @@ const CreateInvoice = () => {
           )}
         </div>
 
-        {/* Labor Charges and Tax Settings */}
+        {/* Additional Charges and Tax Settings */}
         <div className="mb-6 border-t pt-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Auto Labor Charges (₹)
+                Discount Amount (₹)
               </label>
               <input
-                type="text"
-                value={`₹${autoLaborCharges.toFixed(0)}`}
-                className="w-full border border-gray-300 p-2 rounded bg-gray-50"
-                readOnly
-                data-testid="labor-charges-display"
+                type="number"
+                step="0.01"
+                min="0"
+                value={discountAmount}
+                onChange={(e) => setDiscountAmount(parseFloat(e.target.value) || 0)}
+                className="w-full border border-gray-300 p-2 rounded"
+                placeholder="0.00"
+                data-testid="discount-input"
               />
-              <div className="text-xs text-gray-500 mt-1">
-                {totalWeight > 0 ? (
-                  totalWeight < 5 
-                    ? `Weight: ${totalWeight.toFixed(2)}g < 5g → ₹500 fixed`
-                    : `Weight: ${totalWeight.toFixed(2)}g ≥ 5g → ₹100 × ${totalWeight.toFixed(2)}g = ₹${(100 * totalWeight).toFixed(0)}`
-                ) : 'Auto-calculated based on total weight'}
-              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Old Gold Value (₹)
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={oldGoldValue}
+                onChange={(e) => setOldGoldValue(parseFloat(e.target.value) || 0)}
+                className="w-full border border-gray-300 p-2 rounded"
+                placeholder="0.00"
+                data-testid="old-gold-input"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Old Silver Value (₹)
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={oldSilverValue}
+                onChange={(e) => setOldSilverValue(parseFloat(e.target.value) || 0)}
+                className="w-full border border-gray-300 p-2 rounded"
+                placeholder="0.00"
+                data-testid="old-silver-input"
+              />
             </div>
 
             <div>
