@@ -934,8 +934,8 @@ const CreateInvoice = () => {
                 <span data-testid="total-display">₹{total.toFixed(2)}</span>
               </div>
               {!taxIncluded && (
-                <div className="text-sm text-gray-600 italic">
-                  *This invoice is without tax
+                <div className="text-sm text-green-600 italic">
+                  ✓ This invoice is without tax
                 </div>
               )}
             </div>
