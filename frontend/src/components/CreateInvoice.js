@@ -761,9 +761,9 @@ const CreateInvoice = () => {
                           data-testid={`product-select-${index}`}
                         >
                           <option value="">Select product...</option>
-                          {products.filter(p => p.stock_quantity > 0).map(product => (
+                          {products.map(product => (
                             <option key={product.id} value={product.id}>
-                              {product.name} ({product.sku}) - Stock: {product.stock_quantity}
+                              {product.name} ({product.sku}) - {product.purity}
                             </option>
                           ))}
                         </select>
@@ -774,8 +774,7 @@ const CreateInvoice = () => {
                         <input
                           type="number"
                           min="1"
-                          max={product ? product.stock_quantity : 1}
-                          value={item.quantity}
+                          value={item.quantity || 1}
                           onChange={(e) => updateItem(index, 'quantity', parseInt(e.target.value))}
                           className="w-full border border-gray-300 p-2 rounded text-sm"
                           required
