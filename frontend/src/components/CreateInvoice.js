@@ -946,6 +946,19 @@ const CreateInvoice = () => {
           </div>
         </div>
 
+        {/* Labor Calculation Info */}
+        {invoiceItems.length > 0 && (
+          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 className="font-semibold text-blue-800 mb-2">⚙️ Auto Labor Calculation</h4>
+            <div className="text-sm text-blue-700 space-y-1">
+              <p><strong>Rules:</strong></p>
+              <p>• Weight &lt; 5g: Fixed ₹500 labor charge</p>
+              <p>• Weight ≥ 5g: ₹100 per gram (₹100 × weight)</p>
+              <p><strong>Current:</strong> {totalWeight.toFixed(2)}g → ₹{autoLaborCharges.toFixed(0)} labor</p>
+            </div>
+          </div>
+        )}
+
         {/* Submit Button */}
         <div className="flex justify-end">
           <button
