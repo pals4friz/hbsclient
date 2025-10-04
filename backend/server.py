@@ -573,6 +573,27 @@ async def initialize_default_rates():
 
 # === DASHBOARD APIS ===
 
+@api_router.post("/dashboard/reset-sales")
+async def reset_sales_data():
+    """Reset all sales data (invoices and sales records) while keeping products and customers"""
+    try:
+        # Delete all invoices
+        invoices_result = await db.invoices.delete_many({})
+        
+        # Delete all sales records
+        sales_result = await db.sales_records.delete_many({})
+        
+        # Reset stock quantities back to original values if needed
+        # (Optional: You might want to keep current stock levels)
+        
+        return {
+            "message": "Sales data reset successfully",
+            "deleted_invoices": invoices_result.deleted_count,
+            "deleted_sales_records": sales_result.deleted_count
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error resetting sales data: {str(e)}")
+
 @api_router.get("/dashboard/stats")
 async def get_dashboard_stats():
     total_products = await db.products.count_documents({})
