@@ -364,129 +364,36 @@ const CreateInvoice = () => {
     }
   };
 
-  // Generate print HTML for A5 jewelry store format
+  // Generate print HTML for A5 jewelry store format with original and duplicate
   const generatePrintHTML = (invoice) => {
-    const itemsHTML = invoice.items.map((item) => `
-      <tr>
-        <td>${item.product_name}</td>
-        <td>${item.weight.toFixed(1)}g</td>
-        <td>₹${item.rate_per_gram.toFixed(0)}</td>
-        <td>₹${item.amount.toFixed(0)}</td>
-      </tr>
-    `).join('');
+    const generateCopyHTML = (copyType) => {
+      const itemsHTML = invoice.items.slice(0, 4).map((item) => `
+        <tr>
+          <td>${item.product_name.substring(0, 20)}</td>
+          <td>${item.weight.toFixed(1)}g</td>
+          <td>₹${item.rate_per_gram.toFixed(0)}</td>
+          <td>₹${item.amount.toFixed(0)}</td>
+        </tr>
+      `).join('');
 
-    // Add empty rows to fill the table
-    let emptyRows = '';
-    for (let i = invoice.items.length; i < 7; i++) {
-      emptyRows += '<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
-    }
+      // Add empty rows to fill the table
+      let emptyRows = '';
+      const itemCount = Math.min(invoice.items.length, 4);
+      for (let i = itemCount; i < 4; i++) {
+        emptyRows += '<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+      }
 
-    const totalWeight = invoice.items.reduce((sum, item) => sum + item.weight, 0);
-
-    return `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Invoice ${invoice.invoice_number}</title>
-          <style>
-            @page { 
-              size: A5; 
-              margin: 0.3in; 
-            }
-            body { 
-              font-family: Arial, sans-serif; 
-              margin: 0; 
-              font-size: 12px;
-              line-height: 1.2;
-            }
-            .header { 
-              text-align: center; 
-              margin-bottom: 15px; 
-            }
-            .header h1 { 
-              font-size: 16px; 
-              font-weight: bold; 
-              margin: 5px 0; 
-            }
-            .header h2 { 
-              font-size: 14px; 
-              font-weight: bold; 
-              margin: 5px 0; 
-            }
-            .header p { 
-              font-size: 10px; 
-              margin: 5px 0 15px 0; 
-            }
-            .customer-details { 
-              margin-bottom: 15px; 
-            }
-            .customer-details table { 
-              width: 100%; 
-            }
-            .customer-details td { 
-              padding: 2px 5px; 
-              font-size: 9px; 
-            }
-            .customer-details .label { 
-              font-weight: bold; 
-              width: 80px; 
-            }
-            table { 
-              width: 100%; 
-              border-collapse: collapse; 
-              margin-bottom: 10px; 
-            }
-            th, td { 
-              border: 1px solid #000; 
-              padding: 3px 5px; 
-              font-size: 8px;
-            }
-            th { 
-              background-color: #f0f0f0; 
-              font-weight: bold; 
-              text-align: center;
-            }
-            .items-table td:first-child { 
-              text-align: left; 
-            }
-            .items-table td:nth-child(2),
-            .items-table td:nth-child(3),
-            .items-table td:nth-child(4) { 
-              text-align: center; 
-            }
-            .totals-table { 
-              margin-top: 5px; 
-            }
-            .totals-table td { 
-              font-weight: bold; 
-            }
-            .final-total { 
-              background-color: #f0f0f0; 
-            }
-            .footer { 
-              margin-top: 15px; 
-              font-size: 8px; 
-            }
-            .footer table { 
-              border: none; 
-            }
-            .footer td { 
-              border: none; 
-              padding: 2px; 
-            }
-            .footer .label { 
-              font-weight: bold; 
-            }
-            @media print {
-              .no-print { display: none; }
-              body { -webkit-print-color-adjust: exact; }
-            }
-          </style>
-        </head>
-        <body>
+      const totalWeight = invoice.items.reduce((sum, item) => sum + item.weight, 0);
+      
+      // Calculate gold price per 10g (assuming 22K as main purity)
+      const goldRatePer10g = 5500 * 10; // ₹55,000 per 10g for 22K
+      
+      return `
+        <div class="invoice-copy">
           <div class="header">
             <h1>ROUGH ESTIMATE</h1>
-            <h2>HARI BABU SARRAF</h2>
+            <h2>${copyType}</h2>
+            <h3>HARI BABU SARRAF</h3>
             <p>MOHALA CHOWK, PURANPUR</p>
           </div>
           
@@ -494,7 +401,7 @@ const CreateInvoice = () => {
             <table>
               <tr>
                 <td class="label">NAME:</td>
-                <td>${invoice.customer_name}</td>
+                <td>${invoice.customer_name.substring(0, 15)}</td>
                 <td class="label">INVOICE NO.:</td>
                 <td>${invoice.invoice_number}</td>
               </tr>
@@ -529,6 +436,12 @@ const CreateInvoice = () => {
               <td></td>
               <td style="text-align: center;">₹${invoice.subtotal.toFixed(0)}</td>
             </tr>
+            <tr>
+              <td>Gold Price (22K) per 10g</td>
+              <td style="text-align: center;">${goldRatePer10g.toFixed(0)}</td>
+              <td></td>
+              <td style="text-align: center;">₹${invoice.subtotal.toFixed(0)}</td>
+            </tr>
             ${invoice.labor_charges > 0 ? `
               <tr>
                 <td>Labor Charges</td>
@@ -537,12 +450,6 @@ const CreateInvoice = () => {
                 <td style="text-align: center;">₹${invoice.labor_charges.toFixed(0)}</td>
               </tr>
             ` : ''}
-            <tr>
-              <td>GOLD PRICE</td>
-              <td></td>
-              <td></td>
-              <td style="text-align: center;">₹${invoice.subtotal.toFixed(0)}</td>
-            </tr>
             <tr>
               <td>OLD GOLD</td>
               <td></td>
@@ -592,8 +499,130 @@ const CreateInvoice = () => {
                 <td></td>
               </tr>
             </table>
-            ${!invoice.tax_included ? '<p style="font-style: italic; margin-top: 5px; text-align: center;">*This estimate is without tax</p>' : ''}
+            ${!invoice.tax_included ? '<p style="font-style: italic; margin-top: 3px; text-align: center; font-size: 7px;">*This estimate is without tax</p>' : ''}
           </div>
+        </div>
+      `;
+    };
+
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Invoice ${invoice.invoice_number}</title>
+          <style>
+            @page { 
+              size: A5; 
+              margin: 0.2in; 
+            }
+            body { 
+              font-family: Arial, sans-serif; 
+              margin: 0; 
+              font-size: 10px;
+              line-height: 1.1;
+            }
+            .invoice-copy {
+              height: 48%;
+              margin-bottom: 10px;
+              padding: 5px;
+              border-bottom: 2px solid #000;
+            }
+            .invoice-copy:last-child {
+              border-bottom: none;
+            }
+            .header { 
+              text-align: center; 
+              margin-bottom: 8px; 
+            }
+            .header h1 { 
+              font-size: 12px; 
+              font-weight: bold; 
+              margin: 2px 0; 
+            }
+            .header h2 { 
+              font-size: 10px; 
+              font-weight: bold; 
+              margin: 2px 0; 
+              text-decoration: underline;
+            }
+            .header h3 { 
+              font-size: 11px; 
+              font-weight: bold; 
+              margin: 2px 0; 
+            }
+            .header p { 
+              font-size: 8px; 
+              margin: 2px 0 8px 0; 
+            }
+            .customer-details { 
+              margin-bottom: 8px; 
+            }
+            .customer-details table { 
+              width: 100%; 
+            }
+            .customer-details td { 
+              padding: 1px 3px; 
+              font-size: 7px; 
+            }
+            .customer-details .label { 
+              font-weight: bold; 
+              width: 60px; 
+            }
+            table { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin-bottom: 5px; 
+            }
+            th, td { 
+              border: 1px solid #000; 
+              padding: 2px 3px; 
+              font-size: 6px;
+            }
+            th { 
+              background-color: #f0f0f0; 
+              font-weight: bold; 
+              text-align: center;
+            }
+            .items-table td:first-child { 
+              text-align: left; 
+            }
+            .items-table td:nth-child(2),
+            .items-table td:nth-child(3),
+            .items-table td:nth-child(4) { 
+              text-align: center; 
+            }
+            .totals-table { 
+              margin-top: 3px; 
+            }
+            .totals-table td { 
+              font-weight: bold; 
+            }
+            .final-total { 
+              background-color: #f0f0f0; 
+            }
+            .footer { 
+              margin-top: 8px; 
+              font-size: 6px; 
+            }
+            .footer table { 
+              border: none; 
+            }
+            .footer td { 
+              border: none; 
+              padding: 1px; 
+            }
+            .footer .label { 
+              font-weight: bold; 
+            }
+            @media print {
+              .no-print { display: none; }
+              body { -webkit-print-color-adjust: exact; }
+            }
+          </style>
+        </head>
+        <body>
+          ${generateCopyHTML('ORIGINAL')}
+          ${generateCopyHTML('DUPLICATE')}
         </body>
       </html>
     `;
