@@ -218,7 +218,7 @@ async def create_invoice(invoice_data: InvoiceCreate):
             raise HTTPException(status_code=404, detail=f"Product {item_data['product_id']} not found")
         
         quantity = item_data["quantity"]
-        weight = product["weight"] * quantity
+        weight = item_data["weight"]  # Weight comes from QR code/manual input
         amount = weight * product["rate_per_gram"]
         
         invoice_item = InvoiceItem(
@@ -232,10 +232,6 @@ async def create_invoice(invoice_data: InvoiceCreate):
         )
         invoice_items.append(invoice_item)
         subtotal += amount
-        
-        # Update stock
-        new_stock = product["stock_quantity"] - quantity
-        await db.products.update_one({"id": product["id"]}, {"$set": {"stock_quantity": new_stock}})
     
     # Add labor charges
     subtotal_with_labor = subtotal + invoice_data.labor_charges
