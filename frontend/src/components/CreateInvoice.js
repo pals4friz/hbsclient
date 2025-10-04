@@ -871,6 +871,19 @@ const CreateInvoice = () => {
                         />
                       </div>
 
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Labor Charges (₹)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={item.labor_charges || 0}
+                          onChange={(e) => updateItem(index, 'labor_charges', parseFloat(e.target.value) || 0)}
+                          className="w-full border border-gray-300 p-2 rounded text-sm"
+                          placeholder="0.00"
+                          data-testid={`labor-input-${index}`}
+                        />
+                      </div>
+
                       <div className="flex items-end">
                         <div className="flex-1">
                           <label className="block text-xs text-gray-500 mb-1">Amount (₹)</label>
