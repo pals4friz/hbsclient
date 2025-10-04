@@ -239,7 +239,6 @@ const Products = () => {
       fetchProducts();
     } catch (error) {
       console.error('Error saving product:', error);
-      alert('Error saving product');
     }
   };
 
