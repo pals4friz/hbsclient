@@ -832,8 +832,9 @@ const CreateInvoice = () => {
                 const amount = weight * product.rate_per_gram;
 
                 return (
-                  <div key={index} className="border border-gray-200 p-4 rounded" data-testid={`invoice-item-${index}`}>
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                  <div key={index} className="border border-gray-200 p-3 sm:p-4 rounded" data-testid={`invoice-item-${index}`}>
+                    {/* Mobile: Stack vertically, Desktop: 5 columns */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
                       <div>
                         <label className="block text-xs text-gray-500 mb-1">Product</label>
                         <select
