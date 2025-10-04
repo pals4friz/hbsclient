@@ -121,6 +121,8 @@ const CreateInvoice = () => {
       // Reset form
       setSelectedCustomer('');
       setInvoiceItems([]);
+      setLaborCharges(0);
+      setTaxIncluded(true);
       setTaxPercentage(3.0);
       
     } catch (error) {
