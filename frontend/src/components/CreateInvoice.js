@@ -395,7 +395,7 @@ const CreateInvoice = () => {
           <div class="header">
             <h1>ROUGH ESTIMATE</h1>
             <h2>${copyType}</h2>
-            <h3>HARI BABU SARRAF</h3>
+            <h3 style="text-decoration: underline;">HARI BABU SARRAF</h3>
             <p>MOHALA CHOWK, PURANPUR</p>
           </div>
           
