@@ -187,7 +187,6 @@ const CreateInvoice = () => {
     if (!newProductData.name || !newProductData.sku || !newProductData.category || 
         !newProductData.weight || !newProductData.purity || !newProductData.rate_per_gram || 
         !newProductData.stock_quantity) {
-      alert('Please fill in all required fields');
       return;
     }
 
