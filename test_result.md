@@ -216,8 +216,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Firm name display issue testing completed"
-    - "PDF generation verification completed"
+    - "Enhanced firm name display testing completed"
+    - "PDF generation with 12pt font and underline verified"
     - "Backend testing completed - all working"
   stuck_tasks: []
   test_all: false
