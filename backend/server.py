@@ -411,7 +411,7 @@ def create_invoice_pdf(invoice: Invoice) -> str:
         
         if not invoice.tax_included:
             c.setFont("Helvetica-Oblique", 6)
-            c.drawCentredText(width/2, footer_y - 25, "*This estimate is without tax")
+            c.drawCentredString(width/2, footer_y - 25, "*This estimate is without tax")
     
     # Draw original copy (top half)
     draw_invoice_copy(0, "ORIGINAL")
