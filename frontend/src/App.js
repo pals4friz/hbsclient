@@ -291,19 +291,27 @@ const Products = () => {
               <div className="text-xs text-gray-500 mt-1">Weight in grams (e.g., 2.5g, 10.25g)</div>
             </div>
             
-            <select
-              value={formData.purity}
-              onChange={(e) => setFormData({...formData, purity: e.target.value})}
-              className="border border-gray-300 p-2 rounded"
-              required
-              data-testid="product-purity-select"
-            >
-              <option value="">Select Purity</option>
-              <option value="18K">18K</option>
-              <option value="22K">22K</option>
-              <option value="24K">24K</option>
-              <option value="Silver">Silver</option>
-            </select>
+            <div>
+              <select
+                value={formData.purity}
+                onChange={(e) => handlePurityChange(e.target.value)}
+                className="border border-gray-300 p-2 rounded w-full"
+                required
+                data-testid="product-purity-select"
+              >
+                <option value="">Select Purity</option>
+                <option value="18K">18K Gold</option>
+                <option value="20K">20K Gold</option>
+                <option value="22K">22K Gold</option>
+                <option value="24K">24K Gold</option>
+                <option value="Silver">Silver</option>
+              </select>
+              {formData.purity && goldRates.find(rate => rate.purity === formData.purity) && (
+                <div className="text-xs text-green-600 mt-1">
+                  Current rate: ₹{goldRates.find(rate => rate.purity === formData.purity).rate_per_gram}/gram
+                </div>
+              )}
+            </div>
             
             <input
               type="number"
