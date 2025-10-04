@@ -228,6 +228,52 @@ const CreateInvoice = () => {
     }
   };
 
+  // QR Scanner functions
+  const handleQRScan = ({ sku, weight, originalCode }) => {
+    console.log('QR Scan result:', { sku, weight, originalCode });
+    
+    // Find product by SKU
+    const product = products.find(p => p.sku === sku);
+    
+    if (product) {
+      // Check if item already exists in invoice
+      const existingItemIndex = invoiceItems.findIndex(item => item.product_id === product.id);
+      
+      if (existingItemIndex >= 0) {
+        // Update existing item with new weight/quantity
+        const updatedItems = [...invoiceItems];
+        const currentItem = updatedItems[existingItemIndex];
+        
+        // Calculate new quantity based on weight
+        const newQuantity = Math.ceil(weight / product.weight);
+        updatedItems[existingItemIndex] = {
+          ...currentItem,
+          quantity: newQuantity
+        };
+        setInvoiceItems(updatedItems);
+      } else {
+        // Add new item
+        const quantity = Math.ceil(weight / product.weight);
+        const newItem = {
+          product_id: product.id,
+          quantity: quantity
+        };
+        setInvoiceItems([...invoiceItems, newItem]);
+      }
+      
+      setQrScanResult({ sku, weight, productName: product.name, found: true });
+    } else {
+      setQrScanResult({ sku, weight, found: false, error: `Product with SKU "${sku}" not found` });
+    }
+    
+    setShowQRScanner(false);
+  };
+
+  const handleQRError = (error) => {
+    console.error('QR Scanner error:', error);
+    setQrScanResult({ error, found: false });
+  };
+
   // Download PDF function
   const handleDownloadPDF = async (invoiceId, invoiceNumber) => {
     try {
