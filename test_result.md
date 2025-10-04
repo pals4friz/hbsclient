@@ -122,6 +122,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "🎯 FIRM NAME DISPLAY ISSUE RESOLVED: Comprehensive testing confirms 'HARI BABU SARRAF' is properly displayed in PDF. ✅ PDF text extraction verified firm name appears exactly 2 times (original + duplicate copies) ✅ Positioning: Helvetica-Bold 10pt, centered horizontally at y=base_y-60 ✅ Both /api/invoices/{id}/download endpoint working (2827-2877 bytes PDFs) ✅ A5 landscape format maintained ✅ Company info section complete: ROUGH ESTIMATE → ORIGINAL/DUPLICATE → HARI BABU SARRAF → MOHALA CHOWK, PURANPUR ✅ All 36/36 tests passed (100% success rate). User-reported firm name display issue appears to be resolved - PDF generation is working correctly."
+        - working: true
+          agent: "testing"
+          comment: "🎯 ENHANCED FIRM NAME DISPLAY VERIFIED: Comprehensive testing of improved PDF generation with enhanced firm name display completed successfully. ✅ Font size enhancement: Increased from 10pt to 12pt (Helvetica-Bold) for 20% better visibility ✅ Underline feature: Properly implemented horizontal line below firm name using stringWidth calculation ✅ Positioning: Centered at y=base_y-60, underline at y=base_y-62 ✅ Dual copy consistency: Both original and duplicate copies have enhanced styling ✅ Cross-invoice validation: Works across high-value, simple, and multi-item invoices ✅ Layout integrity: Enhancements don't break overall design ✅ Professional appearance: Firm name now more prominent and visually emphasized ✅ All 46/46 tests passed (100% success rate). Enhanced firm name display is working perfectly - 'HARI BABU SARRAF' is now significantly more visible and professionally presented."
 
   - task: "Individual Labor Charges per Item"
     implemented: true
