@@ -456,19 +456,19 @@ const CreateInvoice = () => {
               <td>OLD GOLD</td>
               <td></td>
               <td></td>
-              <td style="text-align: center;">₹0</td>
+              <td style="text-align: center;">₹${invoice.old_gold_value.toFixed(0)}</td>
             </tr>
             <tr>
               <td>OLD SILVER</td>
               <td></td>
               <td></td>
-              <td style="text-align: center;">₹0</td>
+              <td style="text-align: center;">₹${invoice.old_silver_value.toFixed(0)}</td>
             </tr>
             <tr>
               <td>DISCOUNT</td>
               <td></td>
               <td></td>
-              <td style="text-align: center;">₹0</td>
+              <td style="text-align: center;">₹${invoice.discount_amount.toFixed(0)}</td>
             </tr>
             ${invoice.tax_included && invoice.tax_amount > 0 ? `
               <tr>
