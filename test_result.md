@@ -201,9 +201,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Test backend invoice creation with new fields"
-    - "Test PDF generation with landscape orientation and new values"
-    - "Test frontend invoice creation workflow"
+    - "Firm name display issue testing completed"
+    - "PDF generation verification completed"
+    - "Backend testing completed - all working"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
