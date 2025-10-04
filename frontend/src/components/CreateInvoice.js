@@ -153,7 +153,7 @@ const CreateInvoice = () => {
       setSelectedCustomer('');
       setInvoiceItems([]);
       setLaborCharges(0);
-      setTaxIncluded(true);
+      setTaxIncluded(false); // Default to without tax
       setTaxPercentage(3.0);
       
     } catch (error) {
