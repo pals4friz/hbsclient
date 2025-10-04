@@ -299,169 +299,131 @@ async def get_invoice(invoice_id: str):
 # === PDF GENERATION ===
 
 def create_invoice_pdf(invoice: Invoice) -> str:
-    """Create PDF file for invoice and return file path in A5 format"""
+    """Create PDF file for invoice and return file path in A5 format with original and duplicate"""
     temp_dir = tempfile.mkdtemp()
     file_path = os.path.join(temp_dir, f"Invoice_{invoice.invoice_number}.pdf")
     
     # A5 page size (148 x 210 mm)
     from reportlab.lib.pagesizes import A5
+    from reportlab.pdfgen import canvas as pdf_canvas
     
-    # Create PDF document with A5 size
-    doc = SimpleDocTemplate(file_path, pagesize=A5, topMargin=0.3*inch, bottomMargin=0.3*inch, 
-                           leftMargin=0.3*inch, rightMargin=0.3*inch)
-    elements = []
+    # Create canvas for manual layout
+    c = pdf_canvas.Canvas(file_path, pagesize=A5)
+    width, height = A5
     
-    # Get styles
-    styles = getSampleStyleSheet()
-    
-    # Custom styles for A5
-    title_style = ParagraphStyle('CustomTitle', parent=styles['Title'], 
-                                fontSize=16, spaceAfter=10, alignment=1, fontName='Helvetica-Bold')
-    
-    company_style = ParagraphStyle('CompanyStyle', parent=styles['Normal'], 
-                                  fontSize=14, spaceAfter=8, alignment=1, fontName='Helvetica-Bold')
-    
-    address_style = ParagraphStyle('AddressStyle', parent=styles['Normal'], 
-                                  fontSize=10, spaceAfter=15, alignment=1)
-    
-    label_style = ParagraphStyle('LabelStyle', parent=styles['Normal'], 
-                                fontSize=10, fontName='Helvetica-Bold')
-    
-    # Header - Company Info
-    title = Paragraph("ROUGH ESTIMATE", title_style)
-    elements.append(title)
-    
-    company = Paragraph("HARI BABU SARRAF", company_style)
-    elements.append(company)
-    
-    address = Paragraph("MOHALA CHOWK, PURANPUR", address_style)
-    elements.append(address)
-    
-    # Customer and Invoice details
-    customer_data = [
-        ['NAME:', invoice.customer_name, 'INVOICE NO.:', invoice.invoice_number],
-        ['DATE:', invoice.invoice_date, 'PHONE:', invoice.customer_phone],
-    ]
-    
-    customer_table = Table(customer_data, colWidths=[0.8*inch, 1.8*inch, 1*inch, 1.4*inch])
-    customer_table.setStyle(TableStyle([
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 9),
-        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-        ('FONTNAME', (2, 0), (2, -1), 'Helvetica-Bold'),
-        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-        ('TOPPADDING', (0, 0), (-1, -1), 3),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
-    ]))
-    
-    elements.append(customer_table)
-    elements.append(Spacer(1, 15))
-    
-    # Items table header
-    items_data = [['Item Name', 'Lab Weight', 'Rate/g', 'Amount']]
-    
-    # Add items
-    for item in invoice.items:
-        items_data.append([
-            item.product_name[:15] + ('...' if len(item.product_name) > 15 else ''),
-            f"{item.weight:.1f}g",
-            f"₹{item.rate_per_gram:.0f}",
-            f"₹{item.amount:.0f}"
+    def draw_invoice_copy(y_offset, copy_text):
+        """Draw a single invoice copy at given y_offset"""
+        base_y = height - y_offset
+        
+        # Title and company info
+        c.setFont("Helvetica-Bold", 12)
+        c.drawCentredText(width/2, base_y - 30, "ROUGH ESTIMATE")
+        c.drawCentredText(width/2, base_y - 45, copy_text)
+        
+        c.setFont("Helvetica-Bold", 10)
+        c.drawCentredText(width/2, base_y - 60, "HARI BABU SARRAF")
+        
+        c.setFont("Helvetica", 8)
+        c.drawCentredText(width/2, base_y - 75, "MOHALA CHOWK, PURANPUR")
+        
+        # Customer and invoice details
+        c.setFont("Helvetica-Bold", 7)
+        c.drawString(20, base_y - 95, f"NAME: {invoice.customer_name[:20]}")
+        c.drawString(220, base_y - 95, f"INVOICE NO.: {invoice.invoice_number}")
+        c.drawString(20, base_y - 108, f"DATE: {invoice.invoice_date}")
+        c.drawString(220, base_y - 108, f"PHONE: {invoice.customer_phone}")
+        
+        # Items table header
+        table_y = base_y - 130
+        c.setFont("Helvetica-Bold", 6)
+        c.rect(20, table_y - 12, width - 40, 12, fill=1, stroke=1)  # Header background
+        c.setFillColorRGB(1, 1, 1)  # White text
+        c.drawString(25, table_y - 10, "Item Name")
+        c.drawString(200, table_y - 10, "Weight")
+        c.drawString(240, table_y - 10, "Rate/g")
+        c.drawString(280, table_y - 10, "Amount")
+        c.setFillColorRGB(0, 0, 0)  # Back to black text
+        
+        # Items data
+        c.setFont("Helvetica", 6)
+        item_y = table_y - 25
+        for i, item in enumerate(invoice.items[:4]):  # Limit to 4 items per copy
+            c.drawString(25, item_y, item.product_name[:25])
+            c.drawString(200, item_y, f"{item.weight:.1f}g")
+            c.drawString(240, item_y, f"₹{item.rate_per_gram:.0f}")
+            c.drawString(280, item_y, f"₹{item.amount:.0f}")
+            item_y -= 12
+        
+        # Calculate gold price per 10g based on purity
+        total_weight = sum(item.weight for item in invoice.items)
+        # Get most common purity from items (simplified - using first item's purity)
+        main_purity = "22K"  # Default, should be determined from actual items
+        gold_rate_per_gram = 5500  # Should come from current gold rates
+        gold_price_per_10g = gold_rate_per_gram * 10
+        
+        # Totals section
+        totals_y = item_y - 15
+        c.setFont("Helvetica-Bold", 6)
+        
+        # Draw totals table
+        c.rect(20, totals_y - 60, width - 40, 60, stroke=1)
+        
+        totals = [
+            ('Total', f"{total_weight:.1f} grms", f"₹{invoice.subtotal:.0f}"),
+            (f'Gold Price ({main_purity}) per 10g', f"{gold_price_per_10g:.0f}", f"₹{invoice.subtotal:.0f}"),
+        ]
+        
+        if invoice.labor_charges > 0:
+            totals.append(('Labor Charges', '', f"₹{invoice.labor_charges:.0f}"))
+        
+        totals.extend([
+            ('OLD GOLD', '', '₹0'),
+            ('OLD SILVER', '', '₹0'),
+            ('DISCOUNT', '', '₹0'),
         ])
+        
+        if invoice.tax_included and invoice.tax_amount > 0:
+            totals.append((f'TAX ({invoice.tax_percentage}%)', '', f"₹{invoice.tax_amount:.0f}"))
+        
+        totals.append(('FINAL TOTAL', '', f"₹{invoice.total_amount:.0f}"))
+        
+        for i, (label, middle, amount) in enumerate(totals):
+            y_pos = totals_y - 10 - (i * 8)
+            c.drawString(25, y_pos, label)
+            if middle:
+                c.drawString(200, y_pos, middle)
+            c.drawString(280, y_pos, amount)
+            
+            # Highlight final total
+            if label == 'FINAL TOTAL':
+                c.rect(20, y_pos - 2, width - 40, 10, fill=0.9, stroke=1)
+                c.setFont("Helvetica-Bold", 7)
+                c.drawString(25, y_pos, label)
+                c.drawString(280, y_pos, amount)
+                c.setFont("Helvetica-Bold", 6)
+        
+        # Footer
+        footer_y = totals_y - 80
+        c.setFont("Helvetica", 6)
+        c.drawString(25, footer_y, "FOLLOW US ON:")
+        c.drawString(150, footer_y, "CONTACTS: 9690124010, 9456977703")
+        c.drawString(25, footer_y - 10, "22 Carat also available")
+        
+        if not invoice.tax_included:
+            c.setFont("Helvetica-Oblique", 6)
+            c.drawCentredText(width/2, footer_y - 25, "*This estimate is without tax")
     
-    # Add empty rows to fill space
-    while len(items_data) < 8:  # Ensure at least 7 item rows
-        items_data.append(['', '', '', ''])
+    # Draw original copy (top half)
+    draw_invoice_copy(0, "ORIGINAL")
     
-    items_table = Table(items_data, colWidths=[2.2*inch, 1*inch, 1*inch, 1.2*inch])
-    items_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 9),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 1), (-1, -1), 8),
-        ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
-        ('ALIGN', (0, 0), (0, -1), 'LEFT'),
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('TOPPADDING', (0, 0), (-1, -1), 4),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
-    ]))
+    # Draw horizontal line separator
+    c.line(20, height/2, width - 20, height/2)
     
-    elements.append(items_table)
-    elements.append(Spacer(1, 10))
+    # Draw duplicate copy (bottom half)
+    draw_invoice_copy(height/2, "DUPLICATE")
     
-    # Calculate totals
-    total_weight = sum(item.weight for item in invoice.items)
-    
-    # Totals section
-    totals_data = [
-        ['Total', f"{total_weight:.1f} grms", '', f"₹{invoice.subtotal:.0f}"],
-    ]
-    
-    if invoice.labor_charges > 0:
-        totals_data.append(['Labor Charges', '', '', f"₹{invoice.labor_charges:.0f}"])
-    
-    # Gold pricing section
-    totals_data.extend([
-        ['GOLD PRICE', '', '', f"₹{invoice.subtotal:.0f}"],
-        ['OLD GOLD', '', '', '₹0'],
-        ['OLD SILVER', '', '', '₹0'],
-        ['DISCOUNT', '', '', '₹0'],
-    ])
-    
-    if invoice.tax_included and invoice.tax_amount > 0:
-        totals_data.append([f'TAX ({invoice.tax_percentage}%)', '', '', f"₹{invoice.tax_amount:.0f}"])
-    
-    totals_data.append(['FINAL TOTAL', '', '', f"₹{invoice.total_amount:.0f}"])
-    
-    totals_table = Table(totals_data, colWidths=[2.2*inch, 1*inch, 1*inch, 1.2*inch])
-    totals_table.setStyle(TableStyle([
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 9),
-        ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
-        ('ALIGN', (0, 0), (0, -1), 'LEFT'),
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('TOPPADDING', (0, 0), (-1, -1), 3),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
-        # Highlight final total
-        ('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey),
-    ]))
-    
-    elements.append(totals_table)
-    elements.append(Spacer(1, 15))
-    
-    # Footer
-    footer_data = [
-        ['FOLLOW US ON:', 'CONTACTS:'],
-        ['', '9690124010, 9456977703'],
-        ['22 Carat also available', ''],
-    ]
-    
-    footer_table = Table(footer_data, colWidths=[2.7*inch, 2.7*inch])
-    footer_table.setStyle(TableStyle([
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 8),
-        ('FONTNAME', (0, 0), (1, 0), 'Helvetica-Bold'),
-        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-        ('TOPPADDING', (0, 0), (-1, -1), 2),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
-    ]))
-    
-    elements.append(footer_table)
-    
-    # Add tax note if without tax
-    if not invoice.tax_included:
-        tax_note = Paragraph("*This estimate is without tax", 
-                           ParagraphStyle('TaxNote', parent=styles['Normal'], 
-                                        fontSize=8, textColor=colors.red, 
-                                        alignment=1, fontName='Helvetica-Oblique'))
-        elements.append(Spacer(1, 5))
-        elements.append(tax_note)
-    
-    # Build PDF
-    doc.build(elements)
+    # Save the PDF
+    c.save()
     return file_path
 
 # === EXCEL GENERATION (KEPT FOR SALES REPORTS) ===
