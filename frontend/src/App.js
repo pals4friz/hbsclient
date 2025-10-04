@@ -277,16 +277,19 @@ const Products = () => {
               <option value="Pendant">Pendant</option>
             </select>
             
-            <input
-              type="number"
-              step="0.01"
-              placeholder="Weight (grams)"
-              value={formData.weight}
-              onChange={(e) => setFormData({...formData, weight: e.target.value})}
-              className="border border-gray-300 p-2 rounded"
-              required
-              data-testid="product-weight-input"
-            />
+            <div>
+              <input
+                type="number"
+                step="0.01"
+                placeholder="Weight (grams)"
+                value={formData.weight}
+                onChange={(e) => setFormData({...formData, weight: e.target.value})}
+                className="border border-gray-300 p-2 rounded w-full"
+                required
+                data-testid="product-weight-input"
+              />
+              <div className="text-xs text-gray-500 mt-1">Weight in grams (e.g., 2.5g, 10.25g)</div>
+            </div>
             
             <select
               value={formData.purity}
