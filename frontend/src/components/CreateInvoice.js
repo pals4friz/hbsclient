@@ -913,13 +913,17 @@ const CreateInvoice = () => {
                 <span>Items Subtotal:</span>
                 <span data-testid="subtotal-display">₹{subtotal.toFixed(2)}</span>
               </div>
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>Total Weight:</span>
+                <span>{totalWeight.toFixed(2)}g</span>
+              </div>
               {autoLaborCharges > 0 && (
-                <div className="flex justify-between">
+                <div className="flex justify-between text-blue-600">
                   <span>Labor Charges:</span>
                   <span data-testid="labor-display">₹{autoLaborCharges.toFixed(0)}</span>
                 </div>
               )}
-              <div className="flex justify-between">
+              <div className="flex justify-between border-t pt-2">
                 <span>Subtotal with Labor:</span>
                 <span data-testid="subtotal-with-labor-display">₹{subtotalWithLabor.toFixed(2)}</span>
               </div>
@@ -934,8 +938,8 @@ const CreateInvoice = () => {
                 <span data-testid="total-display">₹{total.toFixed(2)}</span>
               </div>
               {!taxIncluded && (
-                <div className="text-sm text-green-600 italic">
-                  ✓ This invoice is without tax
+                <div className="text-sm text-green-600 italic mt-2">
+                  ✓ This invoice is without tax (default)
                 </div>
               )}
             </div>
