@@ -88,8 +88,10 @@ class Invoice(BaseModel):
     customer_address: str
     items: List[InvoiceItem]
     subtotal: float
-    tax_percentage: float
-    tax_amount: float
+    labor_charges: float = 0.0
+    tax_included: bool = True  # Whether tax is included or excluded
+    tax_percentage: float = 3.0
+    tax_amount: float = 0.0
     total_amount: float
     invoice_date: str  # Store as string to avoid BSON issues
     created_at: datetime = Field(default_factory=datetime.utcnow)
