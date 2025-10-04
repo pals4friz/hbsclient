@@ -110,6 +110,113 @@ const ProductList = () => {
     }
   };
 
+  // Excel import functions
+  const handleFileImport = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    setImportResults(null);
+
+    try {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+      console.log('Imported data:', jsonData);
+
+      let successCount = 0;
+      let errorCount = 0;
+      const errors = [];
+
+      for (const row of jsonData) {
+        try {
+          // Validate required fields
+          if (!row.name || !row.sku || !row.category || !row.purity || !row.rate_per_gram) {
+            throw new Error(`Missing required fields in row: ${JSON.stringify(row)}`);
+          }
+
+          const productData = {
+            name: row.name.toString().trim(),
+            sku: row.sku.toString().trim().toUpperCase(),
+            category: row.category.toString().trim(),
+            purity: row.purity.toString().trim(),
+            rate_per_gram: parseFloat(row.rate_per_gram),
+            description: row.description ? row.description.toString().trim() : ''
+          };
+
+          await axios.post(`${API}/products`, productData);
+          successCount++;
+        } catch (error) {
+          console.error('Error importing row:', error);
+          errorCount++;
+          errors.push(`Row ${jsonData.indexOf(row) + 2}: ${error.message}`);
+        }
+      }
+
+      setImportResults({
+        total: jsonData.length,
+        success: successCount,
+        errors: errorCount,
+        errorDetails: errors
+      });
+
+      fetchProducts(); // Refresh the product list
+    } catch (error) {
+      console.error('Error reading Excel file:', error);
+      setImportResults({
+        total: 0,
+        success: 0,
+        errors: 1,
+        errorDetails: ['Error reading Excel file: ' + error.message]
+      });
+    } finally {
+      setIsImporting(false);
+      event.target.value = ''; // Reset file input
+    }
+  };
+
+  const downloadTemplate = () => {
+    // Create sample data
+    const templateData = [
+      {
+        name: 'Gold Ring Design 1',
+        sku: 'GR',
+        category: 'Ring',
+        purity: '22K',
+        rate_per_gram: 5500,
+        description: 'Traditional gold ring design'
+      },
+      {
+        name: 'Silver Necklace Chain',
+        sku: 'SN',
+        category: 'Necklace',
+        purity: 'Silver',
+        rate_per_gram: 80,
+        description: 'Silver chain necklace'
+      },
+      {
+        name: 'Diamond Earrings',
+        sku: 'DE',
+        category: 'Earring',
+        purity: '18K',
+        rate_per_gram: 4500,
+        description: 'Diamond studded gold earrings'
+      }
+    ];
+
+    // Create workbook and worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(templateData);
+
+    // Add the worksheet to workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'Products');
+
+    // Save the file
+    XLSX.writeFile(wb, 'product_import_template.xlsx');
+  };
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
