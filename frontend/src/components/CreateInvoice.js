@@ -117,10 +117,9 @@ const CreateInvoice = () => {
     
     // New calculation formula: Subtotal + Labor + Tax - Discount - (Old Gold + Old Silver) = Final Total
     const subtotalWithTax = subtotalWithLabor + taxAmount;
-    const totalAfterDeductions = subtotalWithTax - parseFloat(discountAmount || 0) - parseFloat(oldGoldValue || 0) - parseFloat(oldSilverValue || 0);
-    const total = subtotalWithLabor + taxAmount;
+    const total = subtotalWithTax - parseFloat(discountAmount || 0) - parseFloat(oldGoldValue || 0) - parseFloat(oldSilverValue || 0);
 
-    return { subtotal, laborCharges: totalLaborCharges, totalWeight, subtotalWithLabor, taxAmount, total, invoiceItems };
+    return { subtotal, laborCharges: totalLaborCharges, totalWeight, subtotalWithLabor, taxAmount, total, discountAmount, oldGoldValue, oldSilverValue };
   };
 
   const handleSubmit = async (e) => {
