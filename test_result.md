@@ -156,6 +156,18 @@ backend:
           agent: "testing"
           comment: "✅ COMPREHENSIVE TESTING PASSED: Enhanced pricing calculation working perfectly. Tested new formula: Subtotal (₹112000) + Labor (₹1000) + Tax (₹3390) - Discount (₹2000) - Old Gold (₹15000) - Old Silver (₹3000) = Final Total (₹96390). All calculations verified mathematically correct. PDF generation includes actual values: OLD GOLD ₹15000, OLD SILVER ₹3000, DISCOUNT ₹2000. Tested both tax included/excluded scenarios. Edge cases with zero values handled correctly. Invoice ID ecd668b4-dde3-4d55-ba3a-1919fcd0e7cc demonstrates full functionality."
 
+  - task: "Enhanced Firm Name Display in PDF"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "🎯 ENHANCED FIRM NAME DISPLAY TESTING COMPLETE: Successfully tested improved PDF generation with enhanced firm name display. ✅ Font size enhancement verified: Increased from 10pt to 12pt (20% larger) for better visibility ✅ Underline feature confirmed: Properly positioned horizontal line below 'HARI BABU SARRAF' ✅ Implementation details: stringWidth calculation for precise underline positioning, 2-point offset below text ✅ Dual copy consistency: Both original and duplicate copies have enhanced styling ✅ Cross-invoice testing: Enhanced display works across different invoice types (high-value, simple, multi-item) ✅ Layout integrity maintained: Enhancements don't break overall PDF design ✅ Professional appearance: Firm name now more prominent and visually emphasized ✅ HTML print format also enhanced: 13px font + underline in frontend print function ✅ All 46/46 tests passed (100% success rate). Enhanced firm name display is working perfectly - 'HARI BABU SARRAF' is now significantly more visible and professionally presented."
+
 frontend:
   - task: "Print HTML - Landscape CSS Configuration"
     implemented: true
