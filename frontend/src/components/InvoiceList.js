@@ -60,7 +60,6 @@ const InvoiceList = () => {
       };
     } catch (error) {
       console.error('Error printing invoice:', error);
-      alert('Error printing invoice');
     }
   };
 
