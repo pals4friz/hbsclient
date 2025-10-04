@@ -246,9 +246,9 @@ class JewelryStoreAPITester:
         )
         return success
 
-    def test_download_invoice(self, invoice_id):
-        """Test invoice Excel download"""
-        print(f"\n🔍 Testing Download Invoice Excel...")
+    def test_download_invoice_pdf(self, invoice_id):
+        """Test invoice PDF download - A5 landscape format"""
+        print(f"\n🔍 Testing Download Invoice PDF (A5 Landscape)...")
         url = f"{self.api_url}/invoices/{invoice_id}/download"
         
         self.tests_run += 1
@@ -256,19 +256,37 @@ class JewelryStoreAPITester:
             response = requests.get(url)
             if response.status_code == 200:
                 content_type = response.headers.get('content-type', '')
-                if 'spreadsheet' in content_type or 'excel' in content_type:
+                if 'pdf' in content_type.lower():
                     self.tests_passed += 1
-                    print(f"✅ Passed - Excel file downloaded successfully")
+                    print(f"✅ Passed - PDF file downloaded successfully")
                     print(f"   Content-Type: {content_type}")
                     print(f"   File size: {len(response.content)} bytes")
-                    return True
+                    
+                    # Save PDF for manual inspection if needed
+                    with open(f"/tmp/test_invoice_{invoice_id}.pdf", "wb") as f:
+                        f.write(response.content)
+                    print(f"   PDF saved to: /tmp/test_invoice_{invoice_id}.pdf")
+                    
+                    # Basic PDF validation - check if it starts with PDF header
+                    if response.content.startswith(b'%PDF'):
+                        print(f"   ✅ Valid PDF format detected")
+                        return True
+                    else:
+                        print(f"   ❌ Invalid PDF format - missing PDF header")
+                        return False
                 else:
-                    print(f"❌ Failed - Wrong content type: {content_type}")
+                    print(f"❌ Failed - Wrong content type: {content_type} (expected PDF)")
+                    return False
             else:
                 print(f"❌ Failed - Status: {response.status_code}")
+                try:
+                    print(f"   Response: {response.text}")
+                except:
+                    pass
+                return False
         except Exception as e:
             print(f"❌ Failed - Error: {str(e)}")
-        return False
+            return False
 
     def test_print_invoice(self, invoice_id):
         """Test invoice print data"""
