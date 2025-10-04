@@ -116,6 +116,19 @@ class SalesRecord(BaseModel):
     sale_date: str  # Store as string to avoid BSON issues
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+class GoldRate(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    purity: str  # 18K, 20K, 22K, 24K, Silver
+    rate_per_gram: float
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+class GoldRateCreate(BaseModel):
+    purity: str
+    rate_per_gram: float
+
+class GoldRateUpdate(BaseModel):
+    rate_per_gram: float
+
 # === PRODUCT APIS ===
 
 @api_router.post("/products", response_model=Product)
