@@ -109,6 +109,7 @@ const Dashboard = () => {
 // Products Component
 const Products = () => {
   const [products, setProducts] = useState([]);
+  const [goldRates, setGoldRates] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState({
