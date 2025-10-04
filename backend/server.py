@@ -239,6 +239,8 @@ async def create_invoice(invoice_data: InvoiceCreate):
         customer_address=customer["address"],
         items=invoice_items,
         subtotal=subtotal,
+        labor_charges=invoice_data.labor_charges,
+        tax_included=invoice_data.tax_included,
         tax_percentage=invoice_data.tax_percentage,
         tax_amount=tax_amount,
         total_amount=total_amount,
