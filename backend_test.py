@@ -188,16 +188,22 @@ class JewelryStoreAPITester:
         return success
 
     def test_create_invoice(self, customer_id, product_id):
-        """Test invoice creation"""
+        """Test invoice creation with weight data for PDF testing"""
         invoice_data = {
             "customer_id": customer_id,
             "items": [
                 {
                     "product_id": product_id,
-                    "quantity": 2
+                    "quantity": 1,
+                    "weight": 8.5  # Add weight for proper PDF generation
+                },
+                {
+                    "product_id": product_id,
+                    "quantity": 1,
+                    "weight": 12.3  # Second item for better testing
                 }
             ],
-            "labor_charges": 500.0,
+            "labor_charges": 750.0,
             "tax_included": True,
             "tax_percentage": 3.0
         }
