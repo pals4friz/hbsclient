@@ -270,10 +270,13 @@ async def create_invoice(invoice_data: InvoiceCreate):
         customer_address=customer["address"],
         items=invoice_items,
         subtotal=subtotal,
-        labor_charges=invoice_data.labor_charges,
+        labor_charges=total_labor_charges,
         tax_included=invoice_data.tax_included,
-        tax_percentage=invoice_data.tax_percentage,
+        tax_percentage=3.0,  # Default tax percentage
         tax_amount=tax_amount,
+        discount_amount=invoice_data.discount_amount,
+        old_gold_value=invoice_data.old_gold_value,
+        old_silver_value=invoice_data.old_silver_value,
         total_amount=total_amount,
         invoice_date=date.today().isoformat()
     )
