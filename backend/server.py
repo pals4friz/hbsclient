@@ -432,6 +432,13 @@ async def download_invoice(invoice_id: str):
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
 
+@api_router.get("/invoices/{invoice_id}/print")
+async def get_invoice_for_print(invoice_id: str):
+    invoice = await db.invoices.find_one({"id": invoice_id})
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    return Invoice(**invoice)
+
 @api_router.get("/sales/download")
 async def download_sales_report(start_date: str, end_date: str):
     # Parse dates
