@@ -1,0 +1,314 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
+const CreateInvoice = () => {
+  const [customers, setCustomers] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState('');
+  const [invoiceItems, setInvoiceItems] = useState([]);
+  const [taxPercentage, setTaxPercentage] = useState(3.0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetchCustomers();
+    fetchProducts();
+  }, []);
+
+  const fetchCustomers = async () => {
+    try {
+      const response = await axios.get(`${API}/customers`);
+      setCustomers(response.data);
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`${API}/products`);
+      setProducts(response.data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  const addItem = () => {
+    setInvoiceItems([...invoiceItems, { product_id: '', quantity: 1 }]);
+  };
+
+  const removeItem = (index) => {
+    const newItems = invoiceItems.filter((_, i) => i !== index);
+    setInvoiceItems(newItems);
+  };
+
+  const updateItem = (index, field, value) => {
+    const newItems = [...invoiceItems];
+    newItems[index][field] = value;
+    setInvoiceItems(newItems);
+  };
+
+  const calculateTotal = () => {
+    let subtotal = 0;
+    
+    invoiceItems.forEach(item => {
+      const product = products.find(p => p.id === item.product_id);
+      if (product && item.quantity) {
+        const weight = product.weight * item.quantity;
+        const amount = weight * product.rate_per_gram;
+        subtotal += amount;
+      }
+    });
+
+    const taxAmount = subtotal * (taxPercentage / 100);
+    const total = subtotal + taxAmount;
+
+    return { subtotal, taxAmount, total };
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!selectedCustomer) {
+      alert('Please select a customer');
+      return;
+    }
+
+    if (invoiceItems.length === 0) {
+      alert('Please add at least one item');
+      return;
+    }
+
+    const invalidItems = invoiceItems.some(item => !item.product_id || !item.quantity);
+    if (invalidItems) {
+      alert('Please fill all item details');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const invoiceData = {
+        customer_id: selectedCustomer,
+        items: invoiceItems,
+        tax_percentage: taxPercentage
+      };
+
+      const response = await axios.post(`${API}/invoices`, invoiceData);
+      
+      // Download the invoice immediately
+      const downloadResponse = await axios.get(`${API}/invoices/${response.data.id}/download`, {
+        responseType: 'blob'
+      });
+      
+      const url = window.URL.createObjectURL(new Blob([downloadResponse.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Invoice_${response.data.invoice_number}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      alert('Invoice created and downloaded successfully!');
+      
+      // Reset form
+      setSelectedCustomer('');
+      setInvoiceItems([]);
+      setTaxPercentage(3.0);
+      
+    } catch (error) {
+      console.error('Error creating invoice:', error);
+      alert('Error creating invoice. Please check item availability.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const { subtotal, taxAmount, total } = calculateTotal();
+
+  return (
+    <div className="p-6">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Create Invoice</h1>
+
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow">
+        {/* Customer Selection */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Select Customer *
+          </label>
+          <select
+            value={selectedCustomer}
+            onChange={(e) => setSelectedCustomer(e.target.value)}
+            className="w-full border border-gray-300 p-2 rounded"
+            required
+            data-testid="customer-select"
+          >
+            <option value="">Choose a customer...</option>
+            {customers.map(customer => (
+              <option key={customer.id} value={customer.id}>
+                {customer.name} - {customer.phone}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Invoice Items */}
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Invoice Items
+            </label>
+            <button
+              type="button"
+              onClick={addItem}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              data-testid="add-item-btn"
+            >
+              Add Item
+            </button>
+          </div>
+
+          {invoiceItems.length === 0 ? (
+            <p className="text-gray-500 text-center py-4">No items added yet. Click "Add Item" to get started.</p>
+          ) : (
+            <div className="space-y-4">
+              {invoiceItems.map((item, index) => {
+                const product = products.find(p => p.id === item.product_id);
+                const weight = product ? product.weight * item.quantity : 0;
+                const amount = product ? weight * product.rate_per_gram : 0;
+
+                return (
+                  <div key={index} className="border border-gray-200 p-4 rounded" data-testid={`invoice-item-${index}`}>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Product</label>
+                        <select
+                          value={item.product_id}
+                          onChange={(e) => updateItem(index, 'product_id', e.target.value)}
+                          className="w-full border border-gray-300 p-2 rounded text-sm"
+                          required
+                          data-testid={`product-select-${index}`}
+                        >
+                          <option value="">Select product...</option>
+                          {products.filter(p => p.stock_quantity > 0).map(product => (
+                            <option key={product.id} value={product.id}>
+                              {product.name} ({product.sku}) - Stock: {product.stock_quantity}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Quantity</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max={product ? product.stock_quantity : 1}
+                          value={item.quantity}
+                          onChange={(e) => updateItem(index, 'quantity', parseInt(e.target.value))}
+                          className="w-full border border-gray-300 p-2 rounded text-sm"
+                          required
+                          data-testid={`quantity-input-${index}`}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Weight (g)</label>
+                        <input
+                          type="text"
+                          value={weight.toFixed(2)}
+                          className="w-full border border-gray-300 p-2 rounded text-sm bg-gray-50"
+                          readOnly
+                          data-testid={`weight-display-${index}`}
+                        />
+                      </div>
+
+                      <div className="flex items-end">
+                        <div className="flex-1">
+                          <label className="block text-xs text-gray-500 mb-1">Amount (₹)</label>
+                          <input
+                            type="text"
+                            value={`₹${amount.toFixed(2)}`}
+                            className="w-full border border-gray-300 p-2 rounded text-sm bg-gray-50"
+                            readOnly
+                            data-testid={`amount-display-${index}`}
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeItem(index)}
+                          className="ml-2 text-red-600 hover:text-red-800 p-2"
+                          data-testid={`remove-item-${index}`}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Tax and Totals */}
+        <div className="mb-6 border-t pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tax Percentage (%)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                min="0"
+                max="100"
+                value={taxPercentage}
+                onChange={(e) => setTaxPercentage(parseFloat(e.target.value))}
+                className="w-full border border-gray-300 p-2 rounded"
+                data-testid="tax-percentage-input"
+              />
+            </div>
+
+            <div className="md:text-right">
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span>Subtotal:</span>
+                  <span data-testid="subtotal-display">₹{subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Tax ({taxPercentage}%):</span>
+                  <span data-testid="tax-display">₹{taxAmount.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between font-bold text-lg">
+                  <span>Total:</span>
+                  <span data-testid="total-display">₹{total.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={isSubmitting || invoiceItems.length === 0}
+            className={`px-6 py-3 rounded-lg font-medium ${
+              isSubmitting || invoiceItems.length === 0
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-green-600 hover:bg-green-700'
+            } text-white`}
+            data-testid="create-invoice-btn"
+          >
+            {isSubmitting ? 'Creating Invoice...' : 'Create & Download Invoice'}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default CreateInvoice;
