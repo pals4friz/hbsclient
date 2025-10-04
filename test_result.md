@@ -120,6 +120,30 @@ backend:
           agent: "testing"
           comment: "✅ PDF generation working correctly. Fixed drawCentredText -> drawCentredString and fill parameter issues. A5 landscape format confirmed working with original/duplicate copies side-by-side. Gold pricing per 10g calculation implemented. All PDF endpoints tested successfully: /api/invoices/{id}/download returns valid PDF (2872 bytes), /api/invoices/{id}/print returns complete invoice data. Test results: 16/16 tests passed (100% success rate)."
 
+  - task: "Individual Labor Charges per Item"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "✅ Updated InvoiceItem model to include labor_charges field. Updated invoice creation logic to calculate total labor from individual item labor charges."
+
+  - task: "Discount, Old Gold, Old Silver Calculation"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "✅ Added discount_amount, old_gold_value, old_silver_value fields to Invoice model. Updated calculation formula: Subtotal + Labor + Tax - Discount - Old Gold - Old Silver = Final Total. Updated PDF generation to use actual values."
+
 frontend:
   - task: "Print HTML - Landscape CSS Configuration"
     implemented: true
@@ -135,6 +159,30 @@ frontend:
         - working: true
           agent: "main"
           comment: "✅ Updated CSS to @page { size: A5 landscape; } to ensure frontend print function uses landscape orientation matching the backend PDF generation."
+
+  - task: "Individual Labor Input per Item"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/CreateInvoice.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "✅ Added labor_charges input field for each invoice item. Updated addItem function to include labor_charges=0. Changed grid from 4 to 5 columns to accommodate labor input."
+
+  - task: "Discount and Old Gold/Silver Inputs"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/CreateInvoice.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "✅ Added discount amount, old gold value, and old silver value input fields. Updated calculation display to show new formula with deductions. Updated invoice submission to include new fields."
 
 metadata:
   created_by: "main_agent"
