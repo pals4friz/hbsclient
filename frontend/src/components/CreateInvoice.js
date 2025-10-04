@@ -42,6 +42,7 @@ const CreateInvoice = () => {
   useEffect(() => {
     fetchCustomers();
     fetchProducts();
+    fetchGoldRates();
   }, []);
 
   const fetchCustomers = async () => {
@@ -59,6 +60,15 @@ const CreateInvoice = () => {
       setProducts(response.data);
     } catch (error) {
       console.error('Error fetching products:', error);
+    }
+  };
+
+  const fetchGoldRates = async () => {
+    try {
+      const response = await axios.get(`${API}/gold-rates`);
+      setGoldRates(response.data);
+    } catch (error) {
+      console.error('Error fetching gold rates:', error);
     }
   };
 
