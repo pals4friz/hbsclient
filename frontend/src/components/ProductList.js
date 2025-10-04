@@ -255,6 +255,62 @@ const ProductList = () => {
         </div>
       </div>
 
+      {/* Import Results */}
+      {importResults && (
+        <div className={`mb-6 p-4 rounded-lg border ${
+          importResults.errors === 0 
+            ? 'bg-green-50 border-green-200' 
+            : 'bg-yellow-50 border-yellow-200'
+        }`}>
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className={`font-semibold ${
+                importResults.errors === 0 ? 'text-green-800' : 'text-yellow-800'
+              }`}>
+                Excel Import Results
+              </h3>
+              <div className="mt-2 text-sm">
+                <p>Total rows: {importResults.total}</p>
+                <p className="text-green-600">✅ Successfully imported: {importResults.success}</p>
+                {importResults.errors > 0 && (
+                  <p className="text-red-600">❌ Errors: {importResults.errors}</p>
+                )}
+              </div>
+              {importResults.errorDetails.length > 0 && (
+                <div className="mt-3">
+                  <details className="text-sm">
+                    <summary className="cursor-pointer text-red-600 font-medium">
+                      View Error Details ({importResults.errors} errors)
+                    </summary>
+                    <div className="mt-2 max-h-32 overflow-y-auto">
+                      {importResults.errorDetails.map((error, index) => (
+                        <p key={index} className="text-red-600 text-xs mt-1">• {error}</p>
+                      ))}
+                    </div>
+                  </details>
+                </div>
+              )}
+            </div>
+            <button
+              onClick={() => setImportResults(null)}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Loading indicator */}
+      {isImporting && (
+        <div className="mb-6 bg-blue-50 border border-blue-200 p-4 rounded-lg">
+          <div className="flex items-center gap-3">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+            <span className="text-blue-800">Importing Excel file...</span>
+          </div>
+        </div>
+      )}
+
       {showForm && (
         <div className="bg-white p-6 rounded-lg shadow mb-6" data-testid="product-form">
           <h2 className="text-xl font-semibold mb-4">
