@@ -41,7 +41,6 @@ const Customers = () => {
       fetchCustomers();
     } catch (error) {
       console.error('Error saving customer:', error);
-      alert('Error saving customer');
     }
   };
 
