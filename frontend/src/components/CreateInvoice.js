@@ -157,6 +157,77 @@ const CreateInvoice = () => {
     }
   };
 
+  // Add new customer function
+  const handleAddNewCustomer = async (e) => {
+    e.preventDefault();
+    if (!newCustomerData.name || !newCustomerData.phone || !newCustomerData.address) {
+      alert('Please fill in all required fields (Name, Phone, Address)');
+      return;
+    }
+
+    setIsAddingCustomer(true);
+    try {
+      const response = await axios.post(`${API}/customers`, newCustomerData);
+      const newCustomer = response.data;
+      
+      // Update customers list and select the new customer
+      setCustomers([...customers, newCustomer]);
+      setSelectedCustomer(newCustomer.id);
+      
+      // Reset form and close modal
+      setNewCustomerData({ name: '', phone: '', email: '', address: '' });
+      setShowNewCustomerModal(false);
+      
+      alert('Customer added successfully!');
+    } catch (error) {
+      console.error('Error adding customer:', error);
+      alert('Error adding customer. Please try again.');
+    } finally {
+      setIsAddingCustomer(false);
+    }
+  };
+
+  // Add new product function
+  const handleAddNewProduct = async (e) => {
+    e.preventDefault();
+    if (!newProductData.name || !newProductData.sku || !newProductData.category || 
+        !newProductData.weight || !newProductData.purity || !newProductData.rate_per_gram || 
+        !newProductData.stock_quantity) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    setIsAddingProduct(true);
+    try {
+      const productData = {
+        ...newProductData,
+        weight: parseFloat(newProductData.weight),
+        rate_per_gram: parseFloat(newProductData.rate_per_gram),
+        stock_quantity: parseInt(newProductData.stock_quantity)
+      };
+
+      const response = await axios.post(`${API}/products`, productData);
+      const newProduct = response.data;
+      
+      // Update products list
+      setProducts([...products, newProduct]);
+      
+      // Reset form and close modal
+      setNewProductData({
+        name: '', sku: '', category: '', weight: '', purity: '', 
+        rate_per_gram: '', stock_quantity: '', description: ''
+      });
+      setShowNewProductModal(false);
+      
+      alert('Product added successfully!');
+    } catch (error) {
+      console.error('Error adding product:', error);
+      alert('Error adding product. Please try again.');
+    } finally {
+      setIsAddingProduct(false);
+    }
+  };
+
   const { subtotal, laborCharges: laborChargesCalc, subtotalWithLabor, taxAmount, total } = calculateTotal();
 
   return (
