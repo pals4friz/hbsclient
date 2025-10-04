@@ -297,7 +297,127 @@ async def get_invoice(invoice_id: str):
         raise HTTPException(status_code=404, detail="Invoice not found")
     return Invoice(**invoice)
 
-# === EXCEL GENERATION ===
+# === PDF GENERATION ===
+
+def create_invoice_pdf(invoice: Invoice) -> str:
+    """Create PDF file for invoice and return file path"""
+    temp_dir = tempfile.mkdtemp()
+    file_path = os.path.join(temp_dir, f"Invoice_{invoice.invoice_number}.pdf")
+    
+    # Create PDF document
+    doc = SimpleDocTemplate(file_path, pagesize=A4)
+    elements = []
+    
+    # Get styles
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle('CustomTitle', parent=styles['Title'], 
+                                fontSize=24, spaceAfter=30, alignment=1)
+    heading_style = ParagraphStyle('CustomHeading', parent=styles['Heading2'], 
+                                  fontSize=14, spaceAfter=12)
+    normal_style = styles['Normal']
+    
+    # Title
+    title = Paragraph("💎 JEWELRY STORE INVOICE", title_style)
+    elements.append(title)
+    elements.append(Spacer(1, 20))
+    
+    # Invoice details and customer info in a table
+    invoice_data = [
+        ['Invoice Number:', invoice.invoice_number, '', 'Customer Name:', invoice.customer_name],
+        ['Date:', invoice.invoice_date, '', 'Phone:', invoice.customer_phone],
+        ['', '', '', 'Address:', invoice.customer_address[:50] + ('...' if len(invoice.customer_address) > 50 else '')],
+    ]
+    
+    invoice_table = Table(invoice_data, colWidths=[1.2*inch, 1.5*inch, 0.3*inch, 1.2*inch, 2.8*inch])
+    invoice_table.setStyle(TableStyle([
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTNAME', (3, 0), (3, -1), 'Helvetica-Bold'),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+    ]))
+    
+    elements.append(invoice_table)
+    elements.append(Spacer(1, 30))
+    
+    # Items table
+    items_data = [['S.No', 'Product Name', 'SKU', 'Qty', 'Weight(g)', 'Rate/g', 'Amount']]
+    
+    for i, item in enumerate(invoice.items, 1):
+        items_data.append([
+            str(i),
+            item.product_name[:20] + ('...' if len(item.product_name) > 20 else ''),
+            item.sku,
+            str(item.quantity),
+            f"{item.weight:.2f}g",
+            f"₹{item.rate_per_gram:.2f}",
+            f"₹{item.amount:.2f}"
+        ])
+    
+    items_table = Table(items_data, colWidths=[0.5*inch, 2.2*inch, 1*inch, 0.6*inch, 0.8*inch, 1*inch, 1.2*inch])
+    items_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 10),
+        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 1), (-1, -1), 9),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+    
+    elements.append(items_table)
+    elements.append(Spacer(1, 30))
+    
+    # Totals table
+    totals_data = [
+        ['Items Subtotal:', f"₹{invoice.subtotal:.2f}"],
+    ]
+    
+    if invoice.labor_charges > 0:
+        totals_data.append(['Labor Charges:', f"₹{invoice.labor_charges:.2f}"])
+    
+    if invoice.tax_included and invoice.tax_amount > 0:
+        totals_data.append([f'Tax ({invoice.tax_percentage}%):', f"₹{invoice.tax_amount:.2f}"])
+    
+    totals_data.append(['Total Amount:', f"₹{invoice.total_amount:.2f}"])
+    
+    totals_table = Table(totals_data, colWidths=[4*inch, 1.5*inch])
+    totals_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (-1, -1), 'RIGHT'),
+        ('FONTNAME', (0, 0), (-1, -2), 'Helvetica'),
+        ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('LINEBELOW', (0, -1), (-1, -1), 2, colors.black),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+    ]))
+    
+    elements.append(totals_table)
+    elements.append(Spacer(1, 30))
+    
+    # Add tax note if without tax
+    if not invoice.tax_included:
+        tax_note = Paragraph("*This invoice is without tax", 
+                           ParagraphStyle('TaxNote', parent=styles['Normal'], 
+                                        fontSize=10, textColor=colors.red, 
+                                        alignment=1, fontName='Helvetica-Oblique'))
+        elements.append(tax_note)
+        elements.append(Spacer(1, 20))
+    
+    # Thank you message
+    thank_you = Paragraph("Thank you for your business!", 
+                         ParagraphStyle('ThankYou', parent=styles['Normal'], 
+                                      fontSize=12, alignment=1, 
+                                      fontName='Helvetica-Bold'))
+    elements.append(thank_you)
+    
+    # Build PDF
+    doc.build(elements)
+    return file_path
+
+# === EXCEL GENERATION (KEPT FOR SALES REPORTS) ===
 
 def create_invoice_excel(invoice: Invoice) -> str:
     """Create Excel file for invoice and return file path"""
