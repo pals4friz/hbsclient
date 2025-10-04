@@ -949,7 +949,7 @@ const CreateInvoice = () => {
                 min="0"
                 value={oldGoldValue}
                 onChange={(e) => setOldGoldValue(parseFloat(e.target.value) || 0)}
-                className="w-full border border-gray-300 p-2 rounded"
+                className="w-full border border-gray-300 p-2 sm:p-3 rounded touch-manipulation"
                 placeholder="0.00"
                 data-testid="old-gold-input"
               />
