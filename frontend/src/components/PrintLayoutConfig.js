@@ -526,19 +526,13 @@ const PrintLayoutConfig = () => {
                         )}
                       </div>
 
-                {/* Customer & Invoice Details */}
-                <div className="mb-6 p-3 border" style={{ borderColor: config.tableBorderColor }}>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <div className="mb-2"><strong>NAME:</strong> Sample Customer Name</div>
-                      <div className="mb-2"><strong>DATE:</strong> {new Date().toLocaleDateString()}</div>
-                    </div>
-                    <div>
-                      <div className="mb-2"><strong>INVOICE NO.:</strong> INV-20240115-001</div>
-                      <div className="mb-2"><strong>PHONE:</strong> 9876543210</div>
-                    </div>
-                  </div>
-                </div>
+                      {/* Compact Customer Details */}
+                      <div className="mb-2 p-1 border text-xs" style={{ borderColor: config.tableBorderColor }}>
+                        <div><strong>NAME:</strong> Sample Customer</div>
+                        <div><strong>DATE:</strong> {new Date().toLocaleDateString()}</div>
+                        <div><strong>INV NO.:</strong> INV-001</div>
+                        <div><strong>PHONE:</strong> 9876543210</div>
+                      </div>
 
                 {/* Items Table */}
                 <div className="mb-6">
