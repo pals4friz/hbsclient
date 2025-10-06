@@ -463,20 +463,26 @@ const PrintLayoutConfig = () => {
             <h3 className="text-lg font-semibold mb-4 text-blue-600">👁️ Live Preview</h3>
             <div className="border-2 border-gray-300 bg-white overflow-auto" style={{minHeight: '600px'}}>
               <div 
-                className="p-6"
+                className="p-4"
                 style={{
                   fontSize: `${config.tableFontSize}px`,
                   fontFamily: config.defaultFont,
-                  transform: config.pageSize === 'A4' ? 'scale(0.7)' : 'scale(0.8)',
+                  transform: config.pageSize === 'A4' ? 'scale(0.6)' : 'scale(0.7)',
                   transformOrigin: 'top left',
-                  width: config.orientation === 'landscape' ? '297mm' : '210mm',
-                  height: config.orientation === 'landscape' ? '210mm' : '297mm',
+                  width: config.orientation === 'landscape' ? '210mm' : '148mm',
+                  height: config.orientation === 'landscape' ? '148mm' : '210mm',
                   margin: '0 auto',
                   backgroundColor: 'white',
                   border: '1px solid #ddd',
                   boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
                 }}
               >
+                {config.copiesPerPage === 2 ? (
+                  // Side by side layout for A5 landscape
+                  <div className="grid grid-cols-2 gap-2 h-full">
+                    {/* ORIGINAL COPY */}
+                    <div className="border-r border-dashed border-gray-400 pr-2">
+                      <div className="text-center text-xs font-bold mb-2">ORIGINAL</div>
                 {/* Header */}
                 <div 
                   className="text-center mb-6"
