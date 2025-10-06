@@ -392,8 +392,8 @@ const CreateInvoice = () => {
       const itemsHTML = invoice.items.slice(0, 4).map((item) => `
         <tr>
           <td>${item.product_name.substring(0, 20)}</td>
+          <td>₹${item.labor_charges.toFixed(0)}</td>
           <td>${item.weight.toFixed(1)}g</td>
-          <td>₹${item.rate_per_gram.toFixed(0)}</td>
           <td>₹${item.amount.toFixed(0)}</td>
         </tr>
       `).join('');
@@ -406,9 +406,11 @@ const CreateInvoice = () => {
       }
 
       const totalWeight = invoice.items.reduce((sum, item) => sum + item.weight, 0);
+      const totalLabor = invoice.items.reduce((sum, item) => sum + item.labor_charges, 0);
       
-      // Calculate gold price per 10g (assuming 22K as main purity)
-      const goldRatePer10g = 5500 * 10; // ₹55,000 per 10g for 22K
+      // Get dynamic gold price per 10g from current gold rates (22K as standard)
+      const gold22KRate = goldRates.find(rate => rate.purity === '22K');
+      const goldRatePer10g = gold22KRate ? (gold22KRate.rate_per_gram * 10) : 55000; // Fallback to 55000
       
       return `
         <div class="invoice-copy">
