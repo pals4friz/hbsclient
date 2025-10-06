@@ -538,7 +538,7 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
         c.setFont("Helvetica-Bold", 6)
         c.drawCentredString(x_start + table_width/2, summary_y - 40, f"FINAL TOTAL: ₹{invoice.total_amount:.0f}")
     
-    def draw_totals_section(x_start, totals_y, table_width):
+    def draw_totals_section(x_start, totals_y, table_width, is_duplicate=False):
         """Draw jewelry business totals section"""
         
         # Calculate gold price per 10g (sample calculation)
