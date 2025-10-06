@@ -657,36 +657,50 @@ const PrintLayoutConfig = () => {
                   </table>
                 </div>
 
-                {/* Totals Section */}
-                <div 
-                  className={`${config.totalsPosition === 'right' ? 'ml-auto' : ''} p-2 text-xs`}
-                  style={{ 
-                    backgroundColor: config.totalsBackgroundColor,
-                    maxWidth: config.totalsPosition === 'right' ? '200px' : '100%',
-                    borderRadius: '4px'
-                  }}
-                >
-                  <div className="space-y-1">
-                    <div className="flex justify-between">
-                      <span>Subtotal:</span>
-                      <span>₹1,98,250</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Labor:</span>
-                      <span>₹3,000</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Tax (3%):</span>
-                      <span>₹6,038</span>
-                    </div>
-                    <div 
-                      className={`flex justify-between font-bold ${config.finalTotalHighlight ? 'border-t pt-1' : ''}`}
-                      style={{ 
-                        color: config.finalTotalHighlight ? config.finalTotalColor : 'inherit'
-                      }}
-                    >
-                      <span>FINAL TOTAL:</span>
-                      <span>₹2,07,288</span>
+                {/* Totals Section - Jewelry Business Style */}
+                <div className="mb-6">
+                  <div 
+                    className={`${config.totalsPosition === 'right' ? 'ml-auto' : ''} p-4 border`}
+                    style={{ 
+                      backgroundColor: config.totalsBackgroundColor,
+                      maxWidth: config.totalsPosition === 'right' ? '300px' : '100%',
+                      borderColor: config.tableBorderColor,
+                      fontSize: `${config.tableFontSize + 1}px`
+                    }}
+                  >
+                    <div className="space-y-2">
+                      <div className="flex justify-between border-b pb-1" style={{ borderColor: config.tableBorderColor }}>
+                        <span className="font-semibold">GOLD PRICE (22K per 10g):</span>
+                        <span>₹55,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>OLD GOLD:</span>
+                        <span>₹15,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>OLD SILVER:</span>
+                        <span>₹3,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>DISCOUNT:</span>
+                        <span>₹2,000</span>
+                      </div>
+                      <div className="flex justify-between border-t pt-1" style={{ borderColor: config.tableBorderColor }}>
+                        <span>Total Weight:</span>
+                        <span>35.5 grms</span>
+                      </div>
+                      <div 
+                        className={`flex justify-between font-bold text-lg border-t-2 pt-2 ${config.finalTotalHighlight ? 'bg-gray-100' : ''}`}
+                        style={{ 
+                          color: config.finalTotalHighlight ? config.finalTotalColor : 'inherit',
+                          borderColor: config.tableBorderColor,
+                          padding: '8px',
+                          margin: '8px -8px -8px -8px'
+                        }}
+                      >
+                        <span>FINAL TOTAL:</span>
+                        <span>₹1,78,250</span>
+                      </div>
                     </div>
                   </div>
                 </div>
