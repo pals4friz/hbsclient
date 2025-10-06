@@ -465,7 +465,7 @@ const CreateInvoice = () => {
               <td style="text-align: center;">₹${invoice.subtotal.toFixed(0)}</td>
             </tr>
             <tr>
-              <td>Gold Price (22K/10g)</td>
+              <td>Gold Price (${mostCommonPurity}/10g)</td>
               <td style="text-align: center;">₹${goldRatePer10g.toFixed(0)}</td>
               <td></td>
               <td style="text-align: center;">₹${invoice.subtotal.toFixed(0)}</td>
