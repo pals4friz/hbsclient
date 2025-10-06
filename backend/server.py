@@ -544,9 +544,11 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
     def draw_totals_section(x_start, totals_y, table_width, is_duplicate=False):
         """Draw jewelry business totals section"""
         
-        # Calculate gold price per 10g (sample calculation)
+        # Calculate gold price per 10g using dynamic rates from database
         total_weight = sum(item.weight for item in invoice.items)
-        gold_price_per_10g = 55000  # Default, should come from gold rates
+        # Use 22K gold rate as the standard display rate (most common)
+        gold_rate_22k = gold_rates.get("22K", 5500.0)  # Default fallback
+        gold_price_per_10g = gold_rate_22k * 10
         
         c.rect(x_start + 5, totals_y - 50, table_width - 10, 50, stroke=1, fill=0)
         
