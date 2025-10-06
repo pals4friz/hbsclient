@@ -930,16 +930,17 @@ const CreateInvoice = () => {
                       </div>
 
                       <div>
-                        <label className="block text-xs text-gray-500 mb-1">Labor Charges (₹)</label>
+                        <label className="block text-xs text-gray-500 mb-1">Labor (Auto)</label>
                         <input
-                          type="number"
-                          step="0.01"
-                          value={item.labor_charges || 0}
-                          onChange={(e) => updateItem(index, 'labor_charges', parseFloat(e.target.value) || 0)}
-                          className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm touch-manipulation"
-                          placeholder="0.00"
-                          data-testid={`labor-input-${index}`}
+                          type="text"
+                          value={`₹${autoLabor.toFixed(0)}`}
+                          className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm bg-blue-50"
+                          readOnly
+                          data-testid={`labor-display-${index}`}
                         />
+                        <div className="text-xs text-blue-600 mt-1">
+                          {weight <= 5.000 ? `≤5g: ₹500 fixed` : `>5g: ₹100 × ${weight.toFixed(2)}g`}
+                        </div>
                       </div>
 
                       <div className="flex items-end">
