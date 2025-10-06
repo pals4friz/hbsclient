@@ -479,20 +479,22 @@ const PrintLayoutConfig = () => {
               >
                 {/* Header */}
                 <div 
-                  className="text-center mb-4"
+                  className="text-center mb-6"
                   style={{ 
                     backgroundColor: config.headerBackgroundColor,
                     color: config.headerTextColor,
-                    padding: '10px',
-                    borderRadius: '4px'
+                    padding: '15px',
+                    borderRadius: '4px',
+                    borderBottom: '2px solid #333'
                   }}
                 >
                   <div 
                     style={{ 
-                      fontSize: `${config.titleFontSize}px`,
+                      fontSize: `${config.titleFontSize + 2}px`,
                       fontWeight: 'bold',
                       textAlign: config.titlePosition,
-                      marginBottom: '8px'
+                      marginBottom: '10px',
+                      letterSpacing: '2px'
                     }}
                   >
                     {config.invoiceTitle}
@@ -500,17 +502,28 @@ const PrintLayoutConfig = () => {
                   
                   <div 
                     style={{ 
-                      fontSize: `${config.companyNameFontSize}px`,
+                      fontSize: `${config.companyNameFontSize + 2}px`,
                       fontWeight: 'bold',
-                      marginBottom: '4px',
-                      textDecoration: 'underline'
+                      marginBottom: '6px',
+                      textDecoration: 'underline',
+                      letterSpacing: '1px'
                     }}
                   >
                     {config.companyName}
                   </div>
                   
-                  <div style={{ fontSize: `${config.addressFontSize}px` }}>
+                  <div style={{ fontSize: `${config.addressFontSize + 1}px`, marginBottom: '4px' }}>
                     {config.companyAddress}
+                  </div>
+                  
+                  {config.showContact && (
+                    <div style={{ fontSize: `${config.footerFontSize + 1}px`, marginTop: '8px' }}>
+                      CONTACTS: 9690124010, 9456977703
+                    </div>
+                  )}
+                  
+                  <div style={{ fontSize: `${config.footerFontSize}px`, marginTop: '4px', fontStyle: 'italic' }}>
+                    22 Carat also available | FOLLOW US ON: [Social Media]
                   </div>
                 </div>
 
