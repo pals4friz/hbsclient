@@ -729,42 +729,13 @@ const PrintLayoutConfig = () => {
                   )}
                 </div>
 
-                {/* Copy indicator */}
-                {config.copiesPerPage === 2 && (
-                  <div className="text-center text-xs text-gray-500 mt-2">
-                    ORIGINAL
-                  </div>
-                )}
               </div>
               
               {/* Show second copy if enabled */}
               {config.copiesPerPage === 2 && (
                 <div className="border-t-2 border-dashed border-gray-400 my-4">
-                  <div 
-                    className="p-4"
-                    style={{
-                      fontSize: `${config.tableFontSize}px`,
-                      fontFamily: config.defaultFont,
-                      transform: config.pageSize === 'A4' ? 'scale(0.6)' : 'scale(0.8)',
-                      transformOrigin: 'top left',
-                      width: config.orientation === 'landscape' ? '148mm' : '105mm',
-                      height: config.orientation === 'landscape' ? '105mm' : '148mm',
-                      margin: '0 auto',
-                      backgroundColor: 'white',
-                      border: '1px solid #ddd',
-                      opacity: 0.8
-                    }}
-                  >
-                    <div className="text-center text-xs text-gray-500 mb-2">DUPLICATE</div>
-                    {/* Same content as original but with opacity */}
-                    <div style={{ opacity: 0.7 }}>
-                      {/* Simplified duplicate content */}
-                      <div className="text-center text-xs">
-                        <div className="font-bold">{config.companyName}</div>
-                        <div>{config.invoiceTitle}</div>
-                        <div className="mt-2">Sample Invoice Content (Duplicate Copy)</div>
-                      </div>
-                    </div>
+                  <div className="text-center text-sm font-semibold text-gray-600 p-2">
+                    DUPLICATE COPY (Same as above)
                   </div>
                 </div>
               )}
