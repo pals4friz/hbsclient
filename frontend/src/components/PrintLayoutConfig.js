@@ -451,12 +451,233 @@ const PrintLayoutConfig = () => {
         {previewMode && (
           <div className="bg-white p-4 rounded-lg shadow">
             <h3 className="text-lg font-semibold mb-4 text-blue-600">👁️ Live Preview</h3>
-            <div className="border-2 border-gray-300 bg-white p-4 overflow-auto" style={{minHeight: '600px'}}>
-              <div className="text-center text-gray-500 py-20">
-                <div className="text-4xl mb-4">🖨️</div>
-                <p>Invoice preview will appear here</p>
-                <p className="text-sm">Based on your configuration settings</p>
+            <div className="border-2 border-gray-300 bg-white overflow-auto" style={{minHeight: '600px'}}>
+              <div 
+                className="p-4"
+                style={{
+                  fontSize: `${config.tableFontSize}px`,
+                  fontFamily: config.defaultFont,
+                  transform: config.pageSize === 'A4' ? 'scale(0.6)' : 'scale(0.8)',
+                  transformOrigin: 'top left',
+                  width: config.orientation === 'landscape' ? '148mm' : '105mm',
+                  height: config.orientation === 'landscape' ? '105mm' : '148mm',
+                  margin: '0 auto',
+                  backgroundColor: 'white',
+                  border: '1px solid #ddd'
+                }}
+              >
+                {/* Header */}
+                <div 
+                  className="text-center mb-4"
+                  style={{ 
+                    backgroundColor: config.headerBackgroundColor,
+                    color: config.headerTextColor,
+                    padding: '10px',
+                    borderRadius: '4px'
+                  }}
+                >
+                  <div 
+                    style={{ 
+                      fontSize: `${config.titleFontSize}px`,
+                      fontWeight: 'bold',
+                      textAlign: config.titlePosition,
+                      marginBottom: '8px'
+                    }}
+                  >
+                    {config.invoiceTitle}
+                  </div>
+                  
+                  <div 
+                    style={{ 
+                      fontSize: `${config.companyNameFontSize}px`,
+                      fontWeight: 'bold',
+                      marginBottom: '4px',
+                      textDecoration: 'underline'
+                    }}
+                  >
+                    {config.companyName}
+                  </div>
+                  
+                  <div style={{ fontSize: `${config.addressFontSize}px` }}>
+                    {config.companyAddress}
+                  </div>
+                </div>
+
+                {/* Customer & Invoice Details */}
+                <div className="grid grid-cols-2 gap-4 mb-4 text-xs">
+                  <div>
+                    <strong>NAME:</strong> Sample Customer<br/>
+                    <strong>DATE:</strong> 2024-01-15
+                  </div>
+                  <div>
+                    <strong>INVOICE NO:</strong> INV-20240115-001<br/>
+                    <strong>PHONE:</strong> 9876543210
+                  </div>
+                </div>
+
+                {/* Items Table */}
+                <div className="mb-4">
+                  <table className="w-full text-xs" style={{ borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr 
+                        style={{ 
+                          backgroundColor: config.tableHeaderColor,
+                          color: config.tableHeaderTextColor
+                        }}
+                      >
+                        {config.columns.filter(col => col.show).map((column, index) => (
+                          <th 
+                            key={index}
+                            className="border p-1 text-center"
+                            style={{ 
+                              borderColor: config.tableBorderColor,
+                              fontSize: `${config.headerFontSize}px`,
+                              padding: `${config.cellPadding}px`
+                            }}
+                          >
+                            {column.label}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style={{ backgroundColor: 'white' }}>
+                        {config.columns.filter(col => col.show).map((column, index) => (
+                          <td 
+                            key={index}
+                            className="border p-1 text-center"
+                            style={{ 
+                              borderColor: config.tableBorderColor,
+                              padding: `${config.cellPadding}px`
+                            }}
+                          >
+                            {column.name === 'itemName' ? 'Gold Ring' :
+                             column.name === 'weight' ? '10.5g' :
+                             column.name === 'rate' ? '₹5500' :
+                             column.name === 'labor' ? '₹500' :
+                             column.name === 'amount' ? '₹58,250' : 'N/A'}
+                          </td>
+                        ))}
+                      </tr>
+                      <tr style={{ backgroundColor: config.alternateRowColor }}>
+                        {config.columns.filter(col => col.show).map((column, index) => (
+                          <td 
+                            key={index}
+                            className="border p-1 text-center"
+                            style={{ 
+                              borderColor: config.tableBorderColor,
+                              padding: `${config.cellPadding}px`
+                            }}
+                          >
+                            {column.name === 'itemName' ? 'Gold Necklace' :
+                             column.name === 'weight' ? '25.0g' :
+                             column.name === 'rate' ? '₹5500' :
+                             column.name === 'labor' ? '₹2500' :
+                             column.name === 'amount' ? '₹1,40,000' : 'N/A'}
+                          </td>
+                        ))}
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Totals Section */}
+                <div 
+                  className={`${config.totalsPosition === 'right' ? 'ml-auto' : ''} p-2 text-xs`}
+                  style={{ 
+                    backgroundColor: config.totalsBackgroundColor,
+                    maxWidth: config.totalsPosition === 'right' ? '200px' : '100%',
+                    borderRadius: '4px'
+                  }}
+                >
+                  <div className="space-y-1">
+                    <div className="flex justify-between">
+                      <span>Subtotal:</span>
+                      <span>₹1,98,250</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Labor:</span>
+                      <span>₹3,000</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Tax (3%):</span>
+                      <span>₹6,038</span>
+                    </div>
+                    <div 
+                      className={`flex justify-between font-bold ${config.finalTotalHighlight ? 'border-t pt-1' : ''}`}
+                      style={{ 
+                        color: config.finalTotalHighlight ? config.finalTotalColor : 'inherit'
+                      }}
+                    >
+                      <span>FINAL TOTAL:</span>
+                      <span>₹2,07,288</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="mt-4 text-xs">
+                  {config.showContact && (
+                    <div className="mb-1" style={{ fontSize: `${config.footerFontSize}px` }}>
+                      {config.contactInfo}
+                    </div>
+                  )}
+                  {config.showBankDetails && (
+                    <div className="mb-1" style={{ fontSize: `${config.footerFontSize}px` }}>
+                      {config.bankDetails}
+                    </div>
+                  )}
+                  {config.showTerms && (
+                    <div style={{ fontSize: `${config.footerFontSize}px` }}>
+                      {config.terms}
+                    </div>
+                  )}
+                  {config.showSignature && (
+                    <div className="text-right mt-4" style={{ fontSize: `${config.footerFontSize}px` }}>
+                      {config.signatureText}
+                    </div>
+                  )}
+                </div>
+
+                {/* Copy indicator */}
+                {config.copiesPerPage === 2 && (
+                  <div className="text-center text-xs text-gray-500 mt-2">
+                    ORIGINAL
+                  </div>
+                )}
               </div>
+              
+              {/* Show second copy if enabled */}
+              {config.copiesPerPage === 2 && (
+                <div className="border-t-2 border-dashed border-gray-400 my-4">
+                  <div 
+                    className="p-4"
+                    style={{
+                      fontSize: `${config.tableFontSize}px`,
+                      fontFamily: config.defaultFont,
+                      transform: config.pageSize === 'A4' ? 'scale(0.6)' : 'scale(0.8)',
+                      transformOrigin: 'top left',
+                      width: config.orientation === 'landscape' ? '148mm' : '105mm',
+                      height: config.orientation === 'landscape' ? '105mm' : '148mm',
+                      margin: '0 auto',
+                      backgroundColor: 'white',
+                      border: '1px solid #ddd',
+                      opacity: 0.8
+                    }}
+                  >
+                    <div className="text-center text-xs text-gray-500 mb-2">DUPLICATE</div>
+                    {/* Same content as original but with opacity */}
+                    <div style={{ opacity: 0.7 }}>
+                      {/* Simplified duplicate content */}
+                      <div className="text-center text-xs">
+                        <div className="font-bold">{config.companyName}</div>
+                        <div>{config.invoiceTitle}</div>
+                        <div className="mt-2">Sample Invoice Content (Duplicate Copy)</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
