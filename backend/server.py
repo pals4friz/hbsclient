@@ -134,10 +134,10 @@ class GoldRate(BaseModel):
 class PrintConfig(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     # Page Settings
-    pageSize: str = "A4"
-    orientation: str = "portrait"
+    pageSize: str = "A5"
+    orientation: str = "landscape"
     margins: dict = {"top": 20, "bottom": 20, "left": 20, "right": 20}
-    copiesPerPage: int = 1
+    copiesPerPage: int = 2
     
     # Header Settings
     companyName: str = "HARI BABU SARRAF"
