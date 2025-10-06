@@ -7,10 +7,10 @@ const API = `${BACKEND_URL}/api`;
 const PrintLayoutConfig = () => {
   const [config, setConfig] = useState({
     // Page Settings
-    pageSize: 'A5', // A4, A5, Letter, Custom
-    orientation: 'landscape', // portrait, landscape
+    pageSize: 'A4', // A4, A5, Letter, Custom
+    orientation: 'portrait', // portrait, landscape
     margins: { top: 20, bottom: 20, left: 20, right: 20 },
-    copiesPerPage: 2, // 1 (single), 2 (original + duplicate)
+    copiesPerPage: 1, // 1 (single), 2 (original + duplicate)
     
     // Header Settings
     companyName: 'HARI BABU SARRAF',
