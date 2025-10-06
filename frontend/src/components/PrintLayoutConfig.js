@@ -534,121 +534,83 @@ const PrintLayoutConfig = () => {
                         <div><strong>PHONE:</strong> 9876543210</div>
                       </div>
 
-                {/* Items Table */}
-                <div className="mb-6">
-                  <table className="w-full" style={{ borderCollapse: 'collapse', fontSize: `${config.tableFontSize + 2}px` }}>
-                    <thead>
-                      <tr 
-                        style={{ 
-                          backgroundColor: config.tableHeaderColor,
-                          color: config.tableHeaderTextColor
-                        }}
-                      >
-                        {config.columns.filter(col => col.show).map((column, index) => (
-                          <th 
-                            key={index}
-                            className="border p-2 text-center font-bold"
-                            style={{ 
-                              borderColor: config.tableBorderColor,
-                              fontSize: `${config.headerFontSize + 1}px`,
-                              padding: `${config.cellPadding + 2}px`,
-                              borderWidth: `${config.tableBorderWidth}px`
-                            }}
-                          >
-                            {column.label}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {/* Sample Row 1 */}
-                      <tr style={{ backgroundColor: 'white' }}>
-                        {config.columns.filter(col => col.show).map((column, index) => (
-                          <td 
-                            key={index}
-                            className="border p-2"
-                            style={{ 
-                              borderColor: config.tableBorderColor,
-                              padding: `${config.cellPadding + 2}px`,
-                              textAlign: column.name === 'itemName' ? 'left' : 'center',
-                              borderWidth: `${config.tableBorderWidth}px`
-                            }}
-                          >
-                            {column.name === 'itemName' ? 'Gold Ring 22K' :
-                             column.name === 'labor' ? '₹500' :
-                             column.name === 'weight' ? '10.5 grms' :
-                             column.name === 'amount' ? '₹58,250' : 'N/A'}
-                          </td>
-                        ))}
-                      </tr>
-                      
-                      {/* Sample Row 2 */}
-                      <tr style={{ backgroundColor: config.alternateRowColor }}>
-                        {config.columns.filter(col => col.show).map((column, index) => (
-                          <td 
-                            key={index}
-                            className="border p-2"
-                            style={{ 
-                              borderColor: config.tableBorderColor,
-                              padding: `${config.cellPadding + 2}px`,
-                              textAlign: column.name === 'itemName' ? 'left' : 'center',
-                              borderWidth: `${config.tableBorderWidth}px`
-                            }}
-                          >
-                            {column.name === 'itemName' ? 'Gold Necklace 22K' :
-                             column.name === 'labor' ? '₹2,500' :
-                             column.name === 'weight' ? '25.0 grms' :
-                             column.name === 'amount' ? '₹1,40,000' : 'N/A'}
-                          </td>
-                        ))}
-                      </tr>
-                      
-                      {/* Total Row */}
-                      <tr style={{ backgroundColor: config.tableHeaderColor, color: config.tableHeaderTextColor }}>
-                        <td 
-                          className="border p-2 font-bold text-center"
-                          style={{ 
-                            borderColor: config.tableBorderColor,
-                            padding: `${config.cellPadding + 2}px`,
-                            borderWidth: `${config.tableBorderWidth}px`
-                          }}
-                        >
-                          TOTAL
-                        </td>
-                        <td 
-                          className="border p-2 font-bold text-center"
-                          style={{ 
-                            borderColor: config.tableBorderColor,
-                            padding: `${config.cellPadding + 2}px`,
-                            borderWidth: `${config.tableBorderWidth}px`
-                          }}
-                        >
-                          ₹3,000
-                        </td>
-                        <td 
-                          className="border p-2 font-bold text-center"
-                          style={{ 
-                            borderColor: config.tableBorderColor,
-                            padding: `${config.cellPadding + 2}px`,
-                            borderWidth: `${config.tableBorderWidth}px`
-                          }}
-                        >
-                          35.5 grms
-                        </td>
-                        <td 
-                          className="border p-2 font-bold text-center"
-                          style={{ 
-                            borderColor: config.tableBorderColor,
-                            padding: `${config.cellPadding + 2}px`,
-                            borderWidth: `${config.tableBorderWidth}px`
-                          }}
-                        >
-                          ₹1,98,250
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                      {/* Compact Items Table */}
+                      <div className="mb-3">
+                        <table className="w-full text-xs" style={{ borderCollapse: 'collapse' }}>
+                          <thead>
+                            <tr 
+                              style={{ 
+                                backgroundColor: config.tableHeaderColor,
+                                color: config.tableHeaderTextColor
+                              }}
+                            >
+                              {config.columns.filter(col => col.show).map((column, index) => (
+                                <th 
+                                  key={index}
+                                  className="border text-center font-bold"
+                                  style={{ 
+                                    borderColor: config.tableBorderColor,
+                                    fontSize: '6px',
+                                    padding: '2px',
+                                    borderWidth: '0.5px'
+                                  }}
+                                >
+                                  {column.label}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr style={{ backgroundColor: 'white' }}>
+                              {config.columns.filter(col => col.show).map((column, index) => (
+                                <td 
+                                  key={index}
+                                  className="border"
+                                  style={{ 
+                                    borderColor: config.tableBorderColor,
+                                    padding: '1px',
+                                    textAlign: column.name === 'itemName' ? 'left' : 'center',
+                                    fontSize: '6px',
+                                    borderWidth: '0.5px'
+                                  }}
+                                >
+                                  {column.name === 'itemName' ? 'Gold Ring 22K' :
+                                   column.name === 'labor' ? '₹500' :
+                                   column.name === 'weight' ? '10.5g' :
+                                   column.name === 'amount' ? '₹58,250' : 'N/A'}
+                                </td>
+                              ))}
+                            </tr>
+                            <tr style={{ backgroundColor: config.alternateRowColor }}>
+                              {config.columns.filter(col => col.show).map((column, index) => (
+                                <td 
+                                  key={index}
+                                  className="border"
+                                  style={{ 
+                                    borderColor: config.tableBorderColor,
+                                    padding: '1px',
+                                    textAlign: column.name === 'itemName' ? 'left' : 'center',
+                                    fontSize: '6px',
+                                    borderWidth: '0.5px'
+                                  }}
+                                >
+                                  {column.name === 'itemName' ? 'Gold Necklace 22K' :
+                                   column.name === 'labor' ? '₹2,500' :
+                                   column.name === 'weight' ? '25.0g' :
+                                   column.name === 'amount' ? '₹1,40,000' : 'N/A'}
+                                </td>
+                              ))}
+                            </tr>
+                            {/* Total Row */}
+                            <tr style={{ backgroundColor: config.tableHeaderColor, color: config.tableHeaderTextColor }}>
+                              <td className="border font-bold text-center" style={{ borderColor: config.tableBorderColor, padding: '1px', fontSize: '6px', borderWidth: '0.5px' }}>TOTAL</td>
+                              <td className="border font-bold text-center" style={{ borderColor: config.tableBorderColor, padding: '1px', fontSize: '6px', borderWidth: '0.5px' }}>₹3,000</td>
+                              <td className="border font-bold text-center" style={{ borderColor: config.tableBorderColor, padding: '1px', fontSize: '6px', borderWidth: '0.5px' }}>35.5g</td>
+                              <td className="border font-bold text-center" style={{ borderColor: config.tableBorderColor, padding: '1px', fontSize: '6px', borderWidth: '0.5px' }}>₹1,98,250</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
 
                 {/* Totals Section - Jewelry Business Style */}
                 <div className="mb-6">
