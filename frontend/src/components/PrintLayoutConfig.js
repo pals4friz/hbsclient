@@ -697,29 +697,7 @@ const PrintLayoutConfig = () => {
                   </div>
                 )}
 
-                {/* Footer */}
-                <div className="mt-4 text-xs">
-                  {config.showContact && (
-                    <div className="mb-1" style={{ fontSize: `${config.footerFontSize}px` }}>
-                      {config.contactInfo}
-                    </div>
-                  )}
-                  {config.showBankDetails && (
-                    <div className="mb-1" style={{ fontSize: `${config.footerFontSize}px` }}>
-                      {config.bankDetails}
-                    </div>
-                  )}
-                  {config.showTerms && (
-                    <div style={{ fontSize: `${config.footerFontSize}px` }}>
-                      {config.terms}
-                    </div>
-                  )}
-                  {config.showSignature && (
-                    <div className="text-right mt-4" style={{ fontSize: `${config.footerFontSize}px` }}>
-                      {config.signatureText}
-                    </div>
-                  )}
-                </div>
+                {/* Footer removed - integrated into header for A5 format */}
 
               </div>
               
