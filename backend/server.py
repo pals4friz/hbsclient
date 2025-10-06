@@ -589,10 +589,9 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
         else:
             # Simplified summary for duplicate
             draw_simplified_summary(x_start, customer_y - 35, copy_width)
-        c.drawString(220, base_y - 108, f"PHONE: {invoice.customer_phone}")
         
         # Enhanced Items Table with Professional Styling
-        table_y = base_y - 130
+        table_y = customer_y - 130
         table_width = width - 40
         table_left = 20
         
