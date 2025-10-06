@@ -523,20 +523,7 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
         # Totals section below table
         draw_totals_section(x_start, current_y - row_height - 10, table_width, is_duplicate)
     
-    def draw_simplified_summary(x_start, table_y, table_width):
-        """Draw simplified summary for duplicate copy"""
-        c.setFont("Helvetica-Bold", 6)
-        c.drawCentredString(x_start + table_width/2, table_y, "ITEM SUMMARY")
-        
-        summary_y = table_y - 15
-        c.setFont("Helvetica", 5)
-        
-        for i, item in enumerate(invoice.items[:3]):  # Show max 3 items
-            c.drawString(x_start + 8, summary_y - (i * 8), f"{item.product_name[:15]}: ₹{item.amount:.0f}")
-        
-        # Final total
-        c.setFont("Helvetica-Bold", 6)
-        c.drawCentredString(x_start + table_width/2, summary_y - 40, f"FINAL TOTAL: ₹{invoice.total_amount:.0f}")
+    # Removed simplified summary - both copies now use detailed format
     
     def draw_totals_section(x_start, totals_y, table_width, is_duplicate=False):
         """Draw jewelry business totals section"""
