@@ -326,57 +326,7 @@ const ProductList = () => {
               data-testid="product-sku-input"
             />
             
-            <select
-              value={formData.category}
-              onChange={(e) => setFormData({...formData, category: e.target.value})}
-              className="border border-gray-300 p-2 rounded"
-              required
-              data-testid="product-category-select"
-            >
-              <option value="">Select Category</option>
-              <option value="Ring">Ring</option>
-              <option value="Necklace">Necklace</option>
-              <option value="Earring">Earring</option>
-              <option value="Bracelet">Bracelet</option>
-              <option value="Chain">Chain</option>
-              <option value="Pendant">Pendant</option>
-            </select>
-            
-            <div>
-              <select
-                value={formData.purity}
-                onChange={(e) => handlePurityChange(e.target.value)}
-                className="border border-gray-300 p-2 rounded w-full"
-                required
-                data-testid="product-purity-select"
-              >
-                <option value="">Select Purity</option>
-                <option value="18K">18K Gold</option>
-                <option value="20K">20K Gold</option>
-                <option value="22K">22K Gold</option>
-                <option value="24K">24K Gold</option>
-                <option value="Silver">Silver</option>
-              </select>
-              {formData.purity && goldRates.find(rate => rate.purity === formData.purity) && (
-                <div className="text-xs text-green-600 mt-1">
-                  Current rate: ₹{goldRates.find(rate => rate.purity === formData.purity).rate_per_gram}/gram
-                </div>
-              )}
-            </div>
-            
-            <div>
-              <input
-                type="number"
-                step="0.01"
-                placeholder="Rate per gram (₹)"
-                value={formData.rate_per_gram}
-                onChange={(e) => setFormData({...formData, rate_per_gram: e.target.value})}
-                className="border border-gray-300 p-2 rounded w-full"
-                required
-                data-testid="product-rate-input"
-              />
-              <div className="text-xs text-gray-500 mt-1">Selling price per gram including making charges</div>
-            </div>
+            {/* Category, Purity, and Rate fields removed - rates come from dashboard gold rates */}
             
             <input
               type="text"
