@@ -76,9 +76,6 @@ const ProductList = () => {
     setFormData({
       name: product.name,
       sku: product.sku,
-      category: product.category,
-      purity: product.purity,
-      rate_per_gram: product.rate_per_gram.toString(),
       description: product.description
     });
     setEditingProduct(product);
