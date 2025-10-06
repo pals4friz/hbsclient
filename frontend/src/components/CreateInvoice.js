@@ -102,13 +102,25 @@ const CreateInvoice = () => {
     
     invoiceItems.forEach(item => {
       const product = products.find(p => p.id === item.product_id);
-      if (product && item.weight) {
-        const amount = item.weight * product.rate_per_gram;
+      if (product && item.weight && item.purity) {
+        // Get rate per gram from gold rates based on selected purity
+        const goldRate = goldRates.find(rate => rate.purity === item.purity);
+        const ratePerGram = goldRate ? goldRate.rate_per_gram : 5500; // Default rate if purity not found
+        
+        const amount = item.weight * ratePerGram;
         subtotal += amount;
         totalWeight += item.weight;
         
-        // Use individual labor charges per item (user-editable)
-        totalLaborCharges += parseFloat(item.labor_charges || 0);
+        // Automatic labor calculation based on weight rules:
+        // Weight <= 5.000g: labor = ₹500
+        // Weight > 5.000g: labor = weight × 100
+        let autoLaborCharges;
+        if (item.weight <= 5.000) {
+          autoLaborCharges = 500;
+        } else {
+          autoLaborCharges = item.weight * 100;
+        }
+        totalLaborCharges += autoLaborCharges;
       }
     });
 
@@ -119,7 +131,7 @@ const CreateInvoice = () => {
     const subtotalWithTax = subtotalWithLabor + taxAmount;
     const total = subtotalWithTax - parseFloat(discountAmount || 0) - parseFloat(oldGoldValue || 0) - parseFloat(oldSilverValue || 0);
 
-    return { subtotal, laborCharges: totalLaborCharges, totalWeight, subtotalWithLabor, taxAmount, total, discountAmount, oldGoldValue, oldSilverValue };
+    return { subtotal, laborCharges: totalLaborCharges, totalWeight, subtotalWithLabor, taxAmount, total };
   };
 
   const handleSubmit = async (e) => {
