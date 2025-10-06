@@ -466,14 +466,6 @@ const CreateInvoice = () => {
               <td></td>
               <td style="text-align: center;">₹${invoice.subtotal.toFixed(0)}</td>
             </tr>
-            ${invoice.labor_charges > 0 ? `
-              <tr>
-                <td>Labor Charges</td>
-                <td></td>
-                <td></td>
-                <td style="text-align: center;">₹${invoice.labor_charges.toFixed(0)}</td>
-              </tr>
-            ` : ''}
             <tr>
               <td>OLD GOLD</td>
               <td></td>
