@@ -234,9 +234,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Enhanced firm name display testing completed"
-    - "PDF generation with 12pt font and underline verified"
-    - "Backend testing completed - all working"
+    - "Gold rate hardcoding issue resolved and verified"
+    - "PDF format and calculation consistency confirmed"
+    - "All backend invoice print functionality working"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
