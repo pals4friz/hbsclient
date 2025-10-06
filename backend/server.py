@@ -165,7 +165,12 @@ class PrintConfig(BaseModel):
     cellPadding: int = 5
     
     # Table Columns
-    columns: list = []
+    columns: list = [
+        {"name": "itemName", "label": "ITEM NAME", "width": 150, "show": True},
+        {"name": "labor", "label": "LAB", "width": 80, "show": True},
+        {"name": "weight", "label": "WEIGHT", "width": 80, "show": True},
+        {"name": "amount", "label": "AMOUNT", "width": 100, "show": True}
+    ]
     
     # Font Settings
     defaultFont: str = "Helvetica"
