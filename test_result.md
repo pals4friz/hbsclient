@@ -255,9 +255,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Frontend print format testing completed successfully"
-    - "All user-reported print issues resolved"
-    - "Dynamic gold rates verified in both frontend and backend"
+    - "Contextual gold rate display testing completed successfully"
+    - "User-reported purity rate issue resolved"
+    - "Dynamic contextual rates verified in both frontend and backend"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
