@@ -39,11 +39,10 @@ const PrintLayoutConfig = () => {
     
     // Table Columns
     columns: [
-      { name: 'itemName', label: 'ITEM NAME', width: 120, show: true },
-      { name: 'weight', label: 'WEIGHT', width: 50, show: true },
-      { name: 'rate', label: 'RATE/G', width: 50, show: true },
-      { name: 'labor', label: 'LABOR', width: 50, show: true },
-      { name: 'amount', label: 'AMOUNT', width: 60, show: true }
+      { name: 'itemName', label: 'ITEM NAME', width: 150, show: true },
+      { name: 'labor', label: 'LAB', width: 80, show: true },
+      { name: 'weight', label: 'WEIGHT', width: 80, show: true },
+      { name: 'amount', label: 'AMOUNT', width: 100, show: true }
     ],
     
     // Font Settings
