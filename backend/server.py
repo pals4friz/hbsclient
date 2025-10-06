@@ -469,7 +469,8 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
         c.rect(x_start + 5, header_y - row_height, table_width - 10, row_height, fill=1, stroke=1)
         
         c.setFillColor(white)
-        c.setFont("Helvetica-Bold", 6)
+        header_font_size = 5 if is_duplicate else 6
+        c.setFont("Helvetica-Bold", header_font_size)
         c.drawString(col_x[0] + 2, header_y - 8, "ITEM NAME")
         c.drawCentredString(col_x[1] + col_widths[1]/2, header_y - 8, "LAB")
         c.drawCentredString(col_x[2] + col_widths[2]/2, header_y - 8, "WEIGHT")
