@@ -391,18 +391,51 @@ async def get_invoice(invoice_id: str):
 
 # === PDF GENERATION ===
 
-def create_invoice_pdf(invoice: Invoice) -> str:
-    """Create PDF file for invoice and return file path in A5 landscape format with original and duplicate"""
+async def create_invoice_pdf(invoice: Invoice) -> str:
+    """Create PDF file for invoice in A5 landscape format with jewelry business layout (original + duplicate side-by-side)"""
     temp_dir = tempfile.mkdtemp()
     file_path = os.path.join(temp_dir, f"Invoice_{invoice.invoice_number}.pdf")
     
-    # A5 landscape page size (210 x 148 mm)
+    # Get print configuration
+    try:
+        print_config = await db.print_config.find_one({})
+        if not print_config:
+            # Use default config if none saved
+            print_config = {
+                'pageSize': 'A5',
+                'orientation': 'landscape',
+                'copiesPerPage': 2,
+                'companyName': 'HARI BABU SARRAF',
+                'companyAddress': 'MOHALA CHOWK, PURANPUR',
+                'invoiceTitle': 'ROUGH ESTIMATE',
+                'tableHeaderColor': '#333333',
+                'tableBorderColor': '#000000',
+                'showContact': True,
+                'contactInfo': 'CONTACTS: 9690124010, 9456977703'
+            }
+    except:
+        # Default config if database error
+        print_config = {
+            'pageSize': 'A5',
+            'orientation': 'landscape', 
+            'copiesPerPage': 2,
+            'companyName': 'HARI BABU SARRAF',
+            'companyAddress': 'MOHALA CHOWK, PURANPUR',
+            'invoiceTitle': 'ROUGH ESTIMATE',
+            'tableHeaderColor': '#333333',
+            'tableBorderColor': '#000000',
+            'showContact': True,
+            'contactInfo': 'CONTACTS: 9690124010, 9456977703'
+        }
+    
+    # A5 landscape page size (210 x 148 mm = 595 x 420 points)
     from reportlab.lib.pagesizes import A5, landscape
     from reportlab.pdfgen import canvas as pdf_canvas
+    from reportlab.lib.colors import black, white, HexColor
     
-    # Create canvas for manual layout in landscape mode
+    # Create canvas for A5 landscape
     c = pdf_canvas.Canvas(file_path, pagesize=landscape(A5))
-    width, height = landscape(A5)
+    width, height = landscape(A5)  # 595 x 420 points
     
     def draw_invoice_copy(y_offset, copy_text):
         """Draw a single invoice copy at given y_offset"""
