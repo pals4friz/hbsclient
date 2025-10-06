@@ -437,6 +437,111 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
     c = pdf_canvas.Canvas(file_path, pagesize=landscape(A5))
     width, height = landscape(A5)  # 595 x 420 points
     
+    def draw_detailed_table(x_start, table_y, table_width):
+        """Draw detailed items table for original copy"""
+        
+        # Table headers
+        col_widths = [table_width * 0.4, table_width * 0.2, table_width * 0.2, table_width * 0.2]
+        col_x = [x_start + 5]
+        for i in range(1, 4):
+            col_x.append(col_x[-1] + col_widths[i-1])
+        
+        row_height = 12
+        header_y = table_y
+        
+        # Header row
+        c.setFillColor(HexColor('#333333'))
+        c.rect(x_start + 5, header_y - row_height, table_width - 10, row_height, fill=1, stroke=1)
+        
+        c.setFillColor(white)
+        c.setFont("Helvetica-Bold", 6)
+        c.drawString(col_x[0] + 2, header_y - 8, "ITEM NAME")
+        c.drawCentredString(col_x[1] + col_widths[1]/2, header_y - 8, "LAB")
+        c.drawCentredString(col_x[2] + col_widths[2]/2, header_y - 8, "WEIGHT")
+        c.drawCentredString(col_x[3] + col_widths[3]/2, header_y - 8, "AMOUNT")
+        
+        c.setFillColor(black)
+        
+        # Data rows
+        current_y = header_y - row_height
+        total_amount = 0
+        total_weight = 0
+        total_labor = 0
+        
+        for i, item in enumerate(invoice.items[:4]):  # Limit to 4 items for space
+            # Alternating row colors
+            if i % 2 == 1:
+                c.setFillColor(HexColor('#f5f5f5'))
+                c.rect(x_start + 5, current_y - row_height, table_width - 10, row_height, fill=1, stroke=0)
+                c.setFillColor(black)
+            
+            # Draw borders
+            c.rect(x_start + 5, current_y - row_height, table_width - 10, row_height, fill=0, stroke=1)
+            
+            c.setFont("Helvetica", 5)
+            c.drawString(col_x[0] + 2, current_y - 8, item.product_name[:20])
+            c.drawCentredString(col_x[1] + col_widths[1]/2, current_y - 8, f"₹{item.labor_charges:.0f}")
+            c.drawCentredString(col_x[2] + col_widths[2]/2, current_y - 8, f"{item.weight:.1f}g")
+            c.drawCentredString(col_x[3] + col_widths[3]/2, current_y - 8, f"₹{item.amount:.0f}")
+            
+            total_amount += item.amount
+            total_weight += item.weight
+            total_labor += item.labor_charges
+            current_y -= row_height
+        
+        # Total row
+        c.setFillColor(HexColor('#333333'))
+        c.rect(x_start + 5, current_y - row_height, table_width - 10, row_height, fill=1, stroke=1)
+        
+        c.setFillColor(white)
+        c.setFont("Helvetica-Bold", 6)
+        c.drawString(col_x[0] + 2, current_y - 8, "TOTAL")
+        c.drawCentredString(col_x[1] + col_widths[1]/2, current_y - 8, f"₹{total_labor:.0f}")
+        c.drawCentredString(col_x[2] + col_widths[2]/2, current_y - 8, f"{total_weight:.1f}g")
+        c.drawCentredString(col_x[3] + col_widths[3]/2, current_y - 8, f"₹{total_amount:.0f}")
+        
+        c.setFillColor(black)
+        
+        # Totals section below table
+        draw_totals_section(x_start, current_y - row_height - 10, table_width)
+    
+    def draw_simplified_summary(x_start, table_y, table_width):
+        """Draw simplified summary for duplicate copy"""
+        c.setFont("Helvetica-Bold", 6)
+        c.drawCentredString(x_start + table_width/2, table_y, "ITEM SUMMARY")
+        
+        summary_y = table_y - 15
+        c.setFont("Helvetica", 5)
+        
+        for i, item in enumerate(invoice.items[:3]):  # Show max 3 items
+            c.drawString(x_start + 8, summary_y - (i * 8), f"{item.product_name[:15]}: ₹{item.amount:.0f}")
+        
+        # Final total
+        c.setFont("Helvetica-Bold", 6)
+        c.drawCentredString(x_start + table_width/2, summary_y - 40, f"FINAL TOTAL: ₹{invoice.total_amount:.0f}")
+    
+    def draw_totals_section(x_start, totals_y, table_width):
+        """Draw jewelry business totals section"""
+        
+        # Calculate gold price per 10g (sample calculation)
+        total_weight = sum(item.weight for item in invoice.items)
+        gold_price_per_10g = 55000  # Default, should come from gold rates
+        
+        c.rect(x_start + 5, totals_y - 50, table_width - 10, 50, stroke=1, fill=0)
+        
+        c.setFont("Helvetica", 5)
+        line_y = totals_y - 8
+        
+        c.drawString(x_start + 8, line_y, f"GOLD PRICE (22K/10g): ₹{gold_price_per_10g}")
+        c.drawString(x_start + 8, line_y - 8, f"OLD GOLD: ₹{invoice.old_gold_value:.0f}")
+        c.drawString(x_start + 8, line_y - 16, f"OLD SILVER: ₹{invoice.old_silver_value:.0f}")
+        c.drawString(x_start + 8, line_y - 24, f"DISCOUNT: ₹{invoice.discount_amount:.0f}")
+        c.drawString(x_start + 8, line_y - 32, f"Total Weight: {total_weight:.1f}g")
+        
+        # Final total
+        c.setFont("Helvetica-Bold", 6)
+        c.drawString(x_start + 8, line_y - 42, f"FINAL TOTAL: ₹{invoice.total_amount:.0f}")
+    
     def draw_jewelry_invoice_copy(x_start, copy_width, copy_text, is_duplicate=False):
         """Draw a single jewelry invoice copy in the specified area"""
         
