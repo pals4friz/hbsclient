@@ -137,9 +137,6 @@ const ProductList = () => {
           const productData = {
             name: row.name.toString().trim(),
             sku: row.sku.toString().trim().toUpperCase(),
-            category: row.category.toString().trim(),
-            purity: row.purity.toString().trim(),
-            rate_per_gram: parseFloat(row.rate_per_gram),
             description: row.description ? row.description.toString().trim() : ''
           };
 
