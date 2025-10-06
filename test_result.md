@@ -232,7 +232,7 @@ frontend:
     file: "/app/frontend/src/components/CreateInvoice.js, /app/frontend/src/components/InvoiceList.js"
     stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "user"
@@ -240,6 +240,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "✅ FRONTEND PRINT FORMAT FIXES APPLIED: Fixed generatePrintHTML in both CreateInvoice.js and InvoiceList.js - Updated table headers from 'Lab Weight', 'Rate/g' to 'LAB', 'Weight' to match jewelry format - Changed item display from rate_per_gram to labor_charges in second column - Added dynamic gold rate calculation using goldRates state (22K rate * 10) instead of hardcoded 5500*10 - Fixed totals section to show proper labor total, weight total, and gold price per 10g - Updated old gold/silver/discount to use actual invoice values instead of hardcoded zeros - Added goldRates state and fetchGoldRates function to InvoiceList.js for consistency. Frontend print format now matches backend PDF format and uses dynamic gold rates from database."
+        - working: true
+          agent: "testing"
+          comment: "✅ COMPREHENSIVE FRONTEND PRINT TESTING COMPLETED: All user-reported issues have been resolved successfully. ✅ PRINT FORMAT VERIFICATION: Table structure correctly shows 'LAB' header (not 'Rate/g'), labor charges displayed in second column, proper jewelry business format implemented ✅ GOLD RATE VERIFICATION: Dynamic 22K rate confirmed at ₹12800/g (₹128000 per 10g), not hardcoded ₹55000. Gold rates fetched dynamically from database and displayed correctly ✅ CALCULATION CONSISTENCY: Print format calculations match Create Invoice page exactly. Old gold/silver/discount values properly displayed (not hardcoded ₹0) ✅ FUNCTIONALITY TESTING: Print buttons functional on Invoice List, print API requests successful (/api/invoices/{id}/print), print windows open correctly ✅ CODE REVIEW CONFIRMED: Both CreateInvoice.js (lines 412-413, 445, 395, 473-485) and InvoiceList.js (lines 97-98, 228, 81, 253-268) have correct implementations. All user requirements fully satisfied - frontend print functionality now matches backend PDF format with dynamic rates and proper jewelry table structure."
 
 metadata:
   created_by: "main_agent"
