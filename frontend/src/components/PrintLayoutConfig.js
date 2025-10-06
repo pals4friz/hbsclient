@@ -463,17 +463,18 @@ const PrintLayoutConfig = () => {
             <h3 className="text-lg font-semibold mb-4 text-blue-600">👁️ Live Preview</h3>
             <div className="border-2 border-gray-300 bg-white overflow-auto" style={{minHeight: '600px'}}>
               <div 
-                className="p-4"
+                className="p-6"
                 style={{
                   fontSize: `${config.tableFontSize}px`,
                   fontFamily: config.defaultFont,
-                  transform: config.pageSize === 'A4' ? 'scale(0.6)' : 'scale(0.8)',
+                  transform: config.pageSize === 'A4' ? 'scale(0.7)' : 'scale(0.8)',
                   transformOrigin: 'top left',
-                  width: config.orientation === 'landscape' ? '148mm' : '105mm',
-                  height: config.orientation === 'landscape' ? '105mm' : '148mm',
+                  width: config.orientation === 'landscape' ? '297mm' : '210mm',
+                  height: config.orientation === 'landscape' ? '210mm' : '297mm',
                   margin: '0 auto',
                   backgroundColor: 'white',
-                  border: '1px solid #ddd'
+                  border: '1px solid #ddd',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
                 }}
               >
                 {/* Header */}
