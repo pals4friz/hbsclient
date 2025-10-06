@@ -428,7 +428,7 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
                 'showContact': True,
                 'contactInfo': 'CONTACTS: 9690124010, 9456977703'
             }
-    except:
+    except Exception:
         # Default config if database error
         print_config = {
             'pageSize': 'A5',
