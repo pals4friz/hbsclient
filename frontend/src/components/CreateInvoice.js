@@ -442,8 +442,8 @@ const CreateInvoice = () => {
             <thead>
               <tr>
                 <th>Item Name</th>
-                <th>Lab Weight</th>
-                <th>Rate/g</th>
+                <th>LAB</th>
+                <th>Weight</th>
                 <th>Amount</th>
               </tr>
             </thead>
@@ -456,13 +456,13 @@ const CreateInvoice = () => {
           <table class="totals-table">
             <tr>
               <td>Total</td>
-              <td style="text-align: center;">${totalWeight.toFixed(1)} grms</td>
-              <td></td>
+              <td style="text-align: center;">₹${totalLabor.toFixed(0)}</td>
+              <td style="text-align: center;">${totalWeight.toFixed(1)}g</td>
               <td style="text-align: center;">₹${invoice.subtotal.toFixed(0)}</td>
             </tr>
             <tr>
-              <td>Gold Price (22K) per 10g</td>
-              <td style="text-align: center;">${goldRatePer10g.toFixed(0)}</td>
+              <td>Gold Price (22K/10g)</td>
+              <td style="text-align: center;">₹${goldRatePer10g.toFixed(0)}</td>
               <td></td>
               <td style="text-align: center;">₹${invoice.subtotal.toFixed(0)}</td>
             </tr>
