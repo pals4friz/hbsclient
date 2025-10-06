@@ -208,7 +208,7 @@ frontend:
     file: "/app/frontend/src/components/CreateInvoice.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: true
           agent: "main"
