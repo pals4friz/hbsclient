@@ -851,12 +851,19 @@ const CreateInvoice = () => {
               {invoiceItems.map((item, index) => {
                 const product = products.find(p => p.id === item.product_id);
                 const weight = item.weight || 0;
-                const amount = product ? weight * product.rate_per_gram : 0;
+                
+                // Calculate amount using gold rates based on selected purity
+                const goldRate = goldRates.find(rate => rate.purity === item.purity);
+                const ratePerGram = goldRate ? goldRate.rate_per_gram : 5500;
+                const amount = weight * ratePerGram;
+                
+                // Calculate automatic labor based on weight
+                const autoLabor = weight <= 5.000 ? 500 : weight * 100;
 
                 return (
                   <div key={index} className="border border-gray-200 p-3 sm:p-4 rounded" data-testid={`invoice-item-${index}`}>
-                    {/* Mobile: Stack vertically, Desktop: 5 columns */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+                    {/* Mobile: Stack vertically, Desktop: 6 columns */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4">
                       <div>
                         <label className="block text-xs text-gray-500 mb-1">Product</label>
                         <select
