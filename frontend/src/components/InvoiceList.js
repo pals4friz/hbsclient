@@ -25,6 +25,15 @@ const InvoiceList = () => {
     }
   };
 
+  const fetchGoldRates = async () => {
+    try {
+      const response = await axios.get(`${API}/gold-rates`);
+      setGoldRates(response.data);
+    } catch (error) {
+      console.error('Error fetching gold rates:', error);
+    }
+  };
+
   const handleDownload = async (invoiceId, invoiceNumber) => {
     try {
       const response = await axios.get(`${API}/invoices/${invoiceId}/download`, {
