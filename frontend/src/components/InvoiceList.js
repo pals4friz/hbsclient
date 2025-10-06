@@ -239,21 +239,13 @@ const InvoiceList = () => {
           <table class="totals-table">
             <tr>
               <td>Total</td>
-              <td style="text-align: center;">${totalWeight.toFixed(1)} grms</td>
-              <td></td>
+              <td style="text-align: center;">₹${totalLabor.toFixed(0)}</td>
+              <td style="text-align: center;">${totalWeight.toFixed(1)}g</td>
               <td style="text-align: center;">₹${invoice.subtotal.toFixed(0)}</td>
             </tr>
-            ${invoice.labor_charges > 0 ? `
-              <tr>
-                <td>Labor Charges</td>
-                <td></td>
-                <td></td>
-                <td style="text-align: center;">₹${invoice.labor_charges.toFixed(0)}</td>
-              </tr>
-            ` : ''}
             <tr>
-              <td>GOLD PRICE</td>
-              <td></td>
+              <td>Gold Price (22K/10g)</td>
+              <td style="text-align: center;">₹${goldRatePer10g.toFixed(0)}</td>
               <td></td>
               <td style="text-align: center;">₹${invoice.subtotal.toFixed(0)}</td>
             </tr>
@@ -261,19 +253,19 @@ const InvoiceList = () => {
               <td>OLD GOLD</td>
               <td></td>
               <td></td>
-              <td style="text-align: center;">₹0</td>
+              <td style="text-align: center;">₹${invoice.old_gold_value ? invoice.old_gold_value.toFixed(0) : '0'}</td>
             </tr>
             <tr>
               <td>OLD SILVER</td>
               <td></td>
               <td></td>
-              <td style="text-align: center;">₹0</td>
+              <td style="text-align: center;">₹${invoice.old_silver_value ? invoice.old_silver_value.toFixed(0) : '0'}</td>
             </tr>
             <tr>
               <td>DISCOUNT</td>
               <td></td>
               <td></td>
-              <td style="text-align: center;">₹0</td>
+              <td style="text-align: center;">₹${invoice.discount_amount ? invoice.discount_amount.toFixed(0) : '0'}</td>
             </tr>
             ${invoice.tax_included && invoice.tax_amount > 0 ? `
               <tr>
