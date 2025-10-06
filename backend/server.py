@@ -562,7 +562,7 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
         c.setFont("Helvetica", totals_font_size)
         line_y = totals_y - 8
         
-        c.drawString(x_start + 8, line_y, f"GOLD PRICE (22K/10g): ₹{gold_price_per_10g}")
+        c.drawString(x_start + 8, line_y, f"GOLD PRICE ({most_common_purity}/10g): ₹{gold_price_per_10g}")
         c.drawString(x_start + 8, line_y - 8, f"OLD GOLD: ₹{invoice.old_gold_value:.0f}")
         c.drawString(x_start + 8, line_y - 16, f"OLD SILVER: ₹{invoice.old_silver_value:.0f}")
         c.drawString(x_start + 8, line_y - 24, f"DISCOUNT: ₹{invoice.discount_amount:.0f}")
