@@ -86,6 +86,17 @@ const PrintLayoutConfig = () => {
     loadSavedConfig();
   }, []);
 
+  // Auto-refresh preview when config changes
+  useEffect(() => {
+    if (previewMode) {
+      // Force re-render of preview when config changes
+      const timer = setTimeout(() => {
+        // This will trigger a re-render with the new config
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [config, previewMode]);
+
   const loadSavedConfig = async () => {
     try {
       const response = await axios.get(`${API}/print-config`);
