@@ -547,7 +547,8 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
         
         c.rect(x_start + 5, totals_y - 50, table_width - 10, 50, stroke=1, fill=0)
         
-        c.setFont("Helvetica", 5)
+        totals_font_size = 4 if is_duplicate else 5
+        c.setFont("Helvetica", totals_font_size)
         line_y = totals_y - 8
         
         c.drawString(x_start + 8, line_y, f"GOLD PRICE (22K/10g): ₹{gold_price_per_10g}")
@@ -557,7 +558,8 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
         c.drawString(x_start + 8, line_y - 32, f"Total Weight: {total_weight:.1f}g")
         
         # Final total
-        c.setFont("Helvetica-Bold", 6)
+        final_total_font_size = 5 if is_duplicate else 6
+        c.setFont("Helvetica-Bold", final_total_font_size)
         c.drawString(x_start + 8, line_y - 42, f"FINAL TOTAL: ₹{invoice.total_amount:.0f}")
     
     def draw_jewelry_invoice_copy(x_start, copy_width, copy_text, is_duplicate=False):
