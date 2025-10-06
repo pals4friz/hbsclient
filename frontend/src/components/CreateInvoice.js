@@ -876,10 +876,31 @@ const CreateInvoice = () => {
                           <option value="">Select product...</option>
                           {products.map(product => (
                             <option key={product.id} value={product.id}>
-                              {product.name} ({product.sku}) - {product.purity}
+                              {product.name} ({product.sku})
                             </option>
                           ))}
                         </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">Purity</label>
+                        <select
+                          value={item.purity || '18K'}
+                          onChange={(e) => updateItem(index, 'purity', e.target.value)}
+                          className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm touch-manipulation"
+                          data-testid={`purity-select-${index}`}
+                        >
+                          <option value="18K">18K Gold</option>
+                          <option value="20K">20K Gold</option>
+                          <option value="22K">22K Gold</option>
+                          <option value="24K">24K Gold</option>
+                          <option value="Silver">Silver</option>
+                        </select>
+                        {goldRates.find(rate => rate.purity === item.purity) && (
+                          <div className="text-xs text-green-600 mt-1">
+                            ₹{goldRates.find(rate => rate.purity === item.purity).rate_per_gram}/gram
+                          </div>
+                        )}
                       </div>
 
                       <div>
