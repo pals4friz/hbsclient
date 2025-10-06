@@ -220,11 +220,26 @@ frontend:
     file: "/app/frontend/src/components/CreateInvoice.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: true
           agent: "main"
           comment: "✅ Added discount amount, old gold value, and old silver value input fields. Updated calculation display to show new formula with deductions. Updated invoice submission to include new fields."
+
+  - task: "Frontend Print Format Consistency - Gold Rates and Table Structure"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/CreateInvoice.js, /app/frontend/src/components/InvoiceList.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: false
+          agent: "user"
+          comment: "User reported: 'print invoice still not printing the correct format. gold rates on print format are displayed wrong. calculation on the print format is calculated differently from that which is displayed on create invoice page.'"
+        - working: true
+          agent: "main"
+          comment: "✅ FRONTEND PRINT FORMAT FIXES APPLIED: Fixed generatePrintHTML in both CreateInvoice.js and InvoiceList.js - Updated table headers from 'Lab Weight', 'Rate/g' to 'LAB', 'Weight' to match jewelry format - Changed item display from rate_per_gram to labor_charges in second column - Added dynamic gold rate calculation using goldRates state (22K rate * 10) instead of hardcoded 5500*10 - Fixed totals section to show proper labor total, weight total, and gold price per 10g - Updated old gold/silver/discount to use actual invoice values instead of hardcoded zeros - Added goldRates state and fetchGoldRates function to InvoiceList.js for consistency. Frontend print format now matches backend PDF format and uses dynamic gold rates from database."
 
 metadata:
   created_by: "main_agent"
