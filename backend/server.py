@@ -72,9 +72,10 @@ class InvoiceItem(BaseModel):
     sku: str
     quantity: int
     weight: float  # Actual weight from QR code
-    rate_per_gram: float
+    purity: str = "18K"  # Selected purity for this item
+    rate_per_gram: float  # Rate based on selected purity from gold rates
     amount: float
-    labor_charges: float = 0.0  # Individual labor charges per item
+    labor_charges: float = 0.0  # Automatically calculated based on weight
 
 class Invoice(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
