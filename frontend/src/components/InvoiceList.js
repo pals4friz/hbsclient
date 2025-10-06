@@ -209,8 +209,8 @@ const InvoiceList = () => {
             <thead>
               <tr>
                 <th>Item Name</th>
-                <th>Lab Weight</th>
-                <th>Rate/g</th>
+                <th>LAB</th>
+                <th>Weight</th>
                 <th>Amount</th>
               </tr>
             </thead>
