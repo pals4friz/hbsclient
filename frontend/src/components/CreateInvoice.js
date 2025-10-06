@@ -81,7 +81,7 @@ const CreateInvoice = () => {
   };
 
   const addItem = () => {
-    setInvoiceItems([...invoiceItems, { product_id: '', quantity: 1, weight: 0, labor_charges: 0 }]);
+    setInvoiceItems([...invoiceItems, { product_id: '', quantity: 1, weight: 0, purity: '18K', labor_charges: 0 }]);
   };
 
   const removeItem = (index) => {
