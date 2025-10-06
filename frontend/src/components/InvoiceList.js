@@ -7,9 +7,11 @@ const API = `${BACKEND_URL}/api`;
 const InvoiceList = () => {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [goldRates, setGoldRates] = useState([]);
 
   useEffect(() => {
     fetchInvoices();
+    fetchGoldRates();
   }, []);
 
   const fetchInvoices = async () => {
