@@ -1113,8 +1113,12 @@ def main():
     edge_case_invoice_id = tester.test_create_invoice_edge_cases(customer_id, product_id)
     
     print("\n" + "📄" * 50)
-    print("📄 PDF GENERATION TESTING")
+    print("📄 UPDATED PDF GENERATION TESTING - A5 LANDSCAPE SIDE-BY-SIDE")
     print("📄" * 50)
+    
+    # Test the updated PDF format specifically requested by user
+    tester.test_updated_pdf_format_side_by_side(invoice_id)
+    tester.test_pdf_preview_format_match(invoice_id)
     
     # Test PDF downloads and print functionality
     tester.test_download_invoice_pdf(invoice_id)
