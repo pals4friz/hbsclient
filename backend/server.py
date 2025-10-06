@@ -452,8 +452,8 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
     c = pdf_canvas.Canvas(file_path, pagesize=landscape(A5))
     width, height = landscape(A5)  # 595 x 420 points
     
-    def draw_detailed_table(x_start, table_y, table_width):
-        """Draw detailed items table for original copy"""
+    def draw_detailed_table(x_start, table_y, table_width, is_duplicate=False):
+        """Draw detailed items table for both original and duplicate copies"""
         
         # Table headers
         col_widths = [table_width * 0.4, table_width * 0.2, table_width * 0.2, table_width * 0.2]
