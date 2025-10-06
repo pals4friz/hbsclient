@@ -416,11 +416,11 @@ const ProductList = () => {
             <ul className="list-disc list-inside ml-4 space-y-1">
               <li><code>name</code> - Product name</li>
               <li><code>sku</code> - 2-character SKU code</li>
-              <li><code>category</code> - Ring, Necklace, etc.</li>
-              <li><code>purity</code> - 18K, 22K, 24K, Silver</li>
-              <li><code>rate_per_gram</code> - Price per gram</li>
               <li><code>description</code> - Optional description</li>
             </ul>
+            <p className="text-blue-600 font-medium mt-2">
+              ℹ️ Rates are now picked from Dashboard Gold Rates based on item purity selection
+            </p>
             <p className="text-green-600 font-medium mt-2">
               💡 Click "Download Template" for example Excel file
             </p>
