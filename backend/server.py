@@ -717,14 +717,17 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
             c.setFont("Helvetica-Oblique", 6)
             c.drawCentredString(width/2, footer_y - 25, "*This estimate is without tax")
     
-    # Draw original copy (top half)
-    draw_jewelry_invoice_copy(0, width/2, "ORIGINAL")
+    # Draw side-by-side layout for A5 landscape
+    copy_width = width / 2
     
-    # Draw horizontal line separator
-    c.line(20, height/2, width - 20, height/2)
+    # Draw original copy (left side)
+    draw_jewelry_invoice_copy(0, copy_width, "ORIGINAL", is_duplicate=False)
     
-    # Draw duplicate copy (bottom half)
-    draw_jewelry_invoice_copy(0, width/2, "DUPLICATE", is_duplicate=True)
+    # Draw vertical line separator
+    c.line(copy_width, 30, copy_width, height - 30)
+    
+    # Draw duplicate copy (right side)
+    draw_jewelry_invoice_copy(copy_width, copy_width, "DUPLICATE", is_duplicate=True)
     
     # Save the PDF
     c.save()
