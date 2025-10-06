@@ -483,55 +483,48 @@ const PrintLayoutConfig = () => {
                     {/* ORIGINAL COPY */}
                     <div className="border-r border-dashed border-gray-400 pr-2">
                       <div className="text-center text-xs font-bold mb-2">ORIGINAL</div>
-                {/* Header */}
-                <div 
-                  className="text-center mb-6"
-                  style={{ 
-                    backgroundColor: config.headerBackgroundColor,
-                    color: config.headerTextColor,
-                    padding: '15px',
-                    borderRadius: '4px',
-                    borderBottom: '2px solid #333'
-                  }}
-                >
-                  <div 
-                    style={{ 
-                      fontSize: `${config.titleFontSize + 2}px`,
-                      fontWeight: 'bold',
-                      textAlign: config.titlePosition,
-                      marginBottom: '10px',
-                      letterSpacing: '2px'
-                    }}
-                  >
-                    {config.invoiceTitle}
-                  </div>
-                  
-                  <div 
-                    style={{ 
-                      fontSize: `${config.companyNameFontSize + 2}px`,
-                      fontWeight: 'bold',
-                      marginBottom: '6px',
-                      textDecoration: 'underline',
-                      letterSpacing: '1px'
-                    }}
-                  >
-                    {config.companyName}
-                  </div>
-                  
-                  <div style={{ fontSize: `${config.addressFontSize + 1}px`, marginBottom: '4px' }}>
-                    {config.companyAddress}
-                  </div>
-                  
-                  {config.showContact && (
-                    <div style={{ fontSize: `${config.footerFontSize + 1}px`, marginTop: '8px' }}>
-                      CONTACTS: 9690124010, 9456977703
-                    </div>
-                  )}
-                  
-                  <div style={{ fontSize: `${config.footerFontSize}px`, marginTop: '4px', fontStyle: 'italic' }}>
-                    22 Carat also available | FOLLOW US ON: [Social Media]
-                  </div>
-                </div>
+                      {/* Compact Header for A5 */}
+                      <div 
+                        className="text-center mb-3"
+                        style={{ 
+                          backgroundColor: config.headerBackgroundColor,
+                          color: config.headerTextColor,
+                          padding: '6px',
+                          borderRadius: '2px',
+                          borderBottom: '1px solid #333'
+                        }}
+                      >
+                        <div 
+                          style={{ 
+                            fontSize: `${config.titleFontSize - 2}px`,
+                            fontWeight: 'bold',
+                            marginBottom: '2px'
+                          }}
+                        >
+                          {config.invoiceTitle}
+                        </div>
+                        
+                        <div 
+                          style={{ 
+                            fontSize: `${config.companyNameFontSize - 2}px`,
+                            fontWeight: 'bold',
+                            marginBottom: '2px',
+                            textDecoration: 'underline'
+                          }}
+                        >
+                          {config.companyName}
+                        </div>
+                        
+                        <div style={{ fontSize: `${config.addressFontSize - 1}px` }}>
+                          {config.companyAddress}
+                        </div>
+                        
+                        {config.showContact && (
+                          <div style={{ fontSize: `${config.footerFontSize}px`, marginTop: '2px' }}>
+                            📞 9690124010, 9456977703
+                          </div>
+                        )}
+                      </div>
 
                 {/* Customer & Invoice Details */}
                 <div className="mb-6 p-3 border" style={{ borderColor: config.tableBorderColor }}>
