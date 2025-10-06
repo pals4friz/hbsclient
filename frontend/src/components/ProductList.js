@@ -383,9 +383,7 @@ const ProductList = () => {
                 <tr key={product.id}>
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">{product.name}</td>
                   <td className="px-6 py-4 text-sm text-blue-600 font-mono font-bold text-lg">{product.sku}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{product.category}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{product.purity}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900 font-semibold">₹{product.rate_per_gram}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{product.description || '-'}</td>
                   <td className="px-6 py-4 text-sm font-medium">
                     <button
                       onClick={() => handleEdit(product)}
