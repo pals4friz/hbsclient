@@ -171,6 +171,21 @@ backend:
           agent: "testing"
           comment: "🎯 ENHANCED FIRM NAME DISPLAY TESTING COMPLETE: Successfully tested improved PDF generation with enhanced firm name display. ✅ Font size enhancement verified: Increased from 10pt to 12pt (20% larger) for better visibility ✅ Underline feature confirmed: Properly positioned horizontal line below 'HARI BABU SARRAF' ✅ Implementation details: stringWidth calculation for precise underline positioning, 2-point offset below text ✅ Dual copy consistency: Both original and duplicate copies have enhanced styling ✅ Cross-invoice testing: Enhanced display works across different invoice types (high-value, simple, multi-item) ✅ Layout integrity maintained: Enhancements don't break overall PDF design ✅ Professional appearance: Firm name now more prominent and visually emphasized ✅ HTML print format also enhanced: 13px font + underline in frontend print function ✅ All 46/46 tests passed (100% success rate). Enhanced firm name display is working perfectly - 'HARI BABU SARRAF' is now significantly more visible and professionally presented."
 
+  - task: "Dynamic Gold Rate Display in PDF"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL ISSUE IDENTIFIED: PDF generation uses hardcoded gold_price_per_10g = 55000 instead of dynamic rates from database. Database has 22K rate at ₹12800/gram (₹128000/10g) but PDF shows hardcoded ₹55000. Invoice calculations correctly use database rates, but PDF display does not. Location: server.py line 533. This causes major discrepancy between actual gold prices and PDF display."
+        - working: true
+          agent: "testing"
+          comment: "✅ GOLD RATE HARDCODING ISSUE RESOLVED: Fixed PDF generation to use dynamic gold rates from database. ✅ Added gold rates fetching in create_invoice_pdf function ✅ Updated draw_totals_section to calculate gold_price_per_10g = gold_rates.get('22K', 5500.0) * 10 ✅ Removed hardcoded 55000 value ✅ PDF now displays correct 22K rate: ₹128000/10g (₹12800/gram × 10) ✅ Verified with PDF text extraction: no hardcoded ₹55000 found, correct dynamic rate ₹128000 present ✅ All calculations consistent between invoice creation and PDF display ✅ Gold rates endpoint /api/gold-rates working correctly ✅ PDF generation tested with multiple invoices - all showing dynamic rates ✅ Final verification test passed: PDF content shows expected dynamic rates. Critical gold rate display issue completely resolved."
+
 frontend:
   - task: "Print HTML - Landscape CSS Configuration"
     implemented: true
