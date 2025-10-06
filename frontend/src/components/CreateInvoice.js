@@ -896,11 +896,6 @@ const CreateInvoice = () => {
                           <option value="24K">24K Gold</option>
                           <option value="Silver">Silver</option>
                         </select>
-                        {goldRates.find(rate => rate.purity === item.purity) && (
-                          <div className="text-xs text-green-600 mt-1">
-                            ₹{goldRates.find(rate => rate.purity === item.purity).rate_per_gram}/gram
-                          </div>
-                        )}
                       </div>
 
                       <div>
