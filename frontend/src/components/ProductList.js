@@ -66,9 +66,6 @@ const ProductList = () => {
     setFormData({
       name: '',
       sku: '',
-      category: '',
-      purity: '',
-      rate_per_gram: '',
       description: ''
     });
     setEditingProduct(null);
