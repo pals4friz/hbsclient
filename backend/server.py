@@ -443,6 +443,22 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
             'contactInfo': 'CONTACTS: 9690124010, 9456977703'
         }
     
+    # Get current gold rates for PDF display
+    try:
+        gold_rates = {}
+        gold_rates_cursor = db.gold_rates.find()
+        async for rate in gold_rates_cursor:
+            gold_rates[rate["purity"]] = rate["rate_per_gram"]
+    except Exception:
+        # Default rates if database error
+        gold_rates = {
+            "22K": 5500.0,
+            "18K": 4500.0,
+            "20K": 5000.0,
+            "24K": 6000.0,
+            "Silver": 80.0
+        }
+    
     # A5 landscape page size (210 x 148 mm = 595 x 420 points)
     from reportlab.lib.pagesizes import A5, landscape
     from reportlab.pdfgen import canvas as pdf_canvas
