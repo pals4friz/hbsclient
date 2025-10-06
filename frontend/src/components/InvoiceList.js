@@ -91,6 +91,11 @@ const InvoiceList = () => {
     }
 
     const totalWeight = invoice.items.reduce((sum, item) => sum + item.weight, 0);
+    const totalLabor = invoice.items.reduce((sum, item) => sum + item.labor_charges, 0);
+    
+    // Get dynamic gold price per 10g from current gold rates (22K as standard)
+    const gold22KRate = goldRates.find(rate => rate.purity === '22K');
+    const goldRatePer10g = gold22KRate ? (gold22KRate.rate_per_gram * 10) : 55000; // Fallback to 55000
 
     return `
       <!DOCTYPE html>
