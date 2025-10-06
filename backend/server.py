@@ -718,13 +718,13 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
             c.drawCentredString(width/2, footer_y - 25, "*This estimate is without tax")
     
     # Draw original copy (top half)
-    draw_invoice_copy(0, "ORIGINAL")
+    draw_jewelry_invoice_copy(0, width/2, "ORIGINAL")
     
     # Draw horizontal line separator
     c.line(20, height/2, width - 20, height/2)
     
     # Draw duplicate copy (bottom half)
-    draw_invoice_copy(height/2, "DUPLICATE")
+    draw_jewelry_invoice_copy(0, width/2, "DUPLICATE", is_duplicate=True)
     
     # Save the PDF
     c.save()
