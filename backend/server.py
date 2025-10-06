@@ -437,30 +437,53 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
     c = pdf_canvas.Canvas(file_path, pagesize=landscape(A5))
     width, height = landscape(A5)  # 595 x 420 points
     
-    def draw_invoice_copy(y_offset, copy_text):
-        """Draw a single invoice copy at given y_offset"""
-        base_y = height - y_offset
+    def draw_jewelry_invoice_copy(x_start, copy_width, copy_text, is_duplicate=False):
+        """Draw a single jewelry invoice copy in the specified area"""
         
-        # Title and company info
-        c.setFont("Helvetica-Bold", 12)
-        c.drawCentredString(width/2, base_y - 30, "ROUGH ESTIMATE")
-        c.drawCentredString(width/2, base_y - 45, copy_text)
+        # Header section
+        header_y = height - 30
         
-        c.setFont("Helvetica-Bold", 12)
-        c.drawCentredString(width/2, base_y - 60, "HARI BABU SARRAF")
+        # Copy indicator
+        c.setFont("Helvetica-Bold", 8)
+        c.drawCentredString(x_start + copy_width/2, header_y, copy_text)
         
-        # Add underline for firm name
-        firm_name_width = c.stringWidth("HARI BABU SARRAF", "Helvetica-Bold", 12)
-        c.line(width/2 - firm_name_width/2, base_y - 62, width/2 + firm_name_width/2, base_y - 62)
+        # Title
+        c.setFont("Helvetica-Bold", 10 if not is_duplicate else 8)
+        c.drawCentredString(x_start + copy_width/2, header_y - 15, print_config['invoiceTitle'])
         
-        c.setFont("Helvetica", 8)
-        c.drawCentredString(width/2, base_y - 75, "MOHALA CHOWK, PURANPUR")
+        # Company name with underline
+        c.setFont("Helvetica-Bold", 9 if not is_duplicate else 7)
+        company_name = print_config['companyName']
+        c.drawCentredString(x_start + copy_width/2, header_y - 28, company_name)
         
-        # Customer and invoice details
-        c.setFont("Helvetica-Bold", 7)
-        c.drawString(20, base_y - 95, f"NAME: {invoice.customer_name[:20]}")
-        c.drawString(220, base_y - 95, f"INVOICE NO.: {invoice.invoice_number}")
-        c.drawString(20, base_y - 108, f"DATE: {invoice.invoice_date}")
+        # Add underline for company name
+        company_width = c.stringWidth(company_name, "Helvetica-Bold", 9 if not is_duplicate else 7)
+        c.line(x_start + copy_width/2 - company_width/2, header_y - 30, 
+               x_start + copy_width/2 + company_width/2, header_y - 30)
+        
+        # Address
+        c.setFont("Helvetica", 7 if not is_duplicate else 6)
+        c.drawCentredString(x_start + copy_width/2, header_y - 40, print_config['companyAddress'])
+        
+        # Contact info
+        if print_config.get('showContact'):
+            c.drawCentredString(x_start + copy_width/2, header_y - 50, print_config.get('contactInfo', ''))
+        
+        # Customer details box
+        customer_y = header_y - 70
+        c.rect(x_start + 5, customer_y - 25, copy_width - 10, 25, stroke=1, fill=0)
+        
+        c.setFont("Helvetica", 6 if not is_duplicate else 5)
+        c.drawString(x_start + 8, customer_y - 8, f"NAME: {invoice.customer_name[:25]}")
+        c.drawString(x_start + 8, customer_y - 16, f"DATE: {invoice.invoice_date}")
+        c.drawString(x_start + 8, customer_y - 24, f"INV NO.: {invoice.invoice_number}")
+        
+        if not is_duplicate:
+            # Full detailed table for original
+            draw_detailed_table(x_start, customer_y - 35, copy_width)
+        else:
+            # Simplified summary for duplicate
+            draw_simplified_summary(x_start, customer_y - 35, copy_width)
         c.drawString(220, base_y - 108, f"PHONE: {invoice.customer_phone}")
         
         # Enhanced Items Table with Professional Styling
