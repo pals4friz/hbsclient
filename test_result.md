@@ -252,9 +252,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Gold rate hardcoding issue resolved and verified"
-    - "PDF format and calculation consistency confirmed"
-    - "All backend invoice print functionality working"
+    - "Frontend print format testing completed successfully"
+    - "All user-reported print issues resolved"
+    - "Dynamic gold rates verified in both frontend and backend"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
