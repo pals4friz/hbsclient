@@ -13,9 +13,6 @@ const ProductList = () => {
   const [formData, setFormData] = useState({
     name: '',
     sku: '',
-    category: '',
-    purity: '',
-    rate_per_gram: '',
     description: ''
   });
   const [isImporting, setIsImporting] = useState(false);
