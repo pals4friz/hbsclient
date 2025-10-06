@@ -521,7 +521,7 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
         c.setFillColor(black)
         
         # Totals section below table
-        draw_totals_section(x_start, current_y - row_height - 10, table_width)
+        draw_totals_section(x_start, current_y - row_height - 10, table_width, is_duplicate)
     
     def draw_simplified_summary(x_start, table_y, table_width):
         """Draw simplified summary for duplicate copy"""
