@@ -612,53 +612,90 @@ const PrintLayoutConfig = () => {
                         </table>
                       </div>
 
-                {/* Totals Section - Jewelry Business Style */}
-                <div className="mb-6">
-                  <div 
-                    className={`${config.totalsPosition === 'right' ? 'ml-auto' : ''} p-4 border`}
-                    style={{ 
-                      backgroundColor: config.totalsBackgroundColor,
-                      maxWidth: config.totalsPosition === 'right' ? '300px' : '100%',
-                      borderColor: config.tableBorderColor,
-                      fontSize: `${config.tableFontSize + 1}px`
-                    }}
-                  >
-                    <div className="space-y-2">
-                      <div className="flex justify-between border-b pb-1" style={{ borderColor: config.tableBorderColor }}>
-                        <span className="font-semibold">GOLD PRICE (22K per 10g):</span>
-                        <span>₹55,000</span>
+                      {/* Compact Totals Section */}
+                      <div className="mb-2">
+                        <div 
+                          className="p-2 border text-xs"
+                          style={{ 
+                            backgroundColor: config.totalsBackgroundColor,
+                            borderColor: config.tableBorderColor
+                          }}
+                        >
+                          <div className="space-y-1">
+                            <div className="flex justify-between border-b pb-1" style={{ borderColor: config.tableBorderColor, fontSize: '7px' }}>
+                              <span><strong>GOLD PRICE (22K/10g):</strong></span>
+                              <span>₹55,000</span>
+                            </div>
+                            <div className="flex justify-between" style={{ fontSize: '6px' }}>
+                              <span>OLD GOLD:</span>
+                              <span>₹15,000</span>
+                            </div>
+                            <div className="flex justify-between" style={{ fontSize: '6px' }}>
+                              <span>OLD SILVER:</span>
+                              <span>₹3,000</span>
+                            </div>
+                            <div className="flex justify-between" style={{ fontSize: '6px' }}>
+                              <span>DISCOUNT:</span>
+                              <span>₹2,000</span>
+                            </div>
+                            <div className="flex justify-between border-t pt-1" style={{ borderColor: config.tableBorderColor, fontSize: '6px' }}>
+                              <span>Total Weight:</span>
+                              <span>35.5g</span>
+                            </div>
+                            <div 
+                              className={`flex justify-between font-bold border-t pt-1 ${config.finalTotalHighlight ? 'bg-gray-100' : ''}`}
+                              style={{ 
+                                color: config.finalTotalHighlight ? config.finalTotalColor : 'inherit',
+                                borderColor: config.tableBorderColor,
+                                fontSize: '7px'
+                              }}
+                            >
+                              <span>FINAL TOTAL:</span>
+                              <span>₹1,78,250</span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span>OLD GOLD:</span>
-                        <span>₹15,000</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>OLD SILVER:</span>
-                        <span>₹3,000</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>DISCOUNT:</span>
-                        <span>₹2,000</span>
-                      </div>
-                      <div className="flex justify-between border-t pt-1" style={{ borderColor: config.tableBorderColor }}>
-                        <span>Total Weight:</span>
-                        <span>35.5 grms</span>
-                      </div>
-                      <div 
-                        className={`flex justify-between font-bold text-lg border-t-2 pt-2 ${config.finalTotalHighlight ? 'bg-gray-100' : ''}`}
-                        style={{ 
-                          color: config.finalTotalHighlight ? config.finalTotalColor : 'inherit',
-                          borderColor: config.tableBorderColor,
-                          padding: '8px',
-                          margin: '8px -8px -8px -8px'
-                        }}
-                      >
-                        <span>FINAL TOTAL:</span>
-                        <span>₹1,78,250</span>
+                    </div>
+
+                    {/* DUPLICATE COPY */}
+                    <div className="pl-2">
+                      <div className="text-center text-xs font-bold mb-2">DUPLICATE</div>
+                      
+                      {/* Same compact content as original but slightly smaller */}
+                      <div style={{ opacity: 0.9, fontSize: '85%' }}>
+                        {/* Duplicate header */}
+                        <div className="text-center mb-2 p-1" style={{ backgroundColor: config.headerBackgroundColor, borderRadius: '2px', fontSize: '6px' }}>
+                          <div className="font-bold">{config.invoiceTitle}</div>
+                          <div className="font-bold underline">{config.companyName}</div>
+                          <div>{config.companyAddress}</div>
+                          <div>📞 9690124010, 9456977703</div>
+                        </div>
+
+                        {/* Duplicate customer details */}
+                        <div className="mb-1 p-1 border text-xs" style={{ borderColor: config.tableBorderColor, fontSize: '5px' }}>
+                          <div><strong>NAME:</strong> Sample Customer</div>
+                          <div><strong>DATE:</strong> {new Date().toLocaleDateString()}</div>
+                          <div><strong>INV NO.:</strong> INV-001</div>
+                          <div><strong>PHONE:</strong> 9876543210</div>
+                        </div>
+
+                        {/* Duplicate simplified table */}
+                        <div className="mb-1 p-1 border text-center" style={{ borderColor: config.tableBorderColor, fontSize: '5px' }}>
+                          <div className="font-bold">ITEM SUMMARY</div>
+                          <div>Gold Ring 22K: ₹58,250</div>
+                          <div>Gold Necklace 22K: ₹1,40,000</div>
+                          <div className="border-t pt-1 font-bold">FINAL TOTAL: ₹1,78,250</div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  // Single copy layout (existing code for single copy)
+                  <div>
+                    {/* Single copy content goes here if needed */}
+                  </div>
+                )}
 
                 {/* Footer */}
                 <div className="mt-4 text-xs">
