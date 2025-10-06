@@ -598,12 +598,8 @@ async def create_invoice_pdf(invoice: Invoice) -> str:
         c.drawString(x_start + 8, customer_y - 16, f"DATE: {invoice.invoice_date}")
         c.drawString(x_start + 8, customer_y - 24, f"INV NO.: {invoice.invoice_number}")
         
-        if not is_duplicate:
-            # Full detailed table for original
-            draw_detailed_table(x_start, customer_y - 35, copy_width)
-        else:
-            # Simplified summary for duplicate
-            draw_simplified_summary(x_start, customer_y - 35, copy_width)
+        # Both original and duplicate use the same detailed format
+        draw_detailed_table(x_start, customer_y - 35, copy_width, is_duplicate)
         
         # Function content is handled by the new helper functions above
     
