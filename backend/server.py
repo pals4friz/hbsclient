@@ -285,6 +285,12 @@ async def create_invoice(invoice_data: InvoiceCreate):
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
     
+    # Get current gold rates for purity-based pricing
+    gold_rates = {}
+    gold_rates_cursor = db.gold_rates.find()
+    async for rate in gold_rates_cursor:
+        gold_rates[rate["purity"]] = rate["rate_per_gram"]
+    
     # Process items and calculate totals
     invoice_items = []
     subtotal = 0.0
@@ -296,9 +302,22 @@ async def create_invoice(invoice_data: InvoiceCreate):
             raise HTTPException(status_code=404, detail=f"Product {item_data['product_id']} not found")
         
         quantity = item_data["quantity"]
-        weight = item_data["weight"]  # Weight comes from QR code/manual input
-        amount = weight * product["rate_per_gram"]
-        labor_charges = item_data.get("labor_charges", 0.0)  # Individual labor per item
+        weight = item_data["weight"]  # Weight from QR code/manual input
+        purity = item_data.get("purity", "18K")  # Default to 18K if not specified
+        
+        # Get rate per gram based on selected purity from gold rates
+        rate_per_gram = gold_rates.get(purity, 5500)  # Default rate if purity not found
+        
+        # Calculate amount based on weight and purity-based rate
+        amount = weight * rate_per_gram
+        
+        # Automatic labor calculation based on weight rules:
+        # Weight <= 5.000g: labor = ₹500
+        # Weight > 5.000g: labor = weight × 100
+        if weight <= 5.000:
+            labor_charges = 500
+        else:
+            labor_charges = weight * 100
         
         invoice_item = InvoiceItem(
             product_id=product["id"],
@@ -306,7 +325,8 @@ async def create_invoice(invoice_data: InvoiceCreate):
             sku=product["sku"],
             quantity=quantity,
             weight=weight,
-            rate_per_gram=product["rate_per_gram"],
+            purity=purity,
+            rate_per_gram=rate_per_gram,
             amount=amount,
             labor_charges=labor_charges
         )
