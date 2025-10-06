@@ -67,8 +67,8 @@ const InvoiceList = () => {
     const itemsHTML = invoice.items.map((item) => `
       <tr>
         <td>${item.product_name}</td>
+        <td>₹${item.labor_charges.toFixed(0)}</td>
         <td>${item.weight.toFixed(1)}g</td>
-        <td>₹${item.rate_per_gram.toFixed(0)}</td>
         <td>₹${item.amount.toFixed(0)}</td>
       </tr>
     `).join('');
