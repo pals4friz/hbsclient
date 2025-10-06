@@ -1140,10 +1140,16 @@ def main():
     if labor_invoice_id:
         tester.test_firm_name_display_in_pdf(labor_invoice_id)
     
-    # Test PDF with enhanced features
+    # Test PDF with enhanced features and updated format
     if discount_invoice_id:
+        tester.test_updated_pdf_format_side_by_side(discount_invoice_id)
+        tester.test_pdf_preview_format_match(discount_invoice_id)
         tester.test_download_invoice_pdf(discount_invoice_id)
         tester.test_landscape_pdf_format(discount_invoice_id)
+    
+    if labor_invoice_id:
+        tester.test_updated_pdf_format_side_by_side(labor_invoice_id)
+        tester.test_pdf_preview_format_match(labor_invoice_id)
     
     tester.test_sales_report_download()
     
