@@ -624,6 +624,23 @@ async def create_invoice(invoice_data: InvoiceCreate):
     async for rate in gold_rates_cursor:
         gold_rates[rate["purity"]] = rate["rate_per_gram"]
     
+    # Get making charges config
+    making_charges_config = await db.making_charges.find().to_list(1000)
+    
+    def get_making_charges(purity: str, weight: float) -> float:
+        """Get making charges from config or use default"""
+        for rule in making_charges_config:
+            if rule["purity"] == purity and rule["min_weight"] <= weight <= rule["max_weight"]:
+                if rule["charge_type"] == "per_gram":
+                    return rule["charge_amount"] * weight
+                else:
+                    return rule["charge_amount"]  # per_piece
+        # Default calculation if no rule found
+        if weight <= 5.000:
+            return 500
+        else:
+            return weight * 100
+    
     # Process items and calculate totals
     invoice_items = []
     subtotal = 0.0
@@ -642,16 +659,13 @@ async def create_invoice(invoice_data: InvoiceCreate):
             product_name = item_data.get("manual_name", "Custom Item")
             product_id = "manual"
             sku = "MANUAL"
-            # Use the making_charges provided by user, or auto-calculate if not provided
+            # Use the making_charges provided by user, or get from config if not provided
             manual_labor = item_data.get("making_charges", None)
-            if manual_labor is not None:
+            if manual_labor is not None and manual_labor > 0:
                 labor_charges = float(manual_labor)
             else:
-                # Auto-calculate if not provided
-                if weight <= 5.000:
-                    labor_charges = 500
-                else:
-                    labor_charges = weight * 100
+                # Get from config
+                labor_charges = get_making_charges(purity, weight)
         else:
             # Product from inventory
             product = await db.products.find_one({"id": item_data["product_id"]})
@@ -660,13 +674,8 @@ async def create_invoice(invoice_data: InvoiceCreate):
             product_name = product["name"]
             product_id = product["id"]
             sku = product["sku"]
-            # Automatic labor calculation based on weight rules:
-            # Weight <= 5.000g: labor = ₹500
-            # Weight > 5.000g: labor = weight × 100
-            if weight <= 5.000:
-                labor_charges = 500
-            else:
-                labor_charges = weight * 100
+            # Get making charges from config
+            labor_charges = get_making_charges(purity, weight)
         
         # Get rate per gram based on selected purity from gold rates
         rate_per_gram = gold_rates.get(purity, 5500)  # Default rate if purity not found

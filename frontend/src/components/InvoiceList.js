@@ -216,27 +216,27 @@ const InvoiceList = () => {
             </div>
           </div>
           
-          <!-- Calculations Section -->
+          <!-- Calculations Section - Only show fields with values -->
           <div style="border: 1px solid #000; padding: 5px; background-color: ${cfg.totalsBackgroundColor || '#f9f9f9'}; font-size: ${baseFontSize}px;">
+            ${((invoice.old_gold_value || 0) > 0 || (invoice.old_silver_value || 0) > 0 || (invoice.discount_amount || 0) > 0 || (invoice.tax_included && invoice.tax_amount > 0)) ? `
             <table style="width: 100%; border-collapse: collapse;">
+              ${(invoice.old_gold_value || 0) > 0 || (invoice.old_silver_value || 0) > 0 ? `
               <tr>
-                <td style="padding: 1px 0;">OLD GOLD:</td>
-                <td style="text-align: right; padding: 1px 0;">₹${(invoice.old_gold_value || 0).toFixed(0)}</td>
+                ${(invoice.old_gold_value || 0) > 0 ? `<td style="padding: 1px 0;">OLD GOLD:</td><td style="text-align: right; padding: 1px 0;">₹${invoice.old_gold_value.toFixed(0)}</td>` : '<td></td><td></td>'}
                 <td style="width: 15px;"></td>
-                <td style="padding: 1px 0;">OLD SILVER:</td>
-                <td style="text-align: right; padding: 1px 0;">₹${(invoice.old_silver_value || 0).toFixed(0)}</td>
+                ${(invoice.old_silver_value || 0) > 0 ? `<td style="padding: 1px 0;">OLD SILVER:</td><td style="text-align: right; padding: 1px 0;">₹${invoice.old_silver_value.toFixed(0)}</td>` : '<td></td><td></td>'}
               </tr>
+              ` : ''}
+              ${(invoice.discount_amount || 0) > 0 || (invoice.tax_included && invoice.tax_amount > 0) ? `
               <tr>
-                <td style="padding: 1px 0;">DISCOUNT:</td>
-                <td style="text-align: right; padding: 1px 0;">₹${(invoice.discount_amount || 0).toFixed(0)}</td>
+                ${(invoice.discount_amount || 0) > 0 ? `<td style="padding: 1px 0;">DISCOUNT:</td><td style="text-align: right; padding: 1px 0;">₹${invoice.discount_amount.toFixed(0)}</td>` : '<td></td><td></td>'}
                 <td></td>
-                ${invoice.tax_included && invoice.tax_amount > 0 ? `
-                  <td style="padding: 1px 0;">TAX (${invoice.tax_percentage}%):</td>
-                  <td style="text-align: right; padding: 1px 0;">₹${invoice.tax_amount.toFixed(0)}</td>
-                ` : '<td></td><td></td>'}
+                ${invoice.tax_included && invoice.tax_amount > 0 ? `<td style="padding: 1px 0;">TAX (${invoice.tax_percentage}%):</td><td style="text-align: right; padding: 1px 0;">₹${invoice.tax_amount.toFixed(0)}</td>` : '<td></td><td></td>'}
               </tr>
+              ` : ''}
             </table>
-            <div style="display: flex; justify-content: space-between; border-top: 2px solid #000; padding-top: 4px; margin-top: 4px; font-weight: bold; font-size: ${baseFontSize + 2}px; color: ${cfg.finalTotalColor || '#0000aa'};">
+            ` : ''}
+            <div style="display: flex; justify-content: space-between; ${((invoice.old_gold_value || 0) > 0 || (invoice.old_silver_value || 0) > 0 || (invoice.discount_amount || 0) > 0 || (invoice.tax_included && invoice.tax_amount > 0)) ? 'border-top: 2px solid #000; padding-top: 4px; margin-top: 4px;' : ''} font-weight: bold; font-size: ${baseFontSize + 2}px; color: ${cfg.finalTotalColor || '#0000aa'};">
               <span>FINAL TOTAL:</span>
               <span>₹${invoice.total_amount.toFixed(0)}</span>
             </div>

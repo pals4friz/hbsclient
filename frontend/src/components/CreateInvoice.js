@@ -593,27 +593,27 @@ const CreateInvoice = () => {
             </div>
           </div>
           
-          <!-- Calculations Section -->
+          <!-- Calculations Section - Only show fields with values -->
           <div style="border: 1px solid #000; padding: 5px; background-color: ${cfg.totalsBackgroundColor || '#f9f9f9'}; font-size: ${baseFontSize}px;">
+            ${(invoice.old_gold_value > 0 || invoice.old_silver_value > 0 || invoice.discount_amount > 0 || (invoice.tax_included && invoice.tax_amount > 0)) ? `
             <table style="width: 100%; border-collapse: collapse;">
+              ${invoice.old_gold_value > 0 || invoice.old_silver_value > 0 ? `
               <tr>
-                <td style="padding: 1px 0;">OLD GOLD:</td>
-                <td style="text-align: right; padding: 1px 0;">₹${invoice.old_gold_value.toFixed(0)}</td>
+                ${invoice.old_gold_value > 0 ? `<td style="padding: 1px 0;">OLD GOLD:</td><td style="text-align: right; padding: 1px 0;">₹${invoice.old_gold_value.toFixed(0)}</td>` : '<td></td><td></td>'}
                 <td style="width: 15px;"></td>
-                <td style="padding: 1px 0;">OLD SILVER:</td>
-                <td style="text-align: right; padding: 1px 0;">₹${invoice.old_silver_value.toFixed(0)}</td>
+                ${invoice.old_silver_value > 0 ? `<td style="padding: 1px 0;">OLD SILVER:</td><td style="text-align: right; padding: 1px 0;">₹${invoice.old_silver_value.toFixed(0)}</td>` : '<td></td><td></td>'}
               </tr>
+              ` : ''}
+              ${invoice.discount_amount > 0 || (invoice.tax_included && invoice.tax_amount > 0) ? `
               <tr>
-                <td style="padding: 1px 0;">DISCOUNT:</td>
-                <td style="text-align: right; padding: 1px 0;">₹${invoice.discount_amount.toFixed(0)}</td>
+                ${invoice.discount_amount > 0 ? `<td style="padding: 1px 0;">DISCOUNT:</td><td style="text-align: right; padding: 1px 0;">₹${invoice.discount_amount.toFixed(0)}</td>` : '<td></td><td></td>'}
                 <td></td>
-                ${invoice.tax_included && invoice.tax_amount > 0 ? `
-                  <td style="padding: 1px 0;">TAX (${invoice.tax_percentage}%):</td>
-                  <td style="text-align: right; padding: 1px 0;">₹${invoice.tax_amount.toFixed(0)}</td>
-                ` : '<td></td><td></td>'}
+                ${invoice.tax_included && invoice.tax_amount > 0 ? `<td style="padding: 1px 0;">TAX (${invoice.tax_percentage}%):</td><td style="text-align: right; padding: 1px 0;">₹${invoice.tax_amount.toFixed(0)}</td>` : '<td></td><td></td>'}
               </tr>
+              ` : ''}
             </table>
-            <div style="display: flex; justify-content: space-between; border-top: 2px solid #000; padding-top: 4px; margin-top: 4px; font-weight: bold; font-size: ${baseFontSize + 2}px; color: ${cfg.finalTotalColor || '#0000aa'};">
+            ` : ''}
+            <div style="display: flex; justify-content: space-between; ${(invoice.old_gold_value > 0 || invoice.old_silver_value > 0 || invoice.discount_amount > 0 || (invoice.tax_included && invoice.tax_amount > 0)) ? 'border-top: 2px solid #000; padding-top: 4px; margin-top: 4px;' : ''} font-weight: bold; font-size: ${baseFontSize + 2}px; color: ${cfg.finalTotalColor || '#0000aa'};">
               <span>FINAL TOTAL:</span>
               <span>₹${invoice.total_amount.toFixed(0)}</span>
             </div>
@@ -893,10 +893,10 @@ const CreateInvoice = () => {
                 const ratePerGram = goldRate ? goldRate.rate_per_gram : 5500;
                 const amount = weight * ratePerGram;
                 
-                // Calculate labor - for manual items with making_charges > 0, use that; otherwise auto-calculate
+                // Calculate labor - for manual items with making_charges > 0, use that; otherwise use config
                 const laborCharges = (isManual && item.making_charges > 0) 
                   ? parseFloat(item.making_charges) 
-                  : (weight <= 5.000 ? 500 : weight * 100);
+                  : getMakingCharges(item.purity, weight);
 
                 return (
                   <div key={index} className={`border p-3 sm:p-4 rounded ${isManual ? 'border-amber-400 bg-amber-50' : 'border-gray-200'}`} data-testid={`invoice-item-${index}`}>
@@ -989,13 +989,13 @@ const CreateInvoice = () => {
                             data-testid={`making-charges-input-${index}`}
                           />
                           <div className="text-xs text-amber-600 mt-1">
-                            {item.making_charges > 0 ? `Custom: ₹${item.making_charges}` : `Auto: ₹${(weight <= 5.000 ? 500 : weight * 100).toFixed(0)}`}
+                            {item.making_charges > 0 ? `Custom: ₹${item.making_charges}` : `Auto: ₹${getMakingCharges(item.purity, weight).toFixed(0)}`}
                           </div>
                         </div>
                       ) : (
                         /* Product from Inventory - Auto Labor Display */
                         <div>
-                          <label className="block text-xs text-gray-500 mb-1">Labor (Auto)</label>
+                          <label className="block text-xs text-gray-500 mb-1">Labor (Config)</label>
                           <input
                             type="text"
                             value={`₹${laborCharges.toFixed(0)}`}
@@ -1004,7 +1004,7 @@ const CreateInvoice = () => {
                             data-testid={`labor-display-${index}`}
                           />
                           <div className="text-xs text-blue-600 mt-1">
-                            {weight <= 5.000 ? `≤5g: ₹500 fixed` : `>5g: ₹100 × ${weight.toFixed(2)}g`}
+                            From config / default
                           </div>
                         </div>
                       )}
