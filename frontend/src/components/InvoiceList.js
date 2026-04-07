@@ -4,14 +4,41 @@ import axios from "axios";
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Default print config
+const DEFAULT_PRINT_CONFIG = {
+  pageSize: 'A5',
+  orientation: 'landscape',
+  margins: { top: 20, bottom: 20, left: 20, right: 20 },
+  copiesPerPage: 2,
+  companyName: 'HARI BABU SARRAF',
+  companyAddress: 'MOHALA CHOWK, PURANPUR',
+  invoiceTitle: 'ROUGH ESTIMATE',
+  titleFontSize: 16,
+  tableHeaderColor: '#333333',
+  tableHeaderTextColor: '#ffffff',
+  alternateRowColor: '#f5f5f5',
+  tableBorderColor: '#cccccc',
+  tableFontSize: 11,
+  totalsBackgroundColor: '#f9f9f9',
+  finalTotalColor: '#0000aa',
+  showTerms: false,
+  terms: '',
+  showContact: true,
+  contactInfo: '9690124010, 9456977703',
+  showSignature: true,
+  signatureText: 'Authorized Signature'
+};
+
 const InvoiceList = () => {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [goldRates, setGoldRates] = useState([]);
+  const [printConfig, setPrintConfig] = useState(DEFAULT_PRINT_CONFIG);
 
   useEffect(() => {
     fetchInvoices();
     fetchGoldRates();
+    fetchPrintConfig();
   }, []);
 
   const fetchInvoices = async () => {
@@ -31,6 +58,17 @@ const InvoiceList = () => {
       setGoldRates(response.data);
     } catch (error) {
       console.error('Error fetching gold rates:', error);
+    }
+  };
+
+  const fetchPrintConfig = async () => {
+    try {
+      const response = await axios.get(`${API}/print-config`);
+      if (response.data) {
+        setPrintConfig(prev => ({ ...prev, ...response.data }));
+      }
+    } catch (error) {
+      console.log('Using default print config');
     }
   };
 
@@ -75,7 +113,9 @@ const InvoiceList = () => {
   };
 
   // Generate print HTML for A5 jewelry store format with original and duplicate SIDE BY SIDE - FULL PAGE
+  // Uses printConfig from Print Layout Configuration
   const generatePrintHTML = (invoice) => {
+    const cfg = printConfig; // Shorthand for config
     const totalWeight = invoice.items.reduce((sum, item) => sum + item.weight, 0);
     const totalLabor = invoice.items.reduce((sum, item) => sum + item.labor_charges, 0);
     
@@ -96,11 +136,11 @@ const InvoiceList = () => {
 
     const generateCopyHTML = (copyType) => {
       const itemsHTML = invoice.items.slice(0, 6).map((item, idx) => `
-        <tr style="background-color: ${idx % 2 === 0 ? '#ffffff' : '#f0f0f0'};">
-          <td style="border: 1px solid #000; padding: 4px 6px; text-align: left; font-size: 11px;">${item.product_name.substring(0, 20)}</td>
-          <td style="border: 1px solid #000; padding: 4px 6px; text-align: center; font-size: 11px;">₹${item.labor_charges.toFixed(0)}</td>
-          <td style="border: 1px solid #000; padding: 4px 6px; text-align: center; font-size: 11px;">${item.weight.toFixed(2)}g</td>
-          <td style="border: 1px solid #000; padding: 4px 6px; text-align: center; font-size: 11px;">₹${item.amount.toFixed(0)}</td>
+        <tr style="background-color: ${idx % 2 === 0 ? '#ffffff' : cfg.alternateRowColor || '#f0f0f0'};">
+          <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px; text-align: left; font-size: ${cfg.tableFontSize || 11}px;">${item.product_name.substring(0, 20)}</td>
+          <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px; text-align: center; font-size: ${cfg.tableFontSize || 11}px;">₹${item.labor_charges.toFixed(0)}</td>
+          <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px; text-align: center; font-size: ${cfg.tableFontSize || 11}px;">${item.weight.toFixed(2)}g</td>
+          <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px; text-align: center; font-size: ${cfg.tableFontSize || 11}px;">₹${item.amount.toFixed(0)}</td>
         </tr>
       `).join('');
 
@@ -108,7 +148,7 @@ const InvoiceList = () => {
       let emptyRows = '';
       const itemCount = Math.min(invoice.items.length, 6);
       for (let i = itemCount; i < 6; i++) {
-        emptyRows += `<tr style="background-color: ${i % 2 === 0 ? '#ffffff' : '#f0f0f0'};"><td style="border: 1px solid #000; padding: 4px 6px; height: 20px;">&nbsp;</td><td style="border: 1px solid #000; padding: 4px 6px;">&nbsp;</td><td style="border: 1px solid #000; padding: 4px 6px;">&nbsp;</td><td style="border: 1px solid #000; padding: 4px 6px;">&nbsp;</td></tr>`;
+        emptyRows += `<tr style="background-color: ${i % 2 === 0 ? '#ffffff' : cfg.alternateRowColor || '#f0f0f0'};"><td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px; height: 20px;">&nbsp;</td><td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px;">&nbsp;</td><td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px;">&nbsp;</td><td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px;">&nbsp;</td></tr>`;
       }
       
       return `
@@ -118,10 +158,10 @@ const InvoiceList = () => {
           
           <!-- Header Section -->
           <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 8px;">
-            <div style="font-size: 16px; font-weight: bold; margin-bottom: 4px;">ROUGH ESTIMATE</div>
-            <div style="font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 4px;">HARI BABU SARRAF</div>
-            <div style="font-size: 12px; margin-bottom: 3px;">MOHALA CHOWK, PURANPUR</div>
-            <div style="font-size: 11px;">📞 9690124010, 9456977703</div>
+            <div style="font-size: ${cfg.titleFontSize || 16}px; font-weight: bold; margin-bottom: 4px;">${cfg.invoiceTitle || 'ROUGH ESTIMATE'}</div>
+            <div style="font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 4px;">${cfg.companyName || 'HARI BABU SARRAF'}</div>
+            <div style="font-size: 12px; margin-bottom: 3px;">${cfg.companyAddress || 'MOHALA CHOWK, PURANPUR'}</div>
+            ${cfg.showContact !== false ? `<div style="font-size: 11px;">📞 ${cfg.contactInfo || '9690124010, 9456977703'}</div>` : ''}
           </div>
           
           <!-- Customer Details -->
@@ -135,28 +175,28 @@ const InvoiceList = () => {
           <!-- Items Table -->
           <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px;">
             <thead>
-              <tr style="background-color: #333; color: #fff;">
-                <th style="border: 1px solid #000; padding: 5px; font-size: 11px; text-align: center; width: 40%;">ITEM NAME</th>
-                <th style="border: 1px solid #000; padding: 5px; font-size: 11px; text-align: center; width: 20%;">LAB</th>
-                <th style="border: 1px solid #000; padding: 5px; font-size: 11px; text-align: center; width: 20%;">WEIGHT</th>
-                <th style="border: 1px solid #000; padding: 5px; font-size: 11px; text-align: center; width: 20%;">AMOUNT</th>
+              <tr style="background-color: ${cfg.tableHeaderColor || '#333'}; color: ${cfg.tableHeaderTextColor || '#fff'};">
+                <th style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; width: 40%;">ITEM NAME</th>
+                <th style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; width: 20%;">LAB</th>
+                <th style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; width: 20%;">WEIGHT</th>
+                <th style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; width: 20%;">AMOUNT</th>
               </tr>
             </thead>
             <tbody>
               ${itemsHTML}
               ${emptyRows}
               <!-- Totals Row -->
-              <tr style="background-color: #333; color: #fff;">
-                <td style="border: 1px solid #000; padding: 5px; font-size: 11px; text-align: center; font-weight: bold;">TOTAL</td>
-                <td style="border: 1px solid #000; padding: 5px; font-size: 11px; text-align: center; font-weight: bold;">₹${totalLabor.toFixed(0)}</td>
-                <td style="border: 1px solid #000; padding: 5px; font-size: 11px; text-align: center; font-weight: bold;">${totalWeight.toFixed(2)}g</td>
-                <td style="border: 1px solid #000; padding: 5px; font-size: 11px; text-align: center; font-weight: bold;">₹${invoice.subtotal.toFixed(0)}</td>
+              <tr style="background-color: ${cfg.tableHeaderColor || '#333'}; color: ${cfg.tableHeaderTextColor || '#fff'};">
+                <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; font-weight: bold;">TOTAL</td>
+                <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; font-weight: bold;">₹${totalLabor.toFixed(0)}</td>
+                <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; font-weight: bold;">${totalWeight.toFixed(2)}g</td>
+                <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; font-weight: bold;">₹${invoice.subtotal.toFixed(0)}</td>
               </tr>
             </tbody>
           </table>
           
           <!-- Totals Section -->
-          <div style="border: 1px solid #000; padding: 8px; background-color: #f9f9f9; font-size: 11px;">
+          <div style="border: 1px solid #000; padding: 8px; background-color: ${cfg.totalsBackgroundColor || '#f9f9f9'}; font-size: 11px;">
             ${goldPurities.length > 0 ? `
               <div style="border-bottom: 1px solid #999; padding-bottom: 4px; margin-bottom: 4px;">
                 <div style="font-weight: bold; font-size: 10px; margin-bottom: 3px; color: #666;">GOLD RATES (per 10g):</div>
@@ -185,12 +225,14 @@ const InvoiceList = () => {
               <span>Total Weight:</span>
               <span>${totalWeight.toFixed(2)}g</span>
             </div>
-            <div style="display: flex; justify-content: space-between; border-top: 2px solid #000; padding-top: 6px; margin-top: 6px; font-weight: bold; font-size: 13px; color: #0000aa;">
+            <div style="display: flex; justify-content: space-between; border-top: 2px solid #000; padding-top: 6px; margin-top: 6px; font-weight: bold; font-size: 13px; color: ${cfg.finalTotalColor || '#0000aa'};">
               <span>FINAL TOTAL:</span>
               <span>₹${invoice.total_amount.toFixed(0)}</span>
             </div>
           </div>
           
+          ${cfg.showTerms && cfg.terms ? `<div style="font-size: 8px; margin-top: 4px; color: #666;">${cfg.terms}</div>` : ''}
+          ${cfg.showSignature ? `<div style="margin-top: 8px; text-align: right; font-size: 9px;"><div style="border-top: 1px solid #000; display: inline-block; padding-top: 3px; min-width: 100px;">${cfg.signatureText || 'Authorized Signature'}</div></div>` : ''}
           ${!invoice.tax_included ? '<div style="font-style: italic; margin-top: 5px; text-align: center; font-size: 9px;">*This estimate is without tax</div>' : ''}
         </div>
       `;
