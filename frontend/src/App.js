@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import axios from "axios";
 import "./App.css";
 import Customers from "./components/Customers";
@@ -10,6 +10,9 @@ import GoldRates from "./components/GoldRates";
 import SalesManagement from "./components/SalesManagement";
 import PrintLayoutConfig from "./components/PrintLayoutConfig";
 import ProductList from "./components/ProductList";
+import Login from "./components/Login";
+import UserManagement from "./components/UserManagement";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -534,6 +537,7 @@ const Products_OLD = () => {
 // Navigation Component
 const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, logout, isAdmin } = useAuth();
   
   return (
     <nav className="bg-blue-600 text-white p-4">
@@ -542,7 +546,7 @@ const Navigation = () => {
           <Link to="/" className="text-lg sm:text-xl font-bold">💎 Jewelry Store</Link>
           
           {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-2 lg:space-x-4 text-sm lg:text-base">
+          <div className="hidden md:flex items-center space-x-2 lg:space-x-4 text-sm lg:text-base">
             <Link to="/" className="hover:text-blue-200 px-2 py-1">Dashboard</Link>
             <Link to="/product-list" className="hover:text-blue-200 px-2 py-1">Product List</Link>
             <Link to="/customers" className="hover:text-blue-200 px-2 py-1">Customers</Link>
@@ -551,6 +555,22 @@ const Navigation = () => {
             <Link to="/sales-management" className="hover:text-blue-200 px-2 py-1">Sales</Link>
             <Link to="/sales-report" className="hover:text-blue-200 px-2 py-1">Reports</Link>
             <Link to="/print-config" className="hover:text-blue-200 px-2 py-1">Print Setup</Link>
+            {isAdmin() && (
+              <Link to="/users" className="hover:text-blue-200 px-2 py-1 bg-purple-700 rounded">👥 Users</Link>
+            )}
+            
+            {/* User Menu */}
+            <div className="ml-4 pl-4 border-l border-blue-400 flex items-center space-x-3">
+              <span className="text-blue-100 text-sm">
+                {user?.role === 'admin' ? '👑' : '👤'} {user?.name || user?.username}
+              </span>
+              <button
+                onClick={logout}
+                className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm"
+              >
+                Logout
+              </button>
+            </div>
           </div>
           
           {/* Mobile Menu Button */}
@@ -576,6 +596,22 @@ const Navigation = () => {
               <Link to="/sales-management" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>Sales</Link>
               <Link to="/sales-report" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>Reports</Link>
               <Link to="/print-config" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>Print Setup</Link>
+              {isAdmin() && (
+                <Link to="/users" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation bg-purple-700 rounded mx-2" onClick={() => setIsMobileMenuOpen(false)}>👥 User Management</Link>
+              )}
+              
+              {/* Mobile User Info & Logout */}
+              <div className="border-t border-blue-500 mt-2 pt-4">
+                <div className="px-2 py-2 text-blue-200 text-sm">
+                  Logged in as: {user?.role === 'admin' ? '👑' : '👤'} {user?.name || user?.username}
+                </div>
+                <button
+                  onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+                  className="w-full text-left px-2 py-2 text-red-300 hover:text-red-100 touch-manipulation"
+                >
+                  🚪 Logout
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -584,22 +620,118 @@ const Navigation = () => {
   );
 };
 
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return children;
+};
+
+// Main Layout with Navigation
+const MainLayout = ({ children }) => {
+  return (
+    <>
+      <Navigation />
+      {children}
+    </>
+  );
+};
+
+function AppRoutes() {
+  const { isAuthenticated } = useAuth();
+  
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <Dashboard />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/product-list" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <ProductList />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/customers" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <Customers />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/invoices" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <CreateInvoice />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/invoice-list" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <InvoiceList />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/sales-management" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <SalesManagement />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/sales-report" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <SalesReport />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/print-config" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <PrintLayoutConfig />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/users" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <UserManagement />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+    </Routes>
+  );
+}
+
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Navigation />
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/product-list" element={<ProductList />} />
-          <Route path="/customers" element={<Customers />} />
-          <Route path="/invoices" element={<CreateInvoice />} />
-          <Route path="/invoice-list" element={<InvoiceList />} />
-          <Route path="/sales-management" element={<SalesManagement />} />
-          <Route path="/sales-report" element={<SalesReport />} />
-          <Route path="/print-config" element={<PrintLayoutConfig />} />
-          <Route path="/print-config" element={<PrintLayoutConfig />} />
-        </Routes>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
       </BrowserRouter>
     </div>
   );

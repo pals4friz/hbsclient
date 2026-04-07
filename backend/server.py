@@ -1,5 +1,6 @@
-from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header
 from fastapi.responses import FileResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -23,6 +24,8 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
+import hashlib
+import secrets
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -207,6 +210,247 @@ class GoldRateCreate(BaseModel):
 
 class GoldRateUpdate(BaseModel):
     rate_per_gram: float
+
+# === USER AUTHENTICATION MODELS ===
+
+class User(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    username: str
+    password_hash: str
+    role: str = "user"  # "admin" or "user"
+    name: str = ""
+    active: bool = True
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class UserCreate(BaseModel):
+    username: str
+    password: str
+    role: str = "user"
+    name: str = ""
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+class UserResponse(BaseModel):
+    id: str
+    username: str
+    role: str
+    name: str
+    active: bool
+    created_at: datetime
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    role: Optional[str] = None
+    active: Optional[bool] = None
+    password: Optional[str] = None
+
+# === HELPER FUNCTIONS ===
+
+def hash_password(password: str) -> str:
+    """Hash password using SHA-256"""
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def verify_password(password: str, password_hash: str) -> bool:
+    """Verify password against hash"""
+    return hash_password(password) == password_hash
+
+def generate_token() -> str:
+    """Generate a simple session token"""
+    return secrets.token_hex(32)
+
+# In-memory token storage (for simplicity - in production use Redis or JWT)
+active_sessions = {}
+
+async def get_current_user(authorization: Optional[str] = Header(None)) -> Optional[dict]:
+    """Get current user from authorization header"""
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+    
+    token = authorization.replace("Bearer ", "")
+    session = active_sessions.get(token)
+    
+    if not session:
+        return None
+    
+    user = await db.users.find_one({"id": session["user_id"]})
+    if not user or not user.get("active", True):
+        return None
+    
+    return user
+
+async def require_auth(authorization: Optional[str] = Header(None)) -> dict:
+    """Require authentication"""
+    user = await get_current_user(authorization)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    return user
+
+async def require_admin(authorization: Optional[str] = Header(None)) -> dict:
+    """Require admin role"""
+    user = await require_auth(authorization)
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return user
+
+# === AUTHENTICATION APIS ===
+
+@api_router.post("/auth/login")
+async def login(credentials: UserLogin):
+    """Login and get session token"""
+    user = await db.users.find_one({"username": credentials.username})
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+    
+    if not verify_password(credentials.password, user["password_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+    
+    if not user.get("active", True):
+        raise HTTPException(status_code=401, detail="Account is disabled")
+    
+    # Generate session token
+    token = generate_token()
+    active_sessions[token] = {
+        "user_id": user["id"],
+        "username": user["username"],
+        "role": user["role"]
+    }
+    
+    return {
+        "token": token,
+        "user": {
+            "id": user["id"],
+            "username": user["username"],
+            "role": user["role"],
+            "name": user.get("name", "")
+        }
+    }
+
+@api_router.post("/auth/logout")
+async def logout(authorization: Optional[str] = Header(None)):
+    """Logout and invalidate session token"""
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.replace("Bearer ", "")
+        if token in active_sessions:
+            del active_sessions[token]
+    return {"message": "Logged out successfully"}
+
+@api_router.get("/auth/me")
+async def get_current_user_info(user: dict = Depends(require_auth)):
+    """Get current logged in user info"""
+    return {
+        "id": user["id"],
+        "username": user["username"],
+        "role": user["role"],
+        "name": user.get("name", "")
+    }
+
+# === USER MANAGEMENT APIS (Admin only) ===
+
+@api_router.post("/users", response_model=UserResponse)
+async def create_user(user_data: UserCreate, admin: dict = Depends(require_admin)):
+    """Create a new user (admin only)"""
+    # Check if username already exists
+    existing_user = await db.users.find_one({"username": user_data.username})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username already exists")
+    
+    # Create user
+    user = User(
+        username=user_data.username,
+        password_hash=hash_password(user_data.password),
+        role=user_data.role,
+        name=user_data.name
+    )
+    
+    await db.users.insert_one(user.dict())
+    
+    return UserResponse(
+        id=user.id,
+        username=user.username,
+        role=user.role,
+        name=user.name,
+        active=user.active,
+        created_at=user.created_at
+    )
+
+@api_router.get("/users", response_model=List[UserResponse])
+async def get_users(admin: dict = Depends(require_admin)):
+    """Get all users (admin only)"""
+    users = await db.users.find().to_list(1000)
+    return [UserResponse(
+        id=u["id"],
+        username=u["username"],
+        role=u["role"],
+        name=u.get("name", ""),
+        active=u.get("active", True),
+        created_at=u.get("created_at", datetime.utcnow())
+    ) for u in users]
+
+@api_router.put("/users/{user_id}", response_model=UserResponse)
+async def update_user(user_id: str, user_data: UserUpdate, admin: dict = Depends(require_admin)):
+    """Update a user (admin only)"""
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    update_data = {}
+    if user_data.name is not None:
+        update_data["name"] = user_data.name
+    if user_data.role is not None:
+        update_data["role"] = user_data.role
+    if user_data.active is not None:
+        update_data["active"] = user_data.active
+    if user_data.password is not None:
+        update_data["password_hash"] = hash_password(user_data.password)
+    
+    if update_data:
+        await db.users.update_one({"id": user_id}, {"$set": update_data})
+    
+    updated_user = await db.users.find_one({"id": user_id})
+    return UserResponse(
+        id=updated_user["id"],
+        username=updated_user["username"],
+        role=updated_user["role"],
+        name=updated_user.get("name", ""),
+        active=updated_user.get("active", True),
+        created_at=updated_user.get("created_at", datetime.utcnow())
+    )
+
+@api_router.delete("/users/{user_id}")
+async def delete_user(user_id: str, admin: dict = Depends(require_admin)):
+    """Delete a user (admin only)"""
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Prevent deleting yourself
+    if user["id"] == admin["id"]:
+        raise HTTPException(status_code=400, detail="Cannot delete yourself")
+    
+    await db.users.delete_one({"id": user_id})
+    return {"message": "User deleted successfully"}
+
+# === INITIALIZATION: Create default admin user ===
+
+async def init_default_admin():
+    """Create default admin user if no users exist"""
+    user_count = await db.users.count_documents({})
+    if user_count == 0:
+        admin_user = User(
+            username="admin",
+            password_hash=hash_password("admin123"),
+            role="admin",
+            name="Administrator"
+        )
+        await db.users.insert_one(admin_user.dict())
+        print("Default admin user created: username='admin', password='admin123'")
+
+@app.on_event("startup")
+async def startup_event():
+    await init_default_admin()
 
 # === PRODUCT APIS ===
 
