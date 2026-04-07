@@ -549,15 +549,12 @@ const CreateInvoice = () => {
       
       return `
         <div style="width: 50%; height: 100%; float: left; padding: 6px; box-sizing: border-box; line-height: ${lineHeight}; ${copyType === 'ORIGINAL' ? 'border-right: 2px dashed #666;' : ''}">
-          <!-- Copy Type Label -->
-          <div style="text-align: center; font-size: ${baseFontSize}px; font-weight: bold; margin-bottom: 4px; text-decoration: underline;">${copyType}</div>
-          
           <!-- Header Section -->
-          <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 6px;">
-            <div style="font-size: ${titleFontSize}px; font-weight: bold; margin-bottom: 3px;">${cfg.invoiceTitle || 'ROUGH ESTIMATE'}</div>
-            <div style="font-size: ${headerFontSize}px; font-weight: bold; text-decoration: underline; margin-bottom: 3px;">${cfg.companyName || 'HARI BABU SARRAF'}</div>
-            <div style="font-size: ${baseFontSize}px; margin-bottom: 2px;">${cfg.companyAddress || 'MOHALA CHOWK, PURANPUR'}</div>
-            ${cfg.showContact !== false ? `<div style="font-size: ${baseFontSize - 1}px;">📞 ${cfg.contactInfo || '9690124010, 9456977703'}</div>` : ''}
+          <div style="border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 6px;">
+            <div style="font-size: ${titleFontSize}px; font-weight: bold; margin-bottom: 3px; text-align: left;">${cfg.invoiceTitle || 'ROUGH ESTIMATE'}</div>
+            <div style="font-size: ${headerFontSize}px; font-weight: bold; text-decoration: underline; margin-bottom: 3px; text-align: center;">${cfg.companyName || 'HARI BABU SARRAF'}</div>
+            <div style="font-size: ${baseFontSize}px; margin-bottom: 2px; text-align: center;">${cfg.companyAddress || 'MOHALA CHOWK, PURANPUR'}</div>
+            ${cfg.showContact !== false ? `<div style="font-size: ${baseFontSize - 1}px; text-align: center;">📞 ${cfg.contactInfo || '9690124010, 9456977703'}</div>` : ''}
           </div>
           
           <!-- Customer Details -->
