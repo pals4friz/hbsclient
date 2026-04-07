@@ -79,13 +79,20 @@ const InvoiceList = () => {
     const totalWeight = invoice.items.reduce((sum, item) => sum + item.weight, 0);
     const totalLabor = invoice.items.reduce((sum, item) => sum + item.labor_charges, 0);
     
-    // Get the most common purity in the invoice items for gold rate display
-    const itemPurities = invoice.items.map(item => item.purity);
-    const mostCommonPurity = itemPurities.length > 0 ? itemPurities[0] : '22K';
+    // Get unique purities from invoice items (only gold items, not silver)
+    const goldPurities = [...new Set(invoice.items
+      .filter(item => item.purity && item.purity !== 'Silver')
+      .map(item => item.purity))];
     
-    // Get dynamic gold price per 10g based on the actual purity used
-    const goldRate = goldRates.find(rate => rate.purity === mostCommonPurity);
-    const goldRatePer10g = goldRate ? (goldRate.rate_per_gram * 10) : 55000;
+    // Generate gold prices HTML for only purchased purities (per 10g)
+    const goldPricesHTML = goldPurities.map(purity => {
+      const goldRate = goldRates.find(rate => rate.purity === purity);
+      const ratePer10g = goldRate ? (goldRate.rate_per_gram * 10) : 0;
+      return `<div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+        <span>${purity} Gold (10g):</span>
+        <span>₹${ratePer10g.toFixed(0)}</span>
+      </div>`;
+    }).join('');
 
     const generateCopyHTML = (copyType) => {
       const itemsHTML = invoice.items.slice(0, 6).map((item, idx) => `
@@ -150,10 +157,12 @@ const InvoiceList = () => {
           
           <!-- Totals Section -->
           <div style="border: 1px solid #000; padding: 8px; background-color: #f9f9f9; font-size: 11px;">
-            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #999; padding-bottom: 4px; margin-bottom: 4px; font-size: 12px;">
-              <strong>GOLD PRICE (${mostCommonPurity}/10g):</strong>
-              <span>₹${goldRatePer10g.toFixed(0)}</span>
-            </div>
+            ${goldPurities.length > 0 ? `
+              <div style="border-bottom: 1px solid #999; padding-bottom: 4px; margin-bottom: 4px;">
+                <div style="font-weight: bold; font-size: 10px; margin-bottom: 3px; color: #666;">GOLD RATES (per 10g):</div>
+                ${goldPricesHTML}
+              </div>
+            ` : ''}
             <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
               <span>OLD GOLD:</span>
               <span>₹${invoice.old_gold_value ? invoice.old_gold_value.toFixed(0) : '0'}</span>
