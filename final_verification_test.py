@@ -6,7 +6,7 @@ import io
 
 def test_pdf_gold_rate_content():
     """Test the actual PDF content to verify gold rate fix"""
-    base_url = "https://jewel-invoice.preview.emergentagent.com"
+    base_url = "https://hbs-client-app.preview.emergentagent.com"
     api_url = f"{base_url}/api"
     
     print("🔍 FINAL VERIFICATION: Testing PDF Content for Gold Rate Fix")

@@ -6,7 +6,7 @@ import PyPDF2
 import io
 
 class GoldRatePDFTester:
-    def __init__(self, base_url="https://jewel-invoice.preview.emergentagent.com"):
+    def __init__(self, base_url="https://hbs-client-app.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0

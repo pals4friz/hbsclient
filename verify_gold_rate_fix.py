@@ -4,7 +4,7 @@ from datetime import datetime
 
 def test_gold_rate_fix():
     """Test if the gold rate fix is working"""
-    base_url = "https://jewel-invoice.preview.emergentagent.com"
+    base_url = "https://hbs-client-app.preview.emergentagent.com"
     api_url = f"{base_url}/api"
     
     print("🔧 Testing Gold Rate Fix...")
