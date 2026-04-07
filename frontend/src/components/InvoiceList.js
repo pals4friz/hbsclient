@@ -74,32 +74,118 @@ const InvoiceList = () => {
     }
   };
 
+  // Generate print HTML for A5 jewelry store format with original and duplicate SIDE BY SIDE
   const generatePrintHTML = (invoice) => {
-    const itemsHTML = invoice.items.map((item) => `
-      <tr>
-        <td>${item.product_name}</td>
-        <td>₹${item.labor_charges.toFixed(0)}</td>
-        <td>${item.weight.toFixed(1)}g</td>
-        <td>₹${item.amount.toFixed(0)}</td>
-      </tr>
-    `).join('');
-
-    // Add empty rows to fill the table
-    let emptyRows = '';
-    for (let i = invoice.items.length; i < 7; i++) {
-      emptyRows += '<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
-    }
-
     const totalWeight = invoice.items.reduce((sum, item) => sum + item.weight, 0);
     const totalLabor = invoice.items.reduce((sum, item) => sum + item.labor_charges, 0);
     
     // Get the most common purity in the invoice items for gold rate display
     const itemPurities = invoice.items.map(item => item.purity);
-    const mostCommonPurity = itemPurities.length > 0 ? itemPurities[0] : '22K'; // Use first item's purity or default to 22K
+    const mostCommonPurity = itemPurities.length > 0 ? itemPurities[0] : '22K';
     
     // Get dynamic gold price per 10g based on the actual purity used
     const goldRate = goldRates.find(rate => rate.purity === mostCommonPurity);
-    const goldRatePer10g = goldRate ? (goldRate.rate_per_gram * 10) : 55000; // Fallback to 55000
+    const goldRatePer10g = goldRate ? (goldRate.rate_per_gram * 10) : 55000;
+
+    const generateCopyHTML = (copyType) => {
+      const itemsHTML = invoice.items.slice(0, 5).map((item, idx) => `
+        <tr style="background-color: ${idx % 2 === 0 ? '#ffffff' : '#f5f5f5'};">
+          <td style="border: 0.5px solid #000; padding: 2px; text-align: left; font-size: 7px;">${item.product_name.substring(0, 18)}</td>
+          <td style="border: 0.5px solid #000; padding: 2px; text-align: center; font-size: 7px;">₹${item.labor_charges.toFixed(0)}</td>
+          <td style="border: 0.5px solid #000; padding: 2px; text-align: center; font-size: 7px;">${item.weight.toFixed(2)}g</td>
+          <td style="border: 0.5px solid #000; padding: 2px; text-align: center; font-size: 7px;">₹${item.amount.toFixed(0)}</td>
+        </tr>
+      `).join('');
+
+      // Add empty rows if less than 5 items
+      let emptyRows = '';
+      const itemCount = Math.min(invoice.items.length, 5);
+      for (let i = itemCount; i < 5; i++) {
+        emptyRows += '<tr style="background-color: #ffffff;"><td style="border: 0.5px solid #000; padding: 2px;">&nbsp;</td><td style="border: 0.5px solid #000; padding: 2px;">&nbsp;</td><td style="border: 0.5px solid #000; padding: 2px;">&nbsp;</td><td style="border: 0.5px solid #000; padding: 2px;">&nbsp;</td></tr>';
+      }
+      
+      return `
+        <div style="width: 49%; float: left; padding: 5px; box-sizing: border-box; ${copyType === 'ORIGINAL' ? 'border-right: 1px dashed #999;' : ''}">
+          <!-- Copy Type Label -->
+          <div style="text-align: center; font-size: 8px; font-weight: bold; margin-bottom: 3px;">${copyType}</div>
+          
+          <!-- Header Section -->
+          <div style="text-align: center; border-bottom: 1px solid #333; padding-bottom: 5px; margin-bottom: 5px;">
+            <div style="font-size: 11px; font-weight: bold; margin-bottom: 2px;">ROUGH ESTIMATE</div>
+            <div style="font-size: 12px; font-weight: bold; text-decoration: underline; margin-bottom: 2px;">HARI BABU SARRAF</div>
+            <div style="font-size: 8px; margin-bottom: 2px;">MOHALA CHOWK, PURANPUR</div>
+            <div style="font-size: 7px;">📞 9690124010, 9456977703</div>
+          </div>
+          
+          <!-- Customer Details -->
+          <div style="border: 1px solid #000; padding: 3px; margin-bottom: 5px; font-size: 7px;">
+            <div><strong>NAME:</strong> ${invoice.customer_name.substring(0, 20)}</div>
+            <div><strong>DATE:</strong> ${new Date(invoice.invoice_date).toLocaleDateString()}</div>
+            <div><strong>INV NO.:</strong> ${invoice.invoice_number}</div>
+            <div><strong>PHONE:</strong> ${invoice.customer_phone}</div>
+          </div>
+          
+          <!-- Items Table -->
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 5px;">
+            <thead>
+              <tr style="background-color: #333; color: #fff;">
+                <th style="border: 0.5px solid #000; padding: 2px; font-size: 7px; text-align: center;">ITEM NAME</th>
+                <th style="border: 0.5px solid #000; padding: 2px; font-size: 7px; text-align: center;">LAB</th>
+                <th style="border: 0.5px solid #000; padding: 2px; font-size: 7px; text-align: center;">WEIGHT</th>
+                <th style="border: 0.5px solid #000; padding: 2px; font-size: 7px; text-align: center;">AMOUNT</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHTML}
+              ${emptyRows}
+              <!-- Totals Row -->
+              <tr style="background-color: #333; color: #fff;">
+                <td style="border: 0.5px solid #000; padding: 2px; font-size: 7px; text-align: center; font-weight: bold;">TOTAL</td>
+                <td style="border: 0.5px solid #000; padding: 2px; font-size: 7px; text-align: center; font-weight: bold;">₹${totalLabor.toFixed(0)}</td>
+                <td style="border: 0.5px solid #000; padding: 2px; font-size: 7px; text-align: center; font-weight: bold;">${totalWeight.toFixed(2)}g</td>
+                <td style="border: 0.5px solid #000; padding: 2px; font-size: 7px; text-align: center; font-weight: bold;">₹${invoice.subtotal.toFixed(0)}</td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <!-- Totals Section -->
+          <div style="border: 1px solid #000; padding: 5px; background-color: #f9f9f9; font-size: 7px;">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding-bottom: 2px; margin-bottom: 2px;">
+              <strong>GOLD PRICE (${mostCommonPurity}/10g):</strong>
+              <span>₹${goldRatePer10g.toFixed(0)}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>OLD GOLD:</span>
+              <span>₹${invoice.old_gold_value ? invoice.old_gold_value.toFixed(0) : '0'}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>OLD SILVER:</span>
+              <span>₹${invoice.old_silver_value ? invoice.old_silver_value.toFixed(0) : '0'}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span>DISCOUNT:</span>
+              <span>₹${invoice.discount_amount ? invoice.discount_amount.toFixed(0) : '0'}</span>
+            </div>
+            ${invoice.tax_included && invoice.tax_amount > 0 ? `
+              <div style="display: flex; justify-content: space-between;">
+                <span>TAX (${invoice.tax_percentage}%):</span>
+                <span>₹${invoice.tax_amount.toFixed(0)}</span>
+              </div>
+            ` : ''}
+            <div style="display: flex; justify-content: space-between; border-top: 1px solid #ccc; padding-top: 2px; margin-top: 2px;">
+              <span>Total Weight:</span>
+              <span>${totalWeight.toFixed(2)}g</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-top: 1px solid #333; padding-top: 3px; margin-top: 3px; font-weight: bold; font-size: 8px; color: #2563eb;">
+              <span>FINAL TOTAL:</span>
+              <span>₹${invoice.total_amount.toFixed(0)}</span>
+            </div>
+          </div>
+          
+          ${!invoice.tax_included ? '<div style="font-style: italic; margin-top: 3px; text-align: center; font-size: 6px;">*This estimate is without tax</div>' : ''}
+        </div>
+      `;
+    };
 
     return `
       <!DOCTYPE html>
@@ -108,201 +194,35 @@ const InvoiceList = () => {
           <title>Invoice ${invoice.invoice_number}</title>
           <style>
             @page { 
-              size: A5; 
-              margin: 0.3in; 
+              size: A5 landscape; 
+              margin: 5mm; 
+            }
+            * {
+              box-sizing: border-box;
             }
             body { 
               font-family: Arial, sans-serif; 
               margin: 0; 
-              font-size: 12px;
+              padding: 0;
+              font-size: 10px;
               line-height: 1.2;
             }
-            .header { 
-              text-align: center; 
-              margin-bottom: 15px; 
-            }
-            .header h1 { 
-              font-size: 16px; 
-              font-weight: bold; 
-              margin: 5px 0; 
-            }
-            .header h2 { 
-              font-size: 14px; 
-              font-weight: bold; 
-              margin: 5px 0; 
-            }
-            .header p { 
-              font-size: 10px; 
-              margin: 5px 0 15px 0; 
-            }
-            .customer-details { 
-              margin-bottom: 15px; 
-            }
-            .customer-details table { 
-              width: 100%; 
-            }
-            .customer-details td { 
-              padding: 2px 5px; 
-              font-size: 9px; 
-            }
-            .customer-details .label { 
-              font-weight: bold; 
-              width: 80px; 
-            }
-            table { 
-              width: 100%; 
-              border-collapse: collapse; 
-              margin-bottom: 10px; 
-            }
-            th, td { 
-              border: 1px solid #000; 
-              padding: 3px 5px; 
-              font-size: 8px;
-            }
-            th { 
-              background-color: #f0f0f0; 
-              font-weight: bold; 
-              text-align: center;
-            }
-            .items-table td:first-child { 
-              text-align: left; 
-            }
-            .items-table td:nth-child(2),
-            .items-table td:nth-child(3),
-            .items-table td:nth-child(4) { 
-              text-align: center; 
-            }
-            .totals-table { 
-              margin-top: 5px; 
-            }
-            .totals-table td { 
-              font-weight: bold; 
-            }
-            .final-total { 
-              background-color: #f0f0f0; 
-            }
-            .footer { 
-              margin-top: 15px; 
-              font-size: 8px; 
-            }
-            .footer table { 
-              border: none; 
-            }
-            .footer td { 
-              border: none; 
-              padding: 2px; 
-            }
-            .footer .label { 
-              font-weight: bold; 
+            .invoice-container {
+              width: 100%;
+              height: 100%;
+              display: flex;
+              overflow: hidden;
             }
             @media print {
               .no-print { display: none; }
-              body { -webkit-print-color-adjust: exact; }
+              body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             }
           </style>
         </head>
         <body>
-          <div class="header">
-            <h1>ROUGH ESTIMATE</h1>
-            <h2>HARI BABU SARRAF</h2>
-            <p>MOHALA CHOWK, PURANPUR</p>
-          </div>
-          
-          <div class="customer-details">
-            <table>
-              <tr>
-                <td class="label">NAME:</td>
-                <td>${invoice.customer_name}</td>
-                <td class="label">INVOICE NO.:</td>
-                <td>${invoice.invoice_number}</td>
-              </tr>
-              <tr>
-                <td class="label">DATE:</td>
-                <td>${new Date(invoice.invoice_date).toLocaleDateString()}</td>
-                <td class="label">PHONE:</td>
-                <td>${invoice.customer_phone}</td>
-              </tr>
-            </table>
-          </div>
-          
-          <table class="items-table">
-            <thead>
-              <tr>
-                <th>Item Name</th>
-                <th>LAB</th>
-                <th>Weight</th>
-                <th>Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${itemsHTML}
-              ${emptyRows}
-            </tbody>
-          </table>
-          
-          <table class="totals-table">
-            <tr>
-              <td>Total</td>
-              <td style="text-align: center;">₹${totalLabor.toFixed(0)}</td>
-              <td style="text-align: center;">${totalWeight.toFixed(1)}g</td>
-              <td style="text-align: center;">₹${invoice.subtotal.toFixed(0)}</td>
-            </tr>
-            <tr>
-              <td>Gold Price (${mostCommonPurity}/10g)</td>
-              <td style="text-align: center;">₹${goldRatePer10g.toFixed(0)}</td>
-              <td></td>
-              <td style="text-align: center;">₹${invoice.subtotal.toFixed(0)}</td>
-            </tr>
-            <tr>
-              <td>OLD GOLD</td>
-              <td></td>
-              <td></td>
-              <td style="text-align: center;">₹${invoice.old_gold_value ? invoice.old_gold_value.toFixed(0) : '0'}</td>
-            </tr>
-            <tr>
-              <td>OLD SILVER</td>
-              <td></td>
-              <td></td>
-              <td style="text-align: center;">₹${invoice.old_silver_value ? invoice.old_silver_value.toFixed(0) : '0'}</td>
-            </tr>
-            <tr>
-              <td>DISCOUNT</td>
-              <td></td>
-              <td></td>
-              <td style="text-align: center;">₹${invoice.discount_amount ? invoice.discount_amount.toFixed(0) : '0'}</td>
-            </tr>
-            ${invoice.tax_included && invoice.tax_amount > 0 ? `
-              <tr>
-                <td>TAX (${invoice.tax_percentage}%)</td>
-                <td></td>
-                <td></td>
-                <td style="text-align: center;">₹${invoice.tax_amount.toFixed(0)}</td>
-              </tr>
-            ` : ''}
-            <tr class="final-total">
-              <td><strong>FINAL TOTAL</strong></td>
-              <td></td>
-              <td></td>
-              <td style="text-align: center;"><strong>₹${invoice.total_amount.toFixed(0)}</strong></td>
-            </tr>
-          </table>
-          
-          <div class="footer">
-            <table>
-              <tr>
-                <td class="label">FOLLOW US ON:</td>
-                <td class="label">CONTACTS:</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>9690124010, 9456977703</td>
-              </tr>
-              <tr>
-                <td>22 Carat also available</td>
-                <td></td>
-              </tr>
-            </table>
-            ${!invoice.tax_included ? '<p style="font-style: italic; margin-top: 5px; text-align: center;">*This estimate is without tax</p>' : ''}
+          <div class="invoice-container">
+            ${generateCopyHTML('ORIGINAL')}
+            ${generateCopyHTML('DUPLICATE')}
           </div>
         </body>
       </html>
