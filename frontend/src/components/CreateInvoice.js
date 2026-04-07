@@ -626,6 +626,11 @@ const CreateInvoice = () => {
           </div>
           
           ${cfg.showSignature ? `<div style="margin-top: 4px; text-align: right; font-size: ${baseFontSize - 2}px;"><div style="border-top: 1px solid #000; display: inline-block; padding-top: 2px; min-width: 80px;">${cfg.signatureText || 'Signature'}</div></div>` : ''}
+          
+          ${cfg.showTerms && cfg.terms ? `<div style="margin-top: 4px; font-size: ${baseFontSize - 3}px; color: #555; border-top: 1px dashed #ccc; padding-top: 3px;"><strong>Terms:</strong> ${cfg.terms}</div>` : ''}
+          
+          ${cfg.showBankDetails && cfg.bankDetails ? `<div style="margin-top: 3px; font-size: ${baseFontSize - 3}px; color: #333; background-color: #f0f0f0; padding: 3px; border-radius: 2px;"><strong>Bank:</strong> ${cfg.bankDetails}</div>` : ''}
+          
           ${!invoice.tax_included ? `<div style="font-style: italic; margin-top: 3px; text-align: center; font-size: ${baseFontSize - 3}px;">*Estimate without tax</div>` : ''}
         </div>
       `;
