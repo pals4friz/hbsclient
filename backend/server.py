@@ -99,7 +99,7 @@ class Invoice(BaseModel):
 
 class InvoiceCreate(BaseModel):
     customer_id: str
-    items: List[dict]  # {product_id, quantity, weight, labor_charges}
+    items: List[dict]  # {product_id, quantity, weight, labor_charges} OR {manual_name, quantity, weight, labor_charges, purity}
     tax_included: bool = False  # Default to without tax
     discount_amount: float = 0.0
     old_gold_value: float = 0.0
@@ -297,13 +297,43 @@ async def create_invoice(invoice_data: InvoiceCreate):
     total_labor_charges = 0.0
     
     for item_data in invoice_data.items:
-        product = await db.products.find_one({"id": item_data["product_id"]})
-        if not product:
-            raise HTTPException(status_code=404, detail=f"Product {item_data['product_id']} not found")
-        
         quantity = item_data["quantity"]
         weight = item_data["weight"]  # Weight from QR code/manual input
         purity = item_data.get("purity", "18K")  # Default to 18K if not specified
+        
+        # Check if this is a manual entry item (no product_id or product_id is "manual")
+        is_manual = item_data.get("is_manual", False) or item_data.get("product_id") == "manual" or not item_data.get("product_id")
+        
+        if is_manual:
+            # Manual entry - user provided item name and making charges directly
+            product_name = item_data.get("manual_name", "Custom Item")
+            product_id = "manual"
+            sku = "MANUAL"
+            # Use the making_charges provided by user, or auto-calculate if not provided
+            manual_labor = item_data.get("making_charges", None)
+            if manual_labor is not None:
+                labor_charges = float(manual_labor)
+            else:
+                # Auto-calculate if not provided
+                if weight <= 5.000:
+                    labor_charges = 500
+                else:
+                    labor_charges = weight * 100
+        else:
+            # Product from inventory
+            product = await db.products.find_one({"id": item_data["product_id"]})
+            if not product:
+                raise HTTPException(status_code=404, detail=f"Product {item_data['product_id']} not found")
+            product_name = product["name"]
+            product_id = product["id"]
+            sku = product["sku"]
+            # Automatic labor calculation based on weight rules:
+            # Weight <= 5.000g: labor = ₹500
+            # Weight > 5.000g: labor = weight × 100
+            if weight <= 5.000:
+                labor_charges = 500
+            else:
+                labor_charges = weight * 100
         
         # Get rate per gram based on selected purity from gold rates
         rate_per_gram = gold_rates.get(purity, 5500)  # Default rate if purity not found
@@ -311,18 +341,10 @@ async def create_invoice(invoice_data: InvoiceCreate):
         # Calculate amount based on weight and purity-based rate
         amount = weight * rate_per_gram
         
-        # Automatic labor calculation based on weight rules:
-        # Weight <= 5.000g: labor = ₹500
-        # Weight > 5.000g: labor = weight × 100
-        if weight <= 5.000:
-            labor_charges = 500
-        else:
-            labor_charges = weight * 100
-        
         invoice_item = InvoiceItem(
-            product_id=product["id"],
-            product_name=product["name"],
-            sku=product["sku"],
+            product_id=product_id,
+            product_name=product_name,
+            sku=sku,
             quantity=quantity,
             weight=weight,
             purity=purity,

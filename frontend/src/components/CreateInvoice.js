@@ -81,7 +81,12 @@ const CreateInvoice = () => {
   };
 
   const addItem = () => {
-    setInvoiceItems([...invoiceItems, { product_id: '', quantity: 1, weight: 0, purity: '18K', labor_charges: 0 }]);
+    setInvoiceItems([...invoiceItems, { product_id: '', quantity: 1, weight: 0, purity: '18K', labor_charges: 0, is_manual: false, manual_name: '', making_charges: 0 }]);
+  };
+
+  // Add manual entry item
+  const addManualItem = () => {
+    setInvoiceItems([...invoiceItems, { product_id: 'manual', quantity: 1, weight: 0, purity: '22K', labor_charges: 0, is_manual: true, manual_name: '', making_charges: 0 }]);
   };
 
   const removeItem = (index) => {
@@ -101,8 +106,11 @@ const CreateInvoice = () => {
     let totalLaborCharges = 0;
     
     invoiceItems.forEach(item => {
-      const product = products.find(p => p.id === item.product_id);
-      if (product && item.weight && item.purity) {
+      const isManual = item.is_manual || item.product_id === 'manual';
+      const product = !isManual ? products.find(p => p.id === item.product_id) : null;
+      
+      // For manual items, always calculate; for product items, need product selected
+      if ((isManual || product) && item.weight && item.purity) {
         // Get rate per gram from gold rates based on selected purity
         const goldRate = goldRates.find(rate => rate.purity === item.purity);
         const ratePerGram = goldRate ? goldRate.rate_per_gram : 5500; // Default rate if purity not found
@@ -111,16 +119,21 @@ const CreateInvoice = () => {
         subtotal += amount;
         totalWeight += item.weight;
         
-        // Automatic labor calculation based on weight rules:
-        // Weight <= 5.000g: labor = ₹500
-        // Weight > 5.000g: labor = weight × 100
-        let autoLaborCharges;
-        if (item.weight <= 5.000) {
-          autoLaborCharges = 500;
+        // For manual items, use user-provided making_charges; for product items, auto-calculate
+        let laborCharges;
+        if (isManual && item.making_charges > 0) {
+          laborCharges = parseFloat(item.making_charges) || 0;
         } else {
-          autoLaborCharges = item.weight * 100;
+          // Automatic labor calculation based on weight rules:
+          // Weight <= 5.000g: labor = ₹500
+          // Weight > 5.000g: labor = weight × 100
+          if (item.weight <= 5.000) {
+            laborCharges = 500;
+          } else {
+            laborCharges = item.weight * 100;
+          }
         }
-        totalLaborCharges += autoLaborCharges;
+        totalLaborCharges += laborCharges;
       }
     });
 
@@ -141,8 +154,17 @@ const CreateInvoice = () => {
       return;
     }
 
-    const invalidItems = invoiceItems.some(item => !item.product_id || !item.quantity);
+    // Validate items - for manual items, check manual_name; for product items, check product_id
+    const invalidItems = invoiceItems.some(item => {
+      const isManual = item.is_manual || item.product_id === 'manual';
+      if (isManual) {
+        return !item.manual_name || item.manual_name.trim() === '' || !item.quantity || item.weight <= 0;
+      } else {
+        return !item.product_id || !item.quantity;
+      }
+    });
     if (invalidItems) {
+      alert('Please fill all required fields for each item (Item Name, Weight, Quantity)');
       return;
     }
 
@@ -735,6 +757,14 @@ const CreateInvoice = () => {
             <div className="space-x-2 flex flex-wrap gap-2">
               <button
                 type="button"
+                onClick={addManualItem}
+                className="px-4 py-2 sm:py-3 bg-amber-600 text-white rounded hover:bg-amber-700 min-h-[44px] touch-manipulation text-sm sm:text-base font-semibold"
+                data-testid="manual-entry-btn"
+              >
+                ✏️ Manual Entry
+              </button>
+              <button
+                type="button"
                 onClick={() => setShowQRScanner(true)}
                 className="px-4 py-2 sm:py-3 bg-purple-600 text-white rounded hover:bg-purple-700 min-h-[44px] touch-manipulation text-sm sm:text-base"
                 data-testid="qr-input-btn"
@@ -755,7 +785,7 @@ const CreateInvoice = () => {
                 className="px-4 py-2 sm:py-3 bg-blue-600 text-white rounded hover:bg-blue-700 min-h-[44px] touch-manipulation text-sm sm:text-base"
                 data-testid="add-item-btn"
               >
-                Add Item
+                From Inventory
               </button>
             </div>
           </div>
@@ -843,11 +873,12 @@ const CreateInvoice = () => {
           )}
 
           {invoiceItems.length === 0 ? (
-            <p className="text-gray-500 text-center py-4">No items added yet. Click "Add Item" to get started.</p>
+            <p className="text-gray-500 text-center py-4">No items added yet. Click "✏️ Manual Entry" to add items directly or "From Inventory" to select existing products.</p>
           ) : (
             <div className="space-y-4">
               {invoiceItems.map((item, index) => {
-                const product = products.find(p => p.id === item.product_id);
+                const isManual = item.is_manual || item.product_id === 'manual';
+                const product = !isManual ? products.find(p => p.id === item.product_id) : null;
                 const weight = item.weight || 0;
                 
                 // Calculate amount using gold rates based on selected purity
@@ -855,35 +886,61 @@ const CreateInvoice = () => {
                 const ratePerGram = goldRate ? goldRate.rate_per_gram : 5500;
                 const amount = weight * ratePerGram;
                 
-                // Calculate automatic labor based on weight
-                const autoLabor = weight <= 5.000 ? 500 : weight * 100;
+                // Calculate labor - for manual items with making_charges > 0, use that; otherwise auto-calculate
+                const laborCharges = (isManual && item.making_charges > 0) 
+                  ? parseFloat(item.making_charges) 
+                  : (weight <= 5.000 ? 500 : weight * 100);
 
                 return (
-                  <div key={index} className="border border-gray-200 p-3 sm:p-4 rounded" data-testid={`invoice-item-${index}`}>
+                  <div key={index} className={`border p-3 sm:p-4 rounded ${isManual ? 'border-amber-400 bg-amber-50' : 'border-gray-200'}`} data-testid={`invoice-item-${index}`}>
+                    {/* Manual Entry Badge */}
+                    {isManual && (
+                      <div className="mb-2 flex items-center">
+                        <span className="text-xs font-semibold text-amber-700 bg-amber-200 px-2 py-1 rounded">✏️ MANUAL ENTRY</span>
+                      </div>
+                    )}
+                    
                     {/* Mobile: Stack vertically, Desktop: 6 columns */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4">
-                      <div>
-                        <label className="block text-xs text-gray-500 mb-1">Product</label>
-                        <select
-                          value={item.product_id}
-                          onChange={(e) => updateItem(index, 'product_id', e.target.value)}
-                          className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm touch-manipulation"
-                          required
-                          data-testid={`product-select-${index}`}
-                        >
-                          <option value="">Select product...</option>
-                          {products.map(product => (
-                            <option key={product.id} value={product.id}>
-                              {product.name} ({product.sku})
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                      {isManual ? (
+                        /* Manual Entry - Item Name Input */
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1">Item Name *</label>
+                          <input
+                            type="text"
+                            value={item.manual_name || ''}
+                            onChange={(e) => updateItem(index, 'manual_name', e.target.value)}
+                            className="w-full border border-amber-400 p-2 sm:p-3 rounded text-sm touch-manipulation bg-white"
+                            placeholder="e.g., Gold Ring, Necklace..."
+                            required
+                            data-testid={`manual-name-input-${index}`}
+                          />
+                        </div>
+                      ) : (
+                        /* Product Selection from Inventory */
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1">Product</label>
+                          <select
+                            value={item.product_id}
+                            onChange={(e) => updateItem(index, 'product_id', e.target.value)}
+                            className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm touch-manipulation"
+                            required
+                            data-testid={`product-select-${index}`}
+                          >
+                            <option value="">Select product...</option>
+                            {products.map(product => (
+                              <option key={product.id} value={product.id}>
+                                {product.name} ({product.sku})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
 
                       <div>
                         <label className="block text-xs text-gray-500 mb-1">Purity</label>
                         <select
-                          value={item.purity || '18K'}
+                          value={item.purity || '22K'}
                           onChange={(e) => updateItem(index, 'purity', e.target.value)}
                           className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm touch-manipulation"
                           data-testid={`purity-select-${index}`}
@@ -897,43 +954,65 @@ const CreateInvoice = () => {
                       </div>
 
                       <div>
+                        <label className="block text-xs text-gray-500 mb-1">Weight (g) *</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={item.weight || ''}
+                          onChange={(e) => updateItem(index, 'weight', parseFloat(e.target.value) || 0)}
+                          className={`w-full border p-2 sm:p-3 rounded text-sm touch-manipulation ${isManual ? 'border-amber-400 bg-white' : 'border-gray-300'}`}
+                          placeholder="0.00"
+                          required
+                          data-testid={`weight-input-${index}`}
+                        />
+                      </div>
+
+                      {isManual ? (
+                        /* Manual Entry - Making Charges Input */
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1">Making Charges (₹)</label>
+                          <input
+                            type="number"
+                            step="1"
+                            min="0"
+                            value={item.making_charges || ''}
+                            onChange={(e) => updateItem(index, 'making_charges', parseFloat(e.target.value) || 0)}
+                            className="w-full border border-amber-400 p-2 sm:p-3 rounded text-sm touch-manipulation bg-white"
+                            placeholder="Enter making charges"
+                            data-testid={`making-charges-input-${index}`}
+                          />
+                          <div className="text-xs text-amber-600 mt-1">
+                            {item.making_charges > 0 ? `Custom: ₹${item.making_charges}` : `Auto: ₹${(weight <= 5.000 ? 500 : weight * 100).toFixed(0)}`}
+                          </div>
+                        </div>
+                      ) : (
+                        /* Product from Inventory - Auto Labor Display */
+                        <div>
+                          <label className="block text-xs text-gray-500 mb-1">Labor (Auto)</label>
+                          <input
+                            type="text"
+                            value={`₹${laborCharges.toFixed(0)}`}
+                            className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm bg-blue-50"
+                            readOnly
+                            data-testid={`labor-display-${index}`}
+                          />
+                          <div className="text-xs text-blue-600 mt-1">
+                            {weight <= 5.000 ? `≤5g: ₹500 fixed` : `>5g: ₹100 × ${weight.toFixed(2)}g`}
+                          </div>
+                        </div>
+                      )}
+
+                      <div>
                         <label className="block text-xs text-gray-500 mb-1">Quantity</label>
                         <input
                           type="number"
                           min="1"
                           value={item.quantity || 1}
-                          onChange={(e) => updateItem(index, 'quantity', parseInt(e.target.value))}
+                          onChange={(e) => updateItem(index, 'quantity', parseInt(e.target.value) || 1)}
                           className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm touch-manipulation"
                           required
                           data-testid={`quantity-input-${index}`}
                         />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs text-gray-500 mb-1">Weight (g)</label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={item.weight || 0}
-                          onChange={(e) => updateItem(index, 'weight', parseFloat(e.target.value) || 0)}
-                          className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm touch-manipulation"
-                          placeholder="0.00"
-                          data-testid={`weight-input-${index}`}
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs text-gray-500 mb-1">Labor (Auto)</label>
-                        <input
-                          type="text"
-                          value={`₹${autoLabor.toFixed(0)}`}
-                          className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm bg-blue-50"
-                          readOnly
-                          data-testid={`labor-display-${index}`}
-                        />
-                        <div className="text-xs text-blue-600 mt-1">
-                          {weight <= 5.000 ? `≤5g: ₹500 fixed` : `>5g: ₹100 × ${weight.toFixed(2)}g`}
-                        </div>
                       </div>
 
                       <div className="flex items-end">
