@@ -102,9 +102,57 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Implement landscape printing for the A5 invoice format. The user wants the invoice to print in landscape mode for better formatting of the original/duplicate copies side-by-side."
+user_problem_statement: "Test the new Making Charges Configuration API for the HBS Client app. Comprehensive testing of all CRUD operations, authentication, authorization, and weight-based rule selection."
 
 backend:
+  - task: "Making Charges Configuration API - Authentication"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ AUTHENTICATION TESTING COMPLETE: Admin login functionality working perfectly. POST /api/auth/login with credentials admin/admin123 successfully returns authentication token. Token validation working correctly for protected endpoints. Bearer token authentication implemented properly."
+
+  - task: "Making Charges Configuration API - CRUD Operations"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ CRUD OPERATIONS TESTING COMPLETE: All making charges CRUD operations working perfectly. ✅ CREATE: POST /api/making-charges successfully creates per_gram and per_piece charge rules with proper admin authorization ✅ READ: GET /api/making-charges returns all charges (no auth required), GET /api/making-charges/{purity}?weight={weight} correctly returns appropriate rule based on weight range ✅ UPDATE: PUT /api/making-charges/{id} successfully updates charge amounts with admin authorization ✅ DELETE: DELETE /api/making-charges/{id} successfully removes charges with admin authorization. All endpoints tested with real data and proper validation."
+
+  - task: "Making Charges Configuration API - Weight-Based Rule Selection"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ WEIGHT-BASED RULE SELECTION TESTING COMPLETE: Smart weight-based rule selection working perfectly. ✅ Light weight items (3g): Correctly returns per_gram rule (₹100 per gram) for items 0-5g range ✅ Heavy weight items (10g): Correctly returns per_piece rule (₹500 per piece) for items 5.01-999g range ✅ Rule matching logic: Properly matches purity (22K) and weight ranges to return appropriate making charge rules ✅ API endpoint GET /api/making-charges/22K?weight={weight} working correctly for both scenarios."
+
+  - task: "Making Charges Configuration API - Authorization & Security"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ AUTHORIZATION & SECURITY TESTING COMPLETE: Role-based access control working perfectly. ✅ Admin-only operations: CREATE, UPDATE, DELETE operations properly restricted to admin users with Bearer token authentication ✅ Public access: GET operations (view charges) correctly accessible without authentication ✅ Unauthorized access: Properly returns 401 status for requests without valid admin token ✅ Security validation: All protected endpoints validate admin role and reject non-admin access appropriately."
+
   - task: "PDF Generation - Landscape A5 Format"
     implemented: true
     working: true
@@ -279,9 +327,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Multi-User Authentication System testing completed successfully"
-    - "All authentication endpoints verified working"
-    - "Role-based access control confirmed functional"
+    - "Making Charges Configuration API testing completed successfully"
+    - "All CRUD operations verified working"
+    - "Authentication and authorization confirmed functional"
+    - "Weight-based rule selection tested and working"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -313,3 +362,5 @@ agent_communication:
       message: "🎯 MANUAL ENTRY FEATURE TESTING COMPLETE: Comprehensive testing of the Manual Entry feature for invoice creation successfully completed with 100% success rate (8/8 tests passed). ✅ SINGLE MANUAL ENTRY: Created invoice with manual item (Gold Ring, 5.5g, ₹750 labor, 22K) - product_id='manual', sku='MANUAL', custom making_charges used correctly ✅ MULTIPLE MANUAL ENTRIES: Created invoice with 3 manual items (Gold Necklace, Silver Bracelet, Gold Earrings) - all items properly saved with manual flags, total labor ₹2500 calculated correctly ✅ MIXED MANUAL & PRODUCT: Successfully created invoice combining manual entry items with product inventory items - both types handled correctly in same invoice ✅ CUSTOM MAKING CHARGES: Verified custom making_charges (₹2500) override auto-calculated labor (₹1500 for 15g item) - manual charges take precedence ✅ PDF GENERATION: PDF download working with manual entries - 2767 bytes PDF generated successfully with application/pdf content-type ✅ DATABASE PERSISTENCE: Manual entry invoices saved correctly - product_id='manual', sku='MANUAL', manual names preserved, labor charges persisted ✅ GOLD RATES INTEGRATION: Manual entries use current gold rates correctly - 22K rate ₹5500/g applied, amount calculation verified (8g × ₹5500 = ₹44000) ✅ API ENDPOINTS: POST /api/invoices accepts manual items with is_manual=true, manual_name, weight, making_charges, purity fields. All test invoices created successfully: INV-20260407-0002, INV-20260407-0003, INV-20260407-0004, INV-20260407-0005. Manual Entry feature is fully functional and ready for production use."
     - agent: "testing"
       message: "🔐 MULTI-USER AUTHENTICATION SYSTEM TESTING COMPLETE: Comprehensive testing of the new authentication system successfully completed with 100% success rate (11/11 tests passed). ✅ AUTHENTICATION ENDPOINTS: POST /api/auth/login (valid/invalid credentials), GET /api/auth/me (with/without token), POST /api/auth/logout all working correctly ✅ USER MANAGEMENT ENDPOINTS: POST /api/users, GET /api/users, PUT /api/users/{id}, DELETE /api/users/{id} all functional with proper admin authorization ✅ SECURITY FEATURES: SHA-256 password hashing, Bearer token authentication, role-based access control, session management all implemented correctly ✅ DEFAULT ADMIN: admin/admin123 credentials working, default admin user created on startup ✅ ACCESS CONTROL: Non-admin users properly blocked from user management endpoints (403 Forbidden) ✅ TOKEN VALIDATION: Proper 401 responses for missing/invalid tokens, successful token invalidation on logout ✅ USER LIFECYCLE: Complete CRUD operations tested - user creation, listing, updating (name/role), deletion with verification ✅ ROLE MANAGEMENT: Admin and regular user roles working correctly, role-based endpoint access enforced. All authentication scenarios tested successfully using test credentials from /app/memory/test_credentials.md. Multi-user authentication system is fully functional and production-ready."
+    - agent: "testing"
+      message: "🎯 MAKING CHARGES CONFIGURATION API TESTING COMPLETE: Comprehensive testing of the new Making Charges Configuration API successfully completed with 100% success rate (9/9 tests passed). ✅ AUTHENTICATION: Admin login working perfectly with credentials admin/admin123, Bearer token authentication implemented correctly ✅ CRUD OPERATIONS: All making charges CRUD operations functional - CREATE (per_gram & per_piece rules), READ (all charges & by purity/weight), UPDATE (charge amounts), DELETE (with proper cleanup) ✅ WEIGHT-BASED RULE SELECTION: Smart rule selection working correctly - light weight items (3g) return per_gram rule (₹100/gram), heavy items (10g) return per_piece rule (₹500/piece) ✅ AUTHORIZATION & SECURITY: Role-based access control properly implemented - admin-only operations (CREATE/UPDATE/DELETE) protected, public access (GET) working without auth, unauthorized access correctly rejected with 401 status ✅ API ENDPOINTS TESTED: POST /api/making-charges, GET /api/making-charges, GET /api/making-charges/{purity}?weight={weight}, PUT /api/making-charges/{id}, DELETE /api/making-charges/{id} ✅ DATA VALIDATION: Proper handling of purity types (22K), charge types (per_gram/per_piece), weight ranges (0-5g, 5.01-999g), charge amounts, descriptions ✅ TEST CLEANUP: Automatic cleanup of test data performed successfully. Making Charges Configuration API is fully functional and production-ready with all expected behaviors working correctly."

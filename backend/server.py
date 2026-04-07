@@ -211,6 +211,34 @@ class GoldRateCreate(BaseModel):
 class GoldRateUpdate(BaseModel):
     rate_per_gram: float
 
+# === MAKING CHARGES MODELS ===
+
+class MakingCharge(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    purity: str  # 18K, 20K, 22K, 24K, Silver
+    charge_type: str  # 'per_gram' or 'per_piece'
+    charge_amount: float
+    min_weight: float = 0
+    max_weight: float = 999
+    description: str = ""
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class MakingChargeCreate(BaseModel):
+    purity: str
+    charge_type: str
+    charge_amount: float
+    min_weight: float = 0
+    max_weight: float = 999
+    description: str = ""
+
+class MakingChargeUpdate(BaseModel):
+    purity: Optional[str] = None
+    charge_type: Optional[str] = None
+    charge_amount: Optional[float] = None
+    min_weight: Optional[float] = None
+    max_weight: Optional[float] = None
+    description: Optional[str] = None
+
 # === USER AUTHENTICATION MODELS ===
 
 class User(BaseModel):
@@ -432,6 +460,67 @@ async def delete_user(user_id: str, admin: dict = Depends(require_admin)):
     
     await db.users.delete_one({"id": user_id})
     return {"message": "User deleted successfully"}
+
+# === MAKING CHARGES APIS (Admin only) ===
+
+@api_router.post("/making-charges", response_model=MakingCharge)
+async def create_making_charge(charge_data: MakingChargeCreate, admin: dict = Depends(require_admin)):
+    """Create a new making charge rule (admin only)"""
+    charge = MakingCharge(**charge_data.dict())
+    await db.making_charges.insert_one(charge.dict())
+    return charge
+
+@api_router.get("/making-charges", response_model=List[MakingCharge])
+async def get_making_charges():
+    """Get all making charge rules"""
+    charges = await db.making_charges.find().to_list(1000)
+    return [MakingCharge(**charge) for charge in charges]
+
+@api_router.get("/making-charges/{purity}")
+async def get_making_charge_by_purity(purity: str, weight: float = 0):
+    """Get making charge for a specific purity and weight"""
+    # Find the charge rule that matches purity and weight range
+    charge = await db.making_charges.find_one({
+        "purity": purity,
+        "min_weight": {"$lte": weight},
+        "max_weight": {"$gte": weight}
+    })
+    
+    if not charge:
+        # Return default charge if no rule found
+        return {
+            "purity": purity,
+            "charge_type": "per_piece",
+            "charge_amount": 500 if weight <= 5 else weight * 100,
+            "calculated": True
+        }
+    
+    return MakingCharge(**charge)
+
+@api_router.put("/making-charges/{charge_id}", response_model=MakingCharge)
+async def update_making_charge(charge_id: str, charge_data: MakingChargeUpdate, admin: dict = Depends(require_admin)):
+    """Update a making charge rule (admin only)"""
+    charge = await db.making_charges.find_one({"id": charge_id})
+    if not charge:
+        raise HTTPException(status_code=404, detail="Making charge not found")
+    
+    update_data = {k: v for k, v in charge_data.dict().items() if v is not None}
+    
+    if update_data:
+        await db.making_charges.update_one({"id": charge_id}, {"$set": update_data})
+    
+    updated_charge = await db.making_charges.find_one({"id": charge_id})
+    return MakingCharge(**updated_charge)
+
+@api_router.delete("/making-charges/{charge_id}")
+async def delete_making_charge(charge_id: str, admin: dict = Depends(require_admin)):
+    """Delete a making charge rule (admin only)"""
+    charge = await db.making_charges.find_one({"id": charge_id})
+    if not charge:
+        raise HTTPException(status_code=404, detail="Making charge not found")
+    
+    await db.making_charges.delete_one({"id": charge_id})
+    return {"message": "Making charge deleted successfully"}
 
 # === INITIALIZATION: Create default admin user ===
 

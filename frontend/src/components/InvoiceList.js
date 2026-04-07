@@ -114,126 +114,136 @@ const InvoiceList = () => {
 
   // Generate print HTML for A5 jewelry store format with original and duplicate SIDE BY SIDE - FULL PAGE
   // Uses printConfig from Print Layout Configuration
+  // Auto-adjusts font sizes based on item count (max 6 items)
   const generatePrintHTML = (invoice) => {
     const cfg = printConfig; // Shorthand for config
-    const totalWeight = invoice.items.reduce((sum, item) => sum + item.weight, 0);
-    const totalLabor = invoice.items.reduce((sum, item) => sum + item.labor_charges, 0);
+    const itemCount = Math.min(invoice.items.length, 6); // Max 6 items
+    const totalWeight = invoice.items.slice(0, 6).reduce((sum, item) => sum + item.weight, 0);
+    const totalLabor = invoice.items.slice(0, 6).reduce((sum, item) => sum + item.labor_charges, 0);
+    
+    // Auto-adjust font sizes based on number of items
+    const baseFontSize = itemCount <= 3 ? 12 : itemCount <= 5 ? 11 : 10;
+    const headerFontSize = itemCount <= 3 ? 18 : itemCount <= 5 ? 16 : 14;
+    const titleFontSize = cfg.titleFontSize || (itemCount <= 3 ? 16 : itemCount <= 5 ? 14 : 12);
+    const tableFontSize = cfg.tableFontSize || baseFontSize;
+    const rowPadding = itemCount <= 3 ? '5px 6px' : itemCount <= 5 ? '4px 5px' : '3px 4px';
+    const lineHeight = itemCount <= 3 ? '1.4' : itemCount <= 5 ? '1.3' : '1.2';
     
     // Get unique purities from invoice items (only gold items, not silver)
-    const goldPurities = [...new Set(invoice.items
+    const goldPurities = [...new Set(invoice.items.slice(0, 6)
       .filter(item => item.purity && item.purity !== 'Silver')
       .map(item => item.purity))];
     
-    // Generate gold prices HTML for only purchased purities (per 10g)
+    // Generate gold prices HTML for only purchased purities (per 10g) - LEFT ALIGNED SEPARATE SECTION
     const goldPricesHTML = goldPurities.map(purity => {
       const goldRate = goldRates.find(rate => rate.purity === purity);
       const ratePer10g = goldRate ? (goldRate.rate_per_gram * 10) : 0;
-      return `<div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
-        <span>${purity} Gold (10g):</span>
-        <span>₹${ratePer10g.toFixed(0)}</span>
+      return `<div style="margin-bottom: 1px; font-size: ${baseFontSize - 1}px;">
+        <strong>${purity}:</strong> ₹${ratePer10g.toFixed(0)}/10g
       </div>`;
     }).join('');
 
     const generateCopyHTML = (copyType) => {
       const itemsHTML = invoice.items.slice(0, 6).map((item, idx) => `
         <tr style="background-color: ${idx % 2 === 0 ? '#ffffff' : cfg.alternateRowColor || '#f0f0f0'};">
-          <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px; text-align: left; font-size: ${cfg.tableFontSize || 11}px;">${item.product_name.substring(0, 20)}</td>
-          <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px; text-align: center; font-size: ${cfg.tableFontSize || 11}px;">₹${item.labor_charges.toFixed(0)}</td>
-          <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px; text-align: center; font-size: ${cfg.tableFontSize || 11}px;">${item.weight.toFixed(2)}g</td>
-          <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px; text-align: center; font-size: ${cfg.tableFontSize || 11}px;">₹${item.amount.toFixed(0)}</td>
+          <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding}; text-align: left; font-size: ${tableFontSize}px;">${item.product_name.substring(0, 18)}</td>
+          <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding}; text-align: center; font-size: ${tableFontSize}px;">₹${item.labor_charges.toFixed(0)}</td>
+          <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding}; text-align: center; font-size: ${tableFontSize}px;">${item.weight.toFixed(2)}g</td>
+          <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding}; text-align: center; font-size: ${tableFontSize}px;">₹${item.amount.toFixed(0)}</td>
         </tr>
       `).join('');
 
-      // Add empty rows if less than 6 items
+      // Only add empty rows if less than 6 items to fill space
       let emptyRows = '';
-      const itemCount = Math.min(invoice.items.length, 6);
-      for (let i = itemCount; i < 6; i++) {
-        emptyRows += `<tr style="background-color: ${i % 2 === 0 ? '#ffffff' : cfg.alternateRowColor || '#f0f0f0'};"><td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px; height: 20px;">&nbsp;</td><td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px;">&nbsp;</td><td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px;">&nbsp;</td><td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 4px 6px;">&nbsp;</td></tr>`;
+      if (itemCount < 6) {
+        for (let i = itemCount; i < 6; i++) {
+          emptyRows += `<tr style="background-color: ${i % 2 === 0 ? '#ffffff' : cfg.alternateRowColor || '#f0f0f0'};"><td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding}; height: 18px;">&nbsp;</td><td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding};">&nbsp;</td><td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding};">&nbsp;</td><td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding};">&nbsp;</td></tr>`;
+        }
       }
       
       return `
-        <div style="width: 50%; height: 100%; float: left; padding: 8px; box-sizing: border-box; ${copyType === 'ORIGINAL' ? 'border-right: 2px dashed #666;' : ''}">
+        <div style="width: 50%; height: 100%; float: left; padding: 6px; box-sizing: border-box; line-height: ${lineHeight}; ${copyType === 'ORIGINAL' ? 'border-right: 2px dashed #666;' : ''}">
           <!-- Copy Type Label -->
-          <div style="text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 6px; text-decoration: underline;">${copyType}</div>
+          <div style="text-align: center; font-size: ${baseFontSize}px; font-weight: bold; margin-bottom: 4px; text-decoration: underline;">${copyType}</div>
           
           <!-- Header Section -->
-          <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 8px;">
-            <div style="font-size: ${cfg.titleFontSize || 16}px; font-weight: bold; margin-bottom: 4px;">${cfg.invoiceTitle || 'ROUGH ESTIMATE'}</div>
-            <div style="font-size: 18px; font-weight: bold; text-decoration: underline; margin-bottom: 4px;">${cfg.companyName || 'HARI BABU SARRAF'}</div>
-            <div style="font-size: 12px; margin-bottom: 3px;">${cfg.companyAddress || 'MOHALA CHOWK, PURANPUR'}</div>
-            ${cfg.showContact !== false ? `<div style="font-size: 11px;">📞 ${cfg.contactInfo || '9690124010, 9456977703'}</div>` : ''}
+          <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 6px; margin-bottom: 6px;">
+            <div style="font-size: ${titleFontSize}px; font-weight: bold; margin-bottom: 3px;">${cfg.invoiceTitle || 'ROUGH ESTIMATE'}</div>
+            <div style="font-size: ${headerFontSize}px; font-weight: bold; text-decoration: underline; margin-bottom: 3px;">${cfg.companyName || 'HARI BABU SARRAF'}</div>
+            <div style="font-size: ${baseFontSize}px; margin-bottom: 2px;">${cfg.companyAddress || 'MOHALA CHOWK, PURANPUR'}</div>
+            ${cfg.showContact !== false ? `<div style="font-size: ${baseFontSize - 1}px;">📞 ${cfg.contactInfo || '9690124010, 9456977703'}</div>` : ''}
           </div>
           
           <!-- Customer Details -->
-          <div style="border: 1px solid #000; padding: 6px; margin-bottom: 8px; font-size: 11px;">
-            <div style="margin-bottom: 2px;"><strong>NAME:</strong> ${invoice.customer_name.substring(0, 25)}</div>
-            <div style="margin-bottom: 2px;"><strong>DATE:</strong> ${new Date(invoice.invoice_date).toLocaleDateString()}</div>
-            <div style="margin-bottom: 2px;"><strong>INV NO.:</strong> ${invoice.invoice_number}</div>
+          <div style="border: 1px solid #000; padding: 4px 6px; margin-bottom: 6px; font-size: ${baseFontSize}px;">
+            <div style="margin-bottom: 1px;"><strong>NAME:</strong> ${invoice.customer_name.substring(0, 22)}</div>
+            <div style="margin-bottom: 1px;"><strong>DATE:</strong> ${new Date(invoice.invoice_date).toLocaleDateString()} &nbsp; <strong>INV:</strong> ${invoice.invoice_number}</div>
             <div><strong>PHONE:</strong> ${invoice.customer_phone}</div>
           </div>
           
-          <!-- Items Table -->
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 8px;">
-            <thead>
-              <tr style="background-color: ${cfg.tableHeaderColor || '#333'}; color: ${cfg.tableHeaderTextColor || '#fff'};">
-                <th style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; width: 40%;">ITEM NAME</th>
-                <th style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; width: 20%;">LAB</th>
-                <th style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; width: 20%;">WEIGHT</th>
-                <th style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; width: 20%;">AMOUNT</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${itemsHTML}
-              ${emptyRows}
-              <!-- Totals Row -->
-              <tr style="background-color: ${cfg.tableHeaderColor || '#333'}; color: ${cfg.tableHeaderTextColor || '#fff'};">
-                <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; font-weight: bold;">TOTAL</td>
-                <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; font-weight: bold;">₹${totalLabor.toFixed(0)}</td>
-                <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; font-weight: bold;">${totalWeight.toFixed(2)}g</td>
-                <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: 5px; font-size: ${cfg.tableFontSize || 11}px; text-align: center; font-weight: bold;">₹${invoice.subtotal.toFixed(0)}</td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <!-- Totals Section -->
-          <div style="border: 1px solid #000; padding: 8px; background-color: ${cfg.totalsBackgroundColor || '#f9f9f9'}; font-size: 11px;">
+          <!-- Two Column Layout: Gold Rates (Left) | Table (Right) -->
+          <div style="display: flex; gap: 6px; margin-bottom: 6px;">
             ${goldPurities.length > 0 ? `
-              <div style="border-bottom: 1px solid #999; padding-bottom: 4px; margin-bottom: 4px;">
-                <div style="font-weight: bold; font-size: 10px; margin-bottom: 3px; color: #666;">GOLD RATES (per 10g):</div>
+              <!-- Gold Rates - Left Side -->
+              <div style="width: 30%; border: 1px solid #000; padding: 4px; background-color: #fffbe6;">
+                <div style="font-weight: bold; font-size: ${baseFontSize - 1}px; margin-bottom: 3px; text-align: center; border-bottom: 1px solid #ccc; padding-bottom: 2px;">GOLD RATE</div>
                 ${goldPricesHTML}
               </div>
             ` : ''}
-            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
-              <span>OLD GOLD:</span>
-              <span>₹${invoice.old_gold_value ? invoice.old_gold_value.toFixed(0) : '0'}</span>
+            
+            <!-- Items Table - Right Side -->
+            <div style="flex: 1;">
+              <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="background-color: ${cfg.tableHeaderColor || '#333'}; color: ${cfg.tableHeaderTextColor || '#fff'};">
+                    <th style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding}; font-size: ${tableFontSize}px; text-align: center;">ITEM</th>
+                    <th style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding}; font-size: ${tableFontSize}px; text-align: center;">LAB</th>
+                    <th style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding}; font-size: ${tableFontSize}px; text-align: center;">WT</th>
+                    <th style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding}; font-size: ${tableFontSize}px; text-align: center;">AMT</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${itemsHTML}
+                  ${emptyRows}
+                  <tr style="background-color: ${cfg.tableHeaderColor || '#333'}; color: ${cfg.tableHeaderTextColor || '#fff'};">
+                    <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding}; font-size: ${tableFontSize}px; text-align: center; font-weight: bold;">TOTAL</td>
+                    <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding}; font-size: ${tableFontSize}px; text-align: center; font-weight: bold;">₹${totalLabor.toFixed(0)}</td>
+                    <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding}; font-size: ${tableFontSize}px; text-align: center; font-weight: bold;">${totalWeight.toFixed(2)}g</td>
+                    <td style="border: 1px solid ${cfg.tableBorderColor || '#000'}; padding: ${rowPadding}; font-size: ${tableFontSize}px; text-align: center; font-weight: bold;">₹${invoice.subtotal.toFixed(0)}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
-              <span>OLD SILVER:</span>
-              <span>₹${invoice.old_silver_value ? invoice.old_silver_value.toFixed(0) : '0'}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
-              <span>DISCOUNT:</span>
-              <span>₹${invoice.discount_amount ? invoice.discount_amount.toFixed(0) : '0'}</span>
-            </div>
-            ${invoice.tax_included && invoice.tax_amount > 0 ? `
-              <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
-                <span>TAX (${invoice.tax_percentage}%):</span>
-                <span>₹${invoice.tax_amount.toFixed(0)}</span>
-              </div>
-            ` : ''}
-            <div style="display: flex; justify-content: space-between; border-top: 1px solid #999; padding-top: 4px; margin-top: 4px;">
-              <span>Total Weight:</span>
-              <span>${totalWeight.toFixed(2)}g</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; border-top: 2px solid #000; padding-top: 6px; margin-top: 6px; font-weight: bold; font-size: 13px; color: ${cfg.finalTotalColor || '#0000aa'};">
+          </div>
+          
+          <!-- Calculations Section -->
+          <div style="border: 1px solid #000; padding: 5px; background-color: ${cfg.totalsBackgroundColor || '#f9f9f9'}; font-size: ${baseFontSize}px;">
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 1px 0;">OLD GOLD:</td>
+                <td style="text-align: right; padding: 1px 0;">₹${(invoice.old_gold_value || 0).toFixed(0)}</td>
+                <td style="width: 15px;"></td>
+                <td style="padding: 1px 0;">OLD SILVER:</td>
+                <td style="text-align: right; padding: 1px 0;">₹${(invoice.old_silver_value || 0).toFixed(0)}</td>
+              </tr>
+              <tr>
+                <td style="padding: 1px 0;">DISCOUNT:</td>
+                <td style="text-align: right; padding: 1px 0;">₹${(invoice.discount_amount || 0).toFixed(0)}</td>
+                <td></td>
+                ${invoice.tax_included && invoice.tax_amount > 0 ? `
+                  <td style="padding: 1px 0;">TAX (${invoice.tax_percentage}%):</td>
+                  <td style="text-align: right; padding: 1px 0;">₹${invoice.tax_amount.toFixed(0)}</td>
+                ` : '<td></td><td></td>'}
+              </tr>
+            </table>
+            <div style="display: flex; justify-content: space-between; border-top: 2px solid #000; padding-top: 4px; margin-top: 4px; font-weight: bold; font-size: ${baseFontSize + 2}px; color: ${cfg.finalTotalColor || '#0000aa'};">
               <span>FINAL TOTAL:</span>
               <span>₹${invoice.total_amount.toFixed(0)}</span>
             </div>
           </div>
           
-          ${cfg.showTerms && cfg.terms ? `<div style="font-size: 8px; margin-top: 4px; color: #666;">${cfg.terms}</div>` : ''}
-          ${cfg.showSignature ? `<div style="margin-top: 8px; text-align: right; font-size: 9px;"><div style="border-top: 1px solid #000; display: inline-block; padding-top: 3px; min-width: 100px;">${cfg.signatureText || 'Authorized Signature'}</div></div>` : ''}
-          ${!invoice.tax_included ? '<div style="font-style: italic; margin-top: 5px; text-align: center; font-size: 9px;">*This estimate is without tax</div>' : ''}
+          ${cfg.showSignature ? `<div style="margin-top: 4px; text-align: right; font-size: ${baseFontSize - 2}px;"><div style="border-top: 1px solid #000; display: inline-block; padding-top: 2px; min-width: 80px;">${cfg.signatureText || 'Signature'}</div></div>` : ''}
+          ${!invoice.tax_included ? `<div style="font-style: italic; margin-top: 3px; text-align: center; font-size: ${baseFontSize - 3}px;">*Estimate without tax</div>` : ''}
         </div>
       `;
     };

@@ -12,6 +12,7 @@ import PrintLayoutConfig from "./components/PrintLayoutConfig";
 import ProductList from "./components/ProductList";
 import Login from "./components/Login";
 import UserManagement from "./components/UserManagement";
+import MakingChargesConfig from "./components/MakingChargesConfig";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -552,11 +553,15 @@ const Navigation = () => {
             <Link to="/customers" className="hover:text-blue-200 px-2 py-1">Customers</Link>
             <Link to="/invoices" className="hover:text-blue-200 px-2 py-1">Create Invoice</Link>
             <Link to="/invoice-list" className="hover:text-blue-200 px-2 py-1">Invoices</Link>
-            <Link to="/sales-management" className="hover:text-blue-200 px-2 py-1">Sales</Link>
-            <Link to="/sales-report" className="hover:text-blue-200 px-2 py-1">Reports</Link>
-            <Link to="/print-config" className="hover:text-blue-200 px-2 py-1">Print Setup</Link>
             {isAdmin() && (
-              <Link to="/users" className="hover:text-blue-200 px-2 py-1 bg-purple-700 rounded">👥 Users</Link>
+              <>
+                <Link to="/product-list" className="hover:text-blue-200 px-2 py-1">Products</Link>
+                <Link to="/sales-management" className="hover:text-blue-200 px-2 py-1">Sales</Link>
+                <Link to="/sales-report" className="hover:text-blue-200 px-2 py-1">Reports</Link>
+                <Link to="/print-config" className="hover:text-blue-200 px-2 py-1">Print Setup</Link>
+                <Link to="/making-charges" className="hover:text-blue-200 px-2 py-1">Making Charges</Link>
+                <Link to="/users" className="hover:text-blue-200 px-2 py-1 bg-purple-700 rounded">👥 Users</Link>
+              </>
             )}
             
             {/* User Menu */}
@@ -589,15 +594,20 @@ const Navigation = () => {
           <div className="md:hidden mt-4 pb-4 border-t border-blue-500">
             <div className="flex flex-col space-y-2 pt-4">
               <Link to="/" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</Link>
-              <Link to="/product-list" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>Product List</Link>
               <Link to="/customers" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>Customers</Link>
               <Link to="/invoices" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>Create Invoice</Link>
               <Link to="/invoice-list" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>Invoices</Link>
-              <Link to="/sales-management" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>Sales</Link>
-              <Link to="/sales-report" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>Reports</Link>
-              <Link to="/print-config" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>Print Setup</Link>
               {isAdmin() && (
-                <Link to="/users" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation bg-purple-700 rounded mx-2" onClick={() => setIsMobileMenuOpen(false)}>👥 User Management</Link>
+                <>
+                  <div className="border-t border-blue-400 my-2 mx-2"></div>
+                  <div className="px-2 text-blue-300 text-xs font-semibold">ADMIN ONLY</div>
+                  <Link to="/product-list" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>📦 Product List</Link>
+                  <Link to="/sales-management" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>💰 Sales</Link>
+                  <Link to="/sales-report" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>📊 Reports</Link>
+                  <Link to="/print-config" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>🖨️ Print Setup</Link>
+                  <Link to="/making-charges" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation" onClick={() => setIsMobileMenuOpen(false)}>⚙️ Making Charges</Link>
+                  <Link to="/users" className="hover:text-blue-200 px-2 py-2 text-base touch-manipulation bg-purple-700 rounded mx-2" onClick={() => setIsMobileMenuOpen(false)}>👥 User Management</Link>
+                </>
               )}
               
               {/* Mobile User Info & Logout */}
@@ -642,6 +652,32 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+// Admin Only Route Component
+const AdminRoute = ({ children }) => {
+  const { isAuthenticated, isAdmin, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  if (!isAdmin()) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return children;
+};
+
 // Main Layout with Navigation
 const MainLayout = ({ children }) => {
   return (
@@ -653,8 +689,6 @@ const MainLayout = ({ children }) => {
 };
 
 function AppRoutes() {
-  const { isAuthenticated } = useAuth();
-  
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
@@ -662,13 +696,6 @@ function AppRoutes() {
         <ProtectedRoute>
           <MainLayout>
             <Dashboard />
-          </MainLayout>
-        </ProtectedRoute>
-      } />
-      <Route path="/product-list" element={
-        <ProtectedRoute>
-          <MainLayout>
-            <ProductList />
           </MainLayout>
         </ProtectedRoute>
       } />
@@ -693,33 +720,48 @@ function AppRoutes() {
           </MainLayout>
         </ProtectedRoute>
       } />
+      {/* Admin Only Routes */}
+      <Route path="/product-list" element={
+        <AdminRoute>
+          <MainLayout>
+            <ProductList />
+          </MainLayout>
+        </AdminRoute>
+      } />
       <Route path="/sales-management" element={
-        <ProtectedRoute>
+        <AdminRoute>
           <MainLayout>
             <SalesManagement />
           </MainLayout>
-        </ProtectedRoute>
+        </AdminRoute>
       } />
       <Route path="/sales-report" element={
-        <ProtectedRoute>
+        <AdminRoute>
           <MainLayout>
             <SalesReport />
           </MainLayout>
-        </ProtectedRoute>
+        </AdminRoute>
       } />
       <Route path="/print-config" element={
-        <ProtectedRoute>
+        <AdminRoute>
           <MainLayout>
             <PrintLayoutConfig />
           </MainLayout>
-        </ProtectedRoute>
+        </AdminRoute>
+      } />
+      <Route path="/making-charges" element={
+        <AdminRoute>
+          <MainLayout>
+            <MakingChargesConfig />
+          </MainLayout>
+        </AdminRoute>
       } />
       <Route path="/users" element={
-        <ProtectedRoute>
+        <AdminRoute>
           <MainLayout>
             <UserManagement />
           </MainLayout>
-        </ProtectedRoute>
+        </AdminRoute>
       } />
     </Routes>
   );
