@@ -129,18 +129,27 @@ const InvoiceList = () => {
     const rowPadding = itemCount <= 3 ? '5px 6px' : itemCount <= 5 ? '4px 5px' : '3px 4px';
     const lineHeight = itemCount <= 3 ? '1.4' : itemCount <= 5 ? '1.3' : '1.2';
     
-    // Get unique purities from invoice items (only gold items, not silver)
-    const goldPurities = [...new Set(invoice.items.slice(0, 6)
-      .filter(item => item.purity && item.purity !== 'Silver')
+    // Get unique purities from invoice items (INCLUDING Silver)
+    const allPurities = [...new Set(invoice.items.slice(0, 6)
+      .filter(item => item.purity)
       .map(item => item.purity))];
     
-    // Generate gold prices HTML for only purchased purities (per 10g) - LEFT ALIGNED SEPARATE SECTION
-    const goldPricesHTML = goldPurities.map(purity => {
-      const goldRate = goldRates.find(rate => rate.purity === purity);
-      const ratePer10g = goldRate ? (goldRate.rate_per_gram * 10) : 0;
-      return `<div style="margin-bottom: 1px; font-size: ${baseFontSize - 1}px;">
-        <strong>${purity}:</strong> ₹${ratePer10g.toFixed(0)}/10g
-      </div>`;
+    // Generate rates HTML for all purchased purities (per 10g for gold, per gram for silver)
+    const ratesHTML = allPurities.map(purity => {
+      const rate = goldRates.find(r => r.purity === purity);
+      if (purity === 'Silver') {
+        // Silver rate per gram
+        const ratePerGram = rate ? rate.rate_per_gram : 0;
+        return `<div style="margin-bottom: 1px; font-size: ${baseFontSize - 1}px;">
+          <strong>Silver:</strong> ₹${ratePerGram.toFixed(0)}/g
+        </div>`;
+      } else {
+        // Gold rate per 10g
+        const ratePer10g = rate ? (rate.rate_per_gram * 10) : 0;
+        return `<div style="margin-bottom: 1px; font-size: ${baseFontSize - 1}px;">
+          <strong>${purity}:</strong> ₹${ratePer10g.toFixed(0)}/10g
+        </div>`;
+      }
     }).join('');
 
     const generateCopyHTML = (copyType) => {
@@ -181,13 +190,13 @@ const InvoiceList = () => {
             <div><strong>PHONE:</strong> ${invoice.customer_phone}</div>
           </div>
           
-          <!-- Two Column Layout: Gold Rates (Left) | Table (Right) -->
+          <!-- Two Column Layout: Rates (Left) | Table (Right) -->
           <div style="display: flex; gap: 6px; margin-bottom: 6px;">
-            ${goldPurities.length > 0 ? `
-              <!-- Gold Rates - Left Side -->
+            ${allPurities.length > 0 ? `
+              <!-- Rates - Left Side -->
               <div style="width: 30%; border: 1px solid #000; padding: 4px; background-color: #fffbe6;">
-                <div style="font-weight: bold; font-size: ${baseFontSize - 1}px; margin-bottom: 3px; text-align: center; border-bottom: 1px solid #ccc; padding-bottom: 2px;">GOLD RATE</div>
-                ${goldPricesHTML}
+                <div style="font-weight: bold; font-size: ${baseFontSize - 1}px; margin-bottom: 3px; text-align: center; border-bottom: 1px solid #ccc; padding-bottom: 2px;">RATES</div>
+                ${ratesHTML}
               </div>
             ` : ''}
             

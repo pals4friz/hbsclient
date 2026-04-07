@@ -7,7 +7,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const MakingChargesConfig = () => {
-  const { isAdmin } = useAuth();
+  const { isAdmin, token } = useAuth();
   const [makingCharges, setMakingCharges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -22,6 +22,13 @@ const MakingChargesConfig = () => {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Create axios config with auth header
+  const getAuthConfig = () => ({
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
 
   useEffect(() => {
     fetchMakingCharges();
@@ -49,10 +56,10 @@ const MakingChargesConfig = () => {
 
     try {
       if (editingCharge) {
-        await axios.put(`${API}/making-charges/${editingCharge.id}`, formData);
+        await axios.put(`${API}/making-charges/${editingCharge.id}`, formData, getAuthConfig());
         setSuccess('Making charge updated successfully!');
       } else {
-        await axios.post(`${API}/making-charges`, formData);
+        await axios.post(`${API}/making-charges`, formData, getAuthConfig());
         setSuccess('Making charge created successfully!');
       }
       fetchMakingCharges();
@@ -68,7 +75,7 @@ const MakingChargesConfig = () => {
     }
 
     try {
-      await axios.delete(`${API}/making-charges/${chargeId}`);
+      await axios.delete(`${API}/making-charges/${chargeId}`, getAuthConfig());
       setSuccess('Making charge deleted successfully!');
       fetchMakingCharges();
     } catch (error) {
