@@ -122,7 +122,7 @@ const MakingChargesConfig = () => {
     );
   }
 
-  const purities = ['18K', '20K', '22K', '24K', 'Silver'];
+  const purities = ['18K', '20K', '22K', '24K', 'Silver', 'Silver SILL', 'Silver925'];
 
   return (
     <div className="p-4 sm:p-6">
@@ -190,7 +190,7 @@ const MakingChargesConfig = () => {
                   <tr key={charge.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        charge.purity === 'Silver' 
+                        charge.purity.startsWith('Silver') 
                           ? 'bg-gray-200 text-gray-800'
                           : 'bg-yellow-100 text-yellow-800'
                       }`}>
@@ -268,7 +268,9 @@ const MakingChargesConfig = () => {
                   required
                 >
                   {purities.map(p => (
-                    <option key={p} value={p}>{p} {p !== 'Silver' ? 'Gold' : ''}</option>
+                    <option key={p} value={p}>
+                      {p.startsWith('Silver') ? p : `${p} Gold`}
+                    </option>
                   ))}
                 </select>
               </div>

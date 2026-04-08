@@ -71,6 +71,8 @@ const GoldRates = () => {
       case '20K': return 'text-orange-600 bg-orange-50';
       case '18K': return 'text-orange-500 bg-orange-50';
       case 'Silver': return 'text-gray-600 bg-gray-50';
+      case 'Silver SILL': return 'text-gray-700 bg-gray-100';
+      case 'Silver925': return 'text-slate-600 bg-slate-50';
       default: return 'text-blue-600 bg-blue-50';
     }
   };
@@ -95,7 +97,7 @@ const GoldRates = () => {
                 </div>
               </div>
               <div className={`px-2 py-1 rounded text-xs font-medium ${getPurityColor(rate.purity)}`}>
-                {rate.purity === 'Silver' ? 'Silver' : 'Gold'}
+                {rate.purity.startsWith('Silver') ? rate.purity : 'Gold'}
               </div>
             </div>
 

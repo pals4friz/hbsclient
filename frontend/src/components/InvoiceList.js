@@ -137,11 +137,11 @@ const InvoiceList = () => {
     // Generate rates HTML for all purchased purities (per 10g for gold, per gram for silver)
     const ratesHTML = allPurities.map(purity => {
       const rate = goldRates.find(r => r.purity === purity);
-      if (purity === 'Silver') {
-        // Silver rate per gram
+      if (purity.startsWith('Silver')) {
+        // Silver rate per gram (for all silver types)
         const ratePerGram = rate ? rate.rate_per_gram : 0;
         return `<div style="margin-bottom: 1px; font-size: ${baseFontSize - 1}px;">
-          <strong>Silver:</strong> ₹${ratePerGram.toFixed(0)}/g
+          <strong>${purity}:</strong> ₹${ratePerGram.toFixed(0)}/g
         </div>`;
       } else {
         // Gold rate per 10g

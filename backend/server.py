@@ -1413,7 +1413,9 @@ async def initialize_default_rates():
         {"purity": "20K", "rate_per_gram": 5000.0},
         {"purity": "22K", "rate_per_gram": 5500.0},
         {"purity": "24K", "rate_per_gram": 6000.0},
-        {"purity": "Silver", "rate_per_gram": 80.0}
+        {"purity": "Silver", "rate_per_gram": 80.0},
+        {"purity": "Silver SILL", "rate_per_gram": 75.0},
+        {"purity": "Silver925", "rate_per_gram": 85.0}
     ]
     
     initialized_count = 0

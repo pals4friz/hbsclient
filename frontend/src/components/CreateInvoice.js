@@ -514,11 +514,11 @@ const CreateInvoice = () => {
     // Generate rates HTML for all purchased purities (per 10g for gold, per gram for silver)
     const ratesHTML = allPurities.map(purity => {
       const rate = goldRates.find(r => r.purity === purity);
-      if (purity === 'Silver') {
-        // Silver rate per gram
+      if (purity.startsWith('Silver')) {
+        // Silver rate per gram (for all silver types)
         const ratePerGram = rate ? rate.rate_per_gram : 0;
         return `<div style="margin-bottom: 1px; font-size: ${baseFontSize - 1}px;">
-          <strong>Silver:</strong> ₹${ratePerGram.toFixed(0)}/g
+          <strong>${purity}:</strong> ₹${ratePerGram.toFixed(0)}/g
         </div>`;
       } else {
         // Gold rate per 10g
@@ -720,7 +720,7 @@ const CreateInvoice = () => {
             {goldRates.map((rate) => (
               <div key={rate.purity} className="flex justify-between items-center text-sm">
                 <span className={`font-medium ${
-                  rate.purity === 'Silver' ? 'text-gray-600' : 'text-yellow-600'
+                  rate.purity.startsWith('Silver') ? 'text-gray-600' : 'text-yellow-600'
                 }`}>
                   {rate.purity}:
                 </span>
@@ -968,6 +968,8 @@ const CreateInvoice = () => {
                           <option value="22K">22K Gold</option>
                           <option value="24K">24K Gold</option>
                           <option value="Silver">Silver</option>
+                          <option value="Silver SILL">Silver SILL</option>
+                          <option value="Silver925">Silver925</option>
                         </select>
                       </div>
 
@@ -1463,6 +1465,8 @@ const CreateInvoice = () => {
                   <option value="22K">22K Gold</option>
                   <option value="24K">24K Gold</option>
                   <option value="Silver">Silver</option>
+                  <option value="Silver SILL">Silver SILL</option>
+                  <option value="Silver925">Silver925</option>
                 </select>
                 {newProductData.purity && goldRates.find(rate => rate.purity === newProductData.purity) && (
                   <div className="text-xs text-green-600 mt-1">
