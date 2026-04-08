@@ -1,5 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header, UploadFile, File
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -13,7 +13,7 @@ import uuid
 from datetime import datetime, date
 import json
 from bson import json_util
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 import io
 import tempfile
@@ -608,6 +608,153 @@ async def get_customer(customer_id: str):
     if not customer:
         raise HTTPException(status_code=404, detail="Customer not found")
     return Customer(**customer)
+
+@api_router.put("/customers/{customer_id}", response_model=Customer)
+async def update_customer(customer_id: str, customer_data: CustomerCreate):
+    """Update existing customer"""
+    existing = await db.customers.find_one({"id": customer_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    
+    updated_data = customer_data.dict()
+    updated_data["id"] = customer_id
+    updated_data["created_at"] = existing["created_at"]
+    
+    await db.customers.update_one({"id": customer_id}, {"$set": updated_data})
+    return Customer(**updated_data)
+
+@api_router.get("/customers/sample-excel/download")
+async def download_sample_excel():
+    """Generate and download sample customer Excel file"""
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Customers"
+    
+    # Define headers
+    headers = ["Name", "Phone", "Email", "Address"]
+    ws.append(headers)
+    
+    # Style headers
+    header_font = Font(bold=True, size=12, color="FFFFFF")
+    header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+    
+    for cell in ws[1]:
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+    
+    # Add sample data rows
+    sample_data = [
+        ["Rajesh Kumar", "9876543210", "rajesh@example.com", "123 Main Street, Puranpur"],
+        ["Priya Sharma", "9123456789", "priya@example.com", "456 Market Road, Puranpur"],
+        ["Amit Singh", "9988776655", "", "789 Gandhi Chowk, Puranpur"]
+    ]
+    
+    for row in sample_data:
+        ws.append(row)
+    
+    # Adjust column widths
+    ws.column_dimensions['A'].width = 20
+    ws.column_dimensions['B'].width = 15
+    ws.column_dimensions['C'].width = 25
+    ws.column_dimensions['D'].width = 35
+    
+    # Save to BytesIO
+    excel_buffer = io.BytesIO()
+    wb.save(excel_buffer)
+    excel_buffer.seek(0)
+    
+    return StreamingResponse(
+        excel_buffer,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=customer_sample.xlsx"}
+    )
+
+@api_router.post("/customers/upload-excel")
+async def upload_customers_excel(file: UploadFile = File(...)):
+    """Upload Excel file to bulk import customers"""
+    
+    # Validate file type
+    if not file.filename.endswith(('.xlsx', '.xls')):
+        raise HTTPException(status_code=400, detail="Only Excel files (.xlsx, .xls) are allowed")
+    
+    try:
+        # Read Excel file
+        contents = await file.read()
+        wb = load_workbook(io.BytesIO(contents))
+        ws = wb.active
+        
+        # Extract headers (first row)
+        headers = [cell.value for cell in ws[1]]
+        
+        # Validate headers
+        required_headers = ["Name", "Phone", "Address"]
+        missing_headers = [h for h in required_headers if h not in headers]
+        if missing_headers:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Missing required columns: {', '.join(missing_headers)}"
+            )
+        
+        # Get column indices
+        name_idx = headers.index("Name")
+        phone_idx = headers.index("Phone")
+        email_idx = headers.index("Email") if "Email" in headers else None
+        address_idx = headers.index("Address")
+        
+        # Get existing phone numbers for duplicate detection
+        existing_phones = set()
+        existing_customers = await db.customers.find({}, {"phone": 1, "_id": 0}).to_list(10000)
+        for customer in existing_customers:
+            existing_phones.add(customer.get("phone", ""))
+        
+        added_count = 0
+        skipped_count = 0
+        errors = []
+        
+        # Process each row (skip header row)
+        for row_idx, row in enumerate(ws.iter_rows(min_row=2, values_only=True), start=2):
+            try:
+                # Extract values
+                name = row[name_idx] if name_idx < len(row) else None
+                phone = str(row[phone_idx]).strip() if phone_idx < len(row) and row[phone_idx] else None
+                email = str(row[email_idx]).strip() if email_idx is not None and email_idx < len(row) and row[email_idx] else ""
+                address = row[address_idx] if address_idx < len(row) else None
+                
+                # Validate required fields
+                if not name or not phone or not address:
+                    errors.append(f"Row {row_idx}: Missing required fields (Name, Phone, or Address)")
+                    continue
+                
+                # Check for duplicates
+                if phone in existing_phones:
+                    skipped_count += 1
+                    continue
+                
+                # Create customer
+                customer = Customer(
+                    name=str(name).strip(),
+                    phone=phone,
+                    email=email,
+                    address=str(address).strip()
+                )
+                
+                await db.customers.insert_one(customer.dict())
+                existing_phones.add(phone)  # Add to set to avoid duplicates within the same file
+                added_count += 1
+                
+            except Exception as e:
+                errors.append(f"Row {row_idx}: {str(e)}")
+        
+        return {
+            "success": True,
+            "added": added_count,
+            "skipped": skipped_count,
+            "errors": errors
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error processing Excel file: {str(e)}")
 
 # === INVOICE APIS ===
 
