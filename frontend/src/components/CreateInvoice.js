@@ -902,12 +902,15 @@ const CreateInvoice = () => {
                 // Calculate amount using gold rates based on selected purity
                 const goldRate = goldRates.find(rate => rate.purity === item.purity);
                 const ratePerGram = goldRate ? goldRate.rate_per_gram : 5500;
-                const amount = weight * ratePerGram;
+                const itemAmount = weight * ratePerGram;
                 
                 // Calculate labor - for manual items with making_charges > 0, use that; otherwise use config
                 const laborCharges = (isManual && item.making_charges > 0) 
                   ? parseFloat(item.making_charges) 
                   : getMakingCharges(item.purity, weight);
+                
+                // Total amount including making charges
+                const totalAmount = itemAmount + laborCharges;
 
                 return (
                   <div key={index} className={`border p-3 sm:p-4 rounded ${isManual ? 'border-amber-400 bg-amber-50' : 'border-gray-200'}`} data-testid={`invoice-item-${index}`}>
@@ -1037,14 +1040,17 @@ const CreateInvoice = () => {
 
                       <div className="flex items-end">
                         <div className="flex-1">
-                          <label className="block text-xs text-gray-500 mb-1">Amount (₹)</label>
+                          <label className="block text-xs text-gray-500 mb-1">Total Amount (₹)</label>
                           <input
                             type="text"
-                            value={`₹${amount.toFixed(2)}`}
-                            className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm bg-gray-50"
+                            value={`₹${totalAmount.toFixed(2)}`}
+                            className="w-full border border-gray-300 p-2 sm:p-3 rounded text-sm bg-gray-50 font-semibold"
                             readOnly
                             data-testid={`amount-display-${index}`}
                           />
+                          <div className="text-xs text-gray-500 mt-1">
+                            Item: ₹{itemAmount.toFixed(0)} + Labor: ₹{laborCharges.toFixed(0)}
+                          </div>
                         </div>
                         <button
                           type="button"
