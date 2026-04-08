@@ -3,7 +3,7 @@
  * Used by both CreateInvoice and InvoiceList components
  */
 
-export const generatePrintHTML = (invoice, goldRates, printConfig) => {
+export const generatePrintHTML = (invoice, goldRates = [], printConfig = {}) => {
   const cfg = printConfig; // Shorthand for config
   const itemCount = Math.min(invoice.items.length, 6); // Max 6 items
   const totalWeight = invoice.items.slice(0, 6).reduce((sum, item) => sum + item.weight, 0);
